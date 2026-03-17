@@ -16,3 +16,4 @@ WHERE {
   ?s ?p ?o .
 }
 
+DROP GRAPH <http://example.com/Gent-Terneuzen> ;
