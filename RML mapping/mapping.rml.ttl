@@ -6,12 +6,12 @@
 @prefix ssn: <http://www.w3.org/ns/ssn/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix ex:   <http://example.com/ns#> .
+@prefix ex:   <http://example.com/attributes/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
 <#SensorMapping> a rr:TriplesMap;
   rml:logicalSource [
-    rml:source "sample.csv";
+    rml:source "../data fetch/data/timeseries.csv";
     rml:referenceFormulation ql:CSV
   ];
 
