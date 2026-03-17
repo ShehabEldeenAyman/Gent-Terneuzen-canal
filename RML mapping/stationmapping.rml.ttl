@@ -1,0 +1,482 @@
+@base <http://example.com/base/> .
+@prefix rr:  <http://www.w3.org/ns/r2rml#> .
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql:  <http://semweb.mmlab.be/ns/ql#> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
+@prefix ssn: <http://www.w3.org/ns/ssn/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ex:   <http://example.com/attributes/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+
+<#StationMapping> a rr:TriplesMap;
+  rml:logicalSource [
+    rml:source "stationsample.csv" ;
+    rml:referenceFormulation ql:CSV
+  ] ;
+
+  # Core Subject Map — each station identified by station_id
+  rr:subjectMap [
+    rr:template "http://example.com/stations/{station_id}" ;
+    rr:class sosa:Platform
+  ] ;
+
+  # station_no (String identifier)
+  rr:predicateObjectMap [
+    rr:predicate ex:stationNo ;
+    rr:objectMap [
+      rml:reference "station_no" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # station_name (String label)
+  rr:predicateObjectMap [
+    rr:predicate rdfs:label ;
+    rr:objectMap [
+      rml:reference "station_name" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # station_longname (String)
+  rr:predicateObjectMap [
+    rr:predicate ex:stationLongname ;
+    rr:objectMap [
+      rml:reference "station_longname" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # station_latitude (Numeric)
+  rr:predicateObjectMap [
+    rr:predicate geo:lat ;
+    rr:objectMap [
+      rml:reference "station_latitude" ;
+      rr:datatype xsd:double
+    ]
+  ] ;
+
+  # station_longitude (Numeric)
+  rr:predicateObjectMap [
+    rr:predicate geo:long ;
+    rr:objectMap [
+      rml:reference "station_longitude" ;
+      rr:datatype xsd:double
+    ]
+  ] ;
+
+  # station_carteasting (Numeric)
+  rr:predicateObjectMap [
+    rr:predicate ex:stationCartEasting ;
+    rr:objectMap [
+      rml:reference "station_carteasting" ;
+      rr:datatype xsd:double
+    ]
+  ] ;
+
+  # station_cartnorthing (Numeric)
+  rr:predicateObjectMap [
+    rr:predicate ex:stationCartNorthing ;
+    rr:objectMap [
+      rml:reference "station_cartnorthing" ;
+      rr:datatype xsd:double
+    ]
+  ] ;
+
+  # station_local_x (Numeric)
+  rr:predicateObjectMap [
+    rr:predicate ex:stationLocalX ;
+    rr:objectMap [
+      rml:reference "station_local_x" ;
+      rr:datatype xsd:double
+    ]
+  ] ;
+
+  # station_local_y (Numeric)
+  rr:predicateObjectMap [
+    rr:predicate ex:stationLocalY ;
+    rr:objectMap [
+      rml:reference "station_local_y" ;
+      rr:datatype xsd:double
+    ]
+  ] ;
+
+  # station_georefsystem (String -> URI)
+  rr:predicateObjectMap [
+    rr:predicate ex:geoRefSystem ;
+    rr:objectMap [
+      rr:template "http://example.com/waterinfo/{station_georefsystem}" ;
+      rr:termType rr:IRI
+    ]
+  ] ;
+
+  # ts_id — links to the timeseries sensor URI (IRI)
+  rr:predicateObjectMap [
+    rr:predicate sosa:hosts ;
+    rr:objectMap [
+      rr:template "http://example.com/waterinfo/{ts_id}" ;
+      rr:termType rr:IRI
+    ]
+  ] ;
+
+  # ts_name (String)
+  rr:predicateObjectMap [
+    rr:predicate ex:tsName ;
+    rr:objectMap [
+      rml:reference "ts_name" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # ts_shortname (String)
+  rr:predicateObjectMap [
+    rr:predicate ex:tsShortname ;
+    rr:objectMap [
+      rml:reference "ts_shortname" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # ts_path (String)
+  rr:predicateObjectMap [
+    rr:predicate ex:tsPath ;
+    rr:objectMap [
+      rml:reference "ts_path" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # ts_type_id (Numeric)
+  rr:predicateObjectMap [
+    rr:predicate ex:tsTypeId ;
+    rr:objectMap [
+      rml:reference "ts_type_id" ;
+      rr:datatype xsd:integer
+    ]
+  ] ;
+
+  # ts_type_name (String -> URI)
+  rr:predicateObjectMap [
+    rr:predicate ex:tsTypeName ;
+    rr:objectMap [
+      rr:template "http://example.com/waterinfo/{ts_type_name}" ;
+      rr:termType rr:IRI
+    ]
+  ] ;
+
+  # parametertype_id (Numeric)
+  rr:predicateObjectMap [
+    rr:predicate ex:parametertypeId ;
+    rr:objectMap [
+      rml:reference "parametertype_id" ;
+      rr:datatype xsd:integer
+    ]
+  ] ;
+
+  # parametertype_name (String -> URI)
+  rr:predicateObjectMap [
+    rr:predicate ex:parametertypeName ;
+    rr:objectMap [
+      rr:template "http://example.com/waterinfo/{parametertype_name}" ;
+      rr:termType rr:IRI
+    ]
+  ] ;
+
+  # stationparameter_name (String -> URI)
+  rr:predicateObjectMap [
+    rr:predicate ex:stationparameterName ;
+    rr:objectMap [
+      rr:template "http://example.com/waterinfo/{stationparameter_name}" ;
+      rr:termType rr:IRI
+    ]
+  ] ;
+
+  # stationparameter_no (String identifier)
+  rr:predicateObjectMap [
+    rr:predicate ex:stationparameterNo ;
+    rr:objectMap [
+      rml:reference "stationparameter_no" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # stationparameter_longname (String)
+  rr:predicateObjectMap [
+    rr:predicate ex:stationparameterLongname ;
+    rr:objectMap [
+      rml:reference "stationparameter_longname" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # ts_unitname (String)
+  rr:predicateObjectMap [
+    rr:predicate ex:tsUnitname ;
+    rr:objectMap [
+      rml:reference "ts_unitname" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # ts_unitsymbol (String)
+  rr:predicateObjectMap [
+    rr:predicate ex:tsUnitsymbol ;
+    rr:objectMap [
+      rml:reference "ts_unitsymbol" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # ts_unitname_abs (String)
+  rr:predicateObjectMap [
+    rr:predicate ex:tsUnitnameAbs ;
+    rr:objectMap [
+      rml:reference "ts_unitname_abs" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # ts_unitsymbol_abs (String)
+  rr:predicateObjectMap [
+    rr:predicate ex:tsUnitsymbolAbs ;
+    rr:objectMap [
+      rml:reference "ts_unitsymbol_abs" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # site_no (String)
+  rr:predicateObjectMap [
+    rr:predicate ex:siteNo ;
+    rr:objectMap [
+      rml:reference "site_no" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # site_id (Numeric)
+  rr:predicateObjectMap [
+    rr:predicate ex:siteId ;
+    rr:objectMap [
+      rml:reference "site_id" ;
+      rr:datatype xsd:integer
+    ]
+  ] ;
+
+  # site_name (String -> URI)
+  rr:predicateObjectMap [
+    rr:predicate ex:siteName ;
+    rr:objectMap [
+      rr:template "http://example.com/waterinfo/{site_name}" ;
+      rr:termType rr:IRI
+    ]
+  ] ;
+
+  # catchment_no (String)
+  rr:predicateObjectMap [
+    rr:predicate ex:catchmentNo ;
+    rr:objectMap [
+      rml:reference "catchment_no" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # catchment_id (Numeric)
+  rr:predicateObjectMap [
+    rr:predicate ex:catchmentId ;
+    rr:objectMap [
+      rml:reference "catchment_id" ;
+      rr:datatype xsd:integer
+    ]
+  ] ;
+
+  # catchment_name (String -> URI)
+  rr:predicateObjectMap [
+    rr:predicate ex:catchmentName ;
+    rr:objectMap [
+      rr:template "http://example.com/waterinfo/{catchment_name}" ;
+      rr:termType rr:IRI
+    ]
+  ] ;
+
+  # ts_density (String -> URI)
+  rr:predicateObjectMap [
+    rr:predicate ex:tsDensity ;
+    rr:objectMap [
+      rr:template "http://example.com/waterinfo/{ts_density}" ;
+      rr:termType rr:IRI
+    ]
+  ] ;
+
+  # ts_exchange (Numeric)
+  rr:predicateObjectMap [
+    rr:predicate ex:tsExchange ;
+    rr:objectMap [
+      rml:reference "ts_exchange" ;
+      rr:datatype xsd:integer
+    ]
+  ] ;
+
+  # ts_spacing (String — ISO 8601 duration)
+  rr:predicateObjectMap [
+    rr:predicate ex:tsSpacing ;
+    rr:objectMap [
+      rml:reference "ts_spacing" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # from (dateTime)
+  rr:predicateObjectMap [
+    rr:predicate ex:from ;
+    rr:objectMap [
+      rml:reference "from" ;
+      rr:datatype xsd:dateTime
+    ]
+  ] ;
+
+  # to (dateTime)
+  rr:predicateObjectMap [
+    rr:predicate ex:to ;
+    rr:objectMap [
+      rml:reference "to" ;
+      rr:datatype xsd:dateTime
+    ]
+  ] ;
+
+  # station_diary (String)
+  rr:predicateObjectMap [
+    rr:predicate ex:stationDiary ;
+    rr:objectMap [
+      rml:reference "station_diary" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # KWInfo_Manager (String)
+  rr:predicateObjectMap [
+    rr:predicate ex:kwinfoManager ;
+    rr:objectMap [
+      rml:reference "KWInfo_Manager" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # station_status (String -> URI)
+  rr:predicateObjectMap [
+    rr:predicate ex:stationStatus ;
+    rr:objectMap [
+      rr:template "http://example.com/waterinfo/{station_status}" ;
+      rr:termType rr:IRI
+    ]
+  ] ;
+
+  # Portal_Bekken (String -> URI)
+  rr:predicateObjectMap [
+    rr:predicate ex:portalBekken ;
+    rr:objectMap [
+      rr:template "http://example.com/waterinfo/{Portal_Bekken}" ;
+      rr:termType rr:IRI
+    ]
+  ] ;
+
+  # station_status_remark (String)
+  rr:predicateObjectMap [
+    rr:predicate ex:stationStatusRemark ;
+    rr:objectMap [
+      rml:reference "station_status_remark" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # station_diary_status (String)
+  rr:predicateObjectMap [
+    rr:predicate ex:stationDiaryStatus ;
+    rr:objectMap [
+      rml:reference "station_diary_status" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # KWInfo_ManagerMail (String)
+  rr:predicateObjectMap [
+    rr:predicate ex:kwinfoManagerMail ;
+    rr:objectMap [
+      rml:reference "KWInfo_ManagerMail" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # KWInfo (Numeric)
+  rr:predicateObjectMap [
+    rr:predicate ex:kwinfo ;
+    rr:objectMap [
+      rml:reference "KWInfo" ;
+      rr:datatype xsd:integer
+    ]
+  ] ;
+
+  # ngr_letter (String)
+  rr:predicateObjectMap [
+    rr:predicate ex:ngrLetter ;
+    rr:objectMap [
+      rml:reference "ngr_letter" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # KWInfo_TechInfo (String)
+  rr:predicateObjectMap [
+    rr:predicate ex:kwinfoTechInfo ;
+    rr:objectMap [
+      rml:reference "KWInfo_TechInfo" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # dataowner (String)
+  rr:predicateObjectMap [
+    rr:predicate ex:dataowner ;
+    rr:objectMap [
+      rml:reference "dataowner" ;
+      rr:datatype xsd:string
+    ]
+  ] ;
+
+  # admin_level (String -> URI)
+  rr:predicateObjectMap [
+    rr:predicate ex:adminLevel ;
+    rr:objectMap [
+      rr:template "http://example.com/waterinfo/{admin_level}" ;
+      rr:termType rr:IRI
+    ]
+  ] ;
+
+  # region_district (String -> URI)
+  rr:predicateObjectMap [
+    rr:predicate ex:regionDistrict ;
+    rr:objectMap [
+      rr:template "http://example.com/waterinfo/{region_district}" ;
+      rr:termType rr:IRI
+    ]
+  ] ;
+
+  # admin_name (String -> URI)
+  rr:predicateObjectMap [
+    rr:predicate ex:adminName ;
+    rr:objectMap [
+      rr:template "http://example.com/waterinfo/{admin_name}" ;
+      rr:termType rr:IRI
+    ]
+  ] ;
+
+  # dataprovider (String)
+  rr:predicateObjectMap [
+    rr:predicate ex:dataprovider ;
+    rr:objectMap [
+      rml:reference "dataprovider" ;
+      rr:datatype xsd:string
+    ]
+  ] .
