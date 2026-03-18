@@ -12,13 +12,13 @@
 
 <#StationMapping> a rr:TriplesMap;
   rml:logicalSource [
-    rml:source "stationsample.csv" ;
+    rml:source "../data/stations.csv" ;
     rml:referenceFormulation ql:CSV
   ] ;
 
   # Core Subject Map — each station identified by station_id
   rr:subjectMap [
-    rr:template "http://example.com/stations/{station_id}" ;
+    rr:template "http://example.com/waterinfo/stations/{station_id}" ;
     rr:class sosa:Platform
   ] ;
 

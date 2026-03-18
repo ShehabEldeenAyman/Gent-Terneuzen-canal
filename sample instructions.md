@@ -1,4 +1,6 @@
-java -jar rmlmapper.jar -m mapping.rml.ttl -o linkeddata.ttl -s turtle
+java -jar rmlmapper.jar -m timeseriesmapping.rml.ttl -o timeseries.ttl -s turtle
+java -jar rmlmapper.jar -m stationmapping.rml.ttl -o stations.ttl -s turtle
+
 
 PREFIX sosa: <http://www.w3.org/ns/sosa/>
 SELECT ?observation ?time ?value
