@@ -1,13 +1,15 @@
 @base <http://example.com/base/> .
-@prefix rr:  <http://www.w3.org/ns/r2rml#> .
-@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
-@prefix ql:  <http://semweb.mmlab.be/ns/ql#> .
-@prefix sosa: <http://www.w3.org/ns/sosa/> .
-@prefix ssn: <http://www.w3.org/ns/ssn/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix ex:   <http://example.com/attributes/> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rr:    <http://www.w3.org/ns/r2rml#> .
+@prefix rml:   <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql:    <http://semweb.mmlab.be/ns/ql#> .
+@prefix sosa:  <http://www.w3.org/ns/sosa/> .
+@prefix ssn:   <http://www.w3.org/ns/ssn/> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ex:    <http://example.com/attributes/> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix obs:   <http://example.com/observations/> .
+@prefix water: <http://example.com/waterinfo/> .
 
 <#SensorMapping> a rr:TriplesMap;
   rml:logicalSource [
@@ -17,15 +19,15 @@
 
   # Core Subject Map
   rr:subjectMap [
-    rr:template "http://example.com/observations/{ts_id}/{Timestamp}" ;
+    rr:template "obs:{ts_id}/{Timestamp}" ;
     rr:class sosa:Observation
   ];
 
-  # Sensor / ts_id (Transformed to URI instead of string)
+  # Sensor / ts_id
   rr:predicateObjectMap [
     rr:predicate sosa:madeBySensor ;
     rr:objectMap [
-        rr:template "http://example.com/waterinfo/{ts_id}" ;
+        rr:template "water:{ts_id}" ;
         rr:termType rr:IRI
     ]
   ] ;
@@ -48,16 +50,16 @@
     ]
   ] ;
 
-  # Interpolation Type (String -> URI)
+  # Interpolation Type
   rr:predicateObjectMap [
     rr:predicate ex:interpolationType ;
     rr:objectMap [
-      rr:template "http://example.com/waterinfo/{Interpolation Type}" ;
+      rr:template "water:{Interpolation Type}" ;
       rr:termType rr:IRI
     ]
   ] ;
 
-  # Quality Code (Numeric)
+  # Quality Code
   rr:predicateObjectMap [
     rr:predicate ex:qualityCode ;
     rr:objectMap [
@@ -66,34 +68,34 @@
     ]
   ] ;
 
-  # Quality Code Name (String -> URI)
+  # Quality Code Name
   rr:predicateObjectMap [
     rr:predicate ex:qualityCodeName ;
     rr:objectMap [
-      rr:template "http://example.com/waterinfo/{Quality Code Name}" ;
+      rr:template "water:{Quality Code Name}" ;
       rr:termType rr:IRI
     ]
   ] ;
 
-  # Quality Code Description (String -> URI)
+  # Quality Code Description
   rr:predicateObjectMap [
     rr:predicate ex:qualityCodeDescription ;
     rr:objectMap [
-      rr:template "http://example.com/waterinfo/{Quality Code Description}" ;
+      rr:template "water:{Quality Code Description}" ;
       rr:termType rr:IRI
     ]
   ] ;
 
-  # Quality Code Color (String -> URI)
+  # Quality Code Color
   rr:predicateObjectMap [
     rr:predicate ex:qualityCodeColor ;
     rr:objectMap [
-      rr:template "http://example.com/waterinfo/{Quality Code Color}" ;
+      rr:template "water:{Quality Code Color}" ;
       rr:termType rr:IRI
     ]
   ] ;
 
-  # Aggregation Accuracy % (Numeric)
+  # Aggregation Accuracy %
   rr:predicateObjectMap [
     rr:predicate ex:aggregationAccuracy ;
     rr:objectMap [
@@ -102,7 +104,7 @@
     ]
   ] ;
 
-  # Absolute Value (Numeric)
+  # Absolute Value
   rr:predicateObjectMap [
     rr:predicate ex:absoluteValue ;
     rr:objectMap [
@@ -111,16 +113,16 @@
     ]
   ] ;
 
-  # AV Interpolation Type (String -> URI)
+  # AV Interpolation Type
   rr:predicateObjectMap [
     rr:predicate ex:avInterpolationType ;
     rr:objectMap [
-      rr:template "http://example.com/waterinfo/{AV Interpolation Type}" ;
+      rr:template "water:{AV Interpolation Type}" ;
       rr:termType rr:IRI
     ]
   ] ;
 
-  # AV Quality Code (Numeric)
+  # AV Quality Code
   rr:predicateObjectMap [
     rr:predicate ex:avQualityCode ;
     rr:objectMap [
@@ -129,25 +131,25 @@
     ]
   ] ;
 
-  # AV Quality Code Name (String -> URI)
+  # AV Quality Code Name
   rr:predicateObjectMap [
     rr:predicate ex:avQualityCodeName ;
     rr:objectMap [
-      rr:template "http://example.com/waterinfo/{AV Quality Code Name}" ;
+      rr:template "water:{AV Quality Code Name}" ;
       rr:termType rr:IRI
     ]
   ] ;
 
-  # AV Quality Code Description (String -> URI)
+  # AV Quality Code Description
   rr:predicateObjectMap [
     rr:predicate ex:avQualityCodeDescription ;
     rr:objectMap [
-      rr:template "http://example.com/waterinfo/{AV Quality Code Description}" ;
+      rr:template "water:{AV Quality Code Description}" ;
       rr:termType rr:IRI
     ]
   ] ;
 
-  # Runoff Value (Numeric)
+  # Runoff Value
   rr:predicateObjectMap [
     rr:predicate ex:runoffValue ;
     rr:objectMap [
@@ -156,16 +158,16 @@
     ]
   ] ;
 
-  # RV Interpolation Type (String -> URI)
+  # RV Interpolation Type
   rr:predicateObjectMap [
     rr:predicate ex:rvInterpolationType ;
     rr:objectMap [
-      rr:template "http://example.com/waterinfo/{RV Interpolation Type}" ;
+      rr:template "water:{RV Interpolation Type}" ;
       rr:termType rr:IRI
     ]
   ] ;
 
-  # RV Quality Code (Numeric)
+  # RV Quality Code
   rr:predicateObjectMap [
     rr:predicate ex:rvQualityCode ;
     rr:objectMap [
@@ -174,25 +176,25 @@
     ]
   ] ;
 
-  # RV Quality Code Name (String -> URI)
+  # RV Quality Code Name
   rr:predicateObjectMap [
     rr:predicate ex:rvQualityCodeName ;
     rr:objectMap [
-      rr:template "http://example.com/waterinfo/{RV Quality Code Name}" ;
+      rr:template "water:{RV Quality Code Name}" ;
       rr:termType rr:IRI
     ]
   ] ;
 
-  # RV Quality Code Description (String -> URI)
+  # RV Quality Code Description
   rr:predicateObjectMap [
     rr:predicate ex:rvQualityCodeDescription ;
     rr:objectMap [
-      rr:template "http://example.com/waterinfo/{RV Quality Code Description}" ;
+      rr:template "water:{RV Quality Code Description}" ;
       rr:termType rr:IRI
     ]
   ] ;
 
-  # Stagesource Value (Numeric)
+  # Stagesource Value
   rr:predicateObjectMap [
     rr:predicate ex:stagesourceValue ;
     rr:objectMap [
@@ -201,7 +203,7 @@
     ]
   ] ;
 
-  # ReturnPeriod (Numeric)
+  # ReturnPeriod
   rr:predicateObjectMap [
     rr:predicate ex:returnPeriod ;
     rr:objectMap [
@@ -219,7 +221,7 @@
     ]
   ] ;
 
-  # Occurrance Count (Numeric)
+  # Occurrance Count
   rr:predicateObjectMap [
     rr:predicate ex:occurranceCount ;
     rr:objectMap [
@@ -228,56 +230,56 @@
     ]
   ] ;
 
-  # Timeseries Comment (String -> URI)
+  # Timeseries Comment
   rr:predicateObjectMap [
     rr:predicate ex:timeseriesComment ;
     rr:objectMap [
-      rr:template "http://example.com/waterinfo/{Timeseries Comment}" ;
+      rr:template "water:{Timeseries Comment}" ;
       rr:termType rr:IRI
     ]
   ] ;
 
-  # Agent Comment (String -> URI)
+  # Agent Comment
   rr:predicateObjectMap [
     rr:predicate ex:agentComment ;
     rr:objectMap [
-      rr:template "http://example.com/waterinfo/{Agent Comment}" ;
+      rr:template "water:{Agent Comment}" ;
       rr:termType rr:IRI
     ]
   ] ;
 
-  # Station Comment (String -> URI)
+  # Station Comment
   rr:predicateObjectMap [
     rr:predicate ex:stationComment ;
     rr:objectMap [
-      rr:template "http://example.com/waterinfo/{Station Comment}" ;
+      rr:template "water:{Station Comment}" ;
       rr:termType rr:IRI
     ]
   ] ;
 
-  # Parameter Comment (String -> URI)
+  # Parameter Comment
   rr:predicateObjectMap [
     rr:predicate ex:parameterComment ;
     rr:objectMap [
-      rr:template "http://example.com/waterinfo/{Parameter Comment}" ;
+      rr:template "water:{Parameter Comment}" ;
       rr:termType rr:IRI
     ]
   ] ;
 
-  # Data Comment (String -> URI)
+  # Data Comment
   rr:predicateObjectMap [
     rr:predicate ex:dataComment ;
     rr:objectMap [
-      rr:template "http://example.com/waterinfo/{Data Comment}" ;
+      rr:template "water:{Data Comment}" ;
       rr:termType rr:IRI
     ]
   ] ;
 
-  # Release State (String -> URI)
+  # Release State
   rr:predicateObjectMap [
     rr:predicate ex:releaseState ;
     rr:objectMap [
-      rr:template "http://example.com/waterinfo/{Release State}" ;
+      rr:template "water:{Release State}" ;
       rr:termType rr:IRI
     ]
   ] .

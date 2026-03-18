@@ -1,0 +1,18 @@
+@prefix ex: <http://example.com/attributes/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rml: <http://w3id.org/rml/> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
+@prefix ssn: <http://www.w3.org/ns/ssn/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://example.com/observations/289421042/2023-01-01%2005%3A15%3A00%2B00%3A00> a
+    sosa:Observation;
+  ex:interpolationType <http://example.com/waterinfo/101>;
+  ex:qualityCode 180;
+  ex:qualityCodeColor <http://example.com/waterinfo/rgba%28255%2C%20213%2C%20170%2C%201.0%29>;
+  ex:qualityCodeDescription <http://example.com/waterinfo/Estimated%20%28by%20automatic%20interpolation%29%20-%20180>;
+  ex:qualityCodeName <http://example.com/waterinfo/EstimatedA>;
+  sosa:hasSimpleResult 1.12002E4;
+  sosa:madeBySensor <http://example.com/waterinfo/289421042>;
+  sosa:resultTime "2023-01-01 05:15:00+00:00"^^xsd:dateTime .
