@@ -9,11 +9,11 @@
 @prefix ex:    <http://example.com/attributes/> .
 @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix obs:   <http://example.com/observations/> .
-@prefix water: <http://example.com/waterinfo/> .
+@prefix waterinfo: <http://example.com/waterinfo/> .
 
 <#SensorMapping> a rr:TriplesMap;
   rml:logicalSource [
-    rml:source "../data fetch/data/timeseries.csv";
+    rml:source "../data/timeseries.csv";
     rml:referenceFormulation ql:CSV
   ];
 
@@ -27,7 +27,7 @@
   rr:predicateObjectMap [
     rr:predicate sosa:madeBySensor ;
     rr:objectMap [
-        rr:template "water:{ts_id}" ;
+        rr:template "waterinfo:{ts_id}" ;
         rr:termType rr:IRI
     ]
   ] ;
@@ -54,7 +54,7 @@
   rr:predicateObjectMap [
     rr:predicate ex:interpolationType ;
     rr:objectMap [
-      rr:template "water:{Interpolation Type}" ;
+      rr:template "waterinfo:{Interpolation Type}" ;
       rr:termType rr:IRI
     ]
   ] ;
@@ -72,7 +72,7 @@
   rr:predicateObjectMap [
     rr:predicate ex:qualityCodeName ;
     rr:objectMap [
-      rr:template "water:{Quality Code Name}" ;
+      rr:template "waterinfo:{Quality Code Name}" ;
       rr:termType rr:IRI
     ]
   ] ;
@@ -81,7 +81,7 @@
   rr:predicateObjectMap [
     rr:predicate ex:qualityCodeDescription ;
     rr:objectMap [
-      rr:template "water:{Quality Code Description}" ;
+      rr:template "waterinfo:{Quality Code Description}" ;
       rr:termType rr:IRI
     ]
   ] ;
@@ -90,7 +90,7 @@
   rr:predicateObjectMap [
     rr:predicate ex:qualityCodeColor ;
     rr:objectMap [
-      rr:template "water:{Quality Code Color}" ;
+      rr:template "waterinfo:{Quality Code Color}" ;
       rr:termType rr:IRI
     ]
   ] ;
@@ -117,7 +117,7 @@
   rr:predicateObjectMap [
     rr:predicate ex:avInterpolationType ;
     rr:objectMap [
-      rr:template "water:{AV Interpolation Type}" ;
+      rr:template "waterinfo:{AV Interpolation Type}" ;
       rr:termType rr:IRI
     ]
   ] ;
@@ -135,7 +135,7 @@
   rr:predicateObjectMap [
     rr:predicate ex:avQualityCodeName ;
     rr:objectMap [
-      rr:template "water:{AV Quality Code Name}" ;
+      rr:template "waterinfo:{AV Quality Code Name}" ;
       rr:termType rr:IRI
     ]
   ] ;
@@ -144,7 +144,7 @@
   rr:predicateObjectMap [
     rr:predicate ex:avQualityCodeDescription ;
     rr:objectMap [
-      rr:template "water:{AV Quality Code Description}" ;
+      rr:template "waterinfo:{AV Quality Code Description}" ;
       rr:termType rr:IRI
     ]
   ] ;
@@ -162,7 +162,7 @@
   rr:predicateObjectMap [
     rr:predicate ex:rvInterpolationType ;
     rr:objectMap [
-      rr:template "water:{RV Interpolation Type}" ;
+      rr:template "waterinfo:{RV Interpolation Type}" ;
       rr:termType rr:IRI
     ]
   ] ;
@@ -180,7 +180,7 @@
   rr:predicateObjectMap [
     rr:predicate ex:rvQualityCodeName ;
     rr:objectMap [
-      rr:template "water:{RV Quality Code Name}" ;
+      rr:template "waterinfo:{RV Quality Code Name}" ;
       rr:termType rr:IRI
     ]
   ] ;
@@ -189,7 +189,7 @@
   rr:predicateObjectMap [
     rr:predicate ex:rvQualityCodeDescription ;
     rr:objectMap [
-      rr:template "water:{RV Quality Code Description}" ;
+      rr:template "waterinfo:{RV Quality Code Description}" ;
       rr:termType rr:IRI
     ]
   ] ;
@@ -234,7 +234,7 @@
   rr:predicateObjectMap [
     rr:predicate ex:timeseriesComment ;
     rr:objectMap [
-      rr:template "water:{Timeseries Comment}" ;
+      rr:template "waterinfo:{Timeseries Comment}" ;
       rr:termType rr:IRI
     ]
   ] ;
@@ -243,7 +243,7 @@
   rr:predicateObjectMap [
     rr:predicate ex:agentComment ;
     rr:objectMap [
-      rr:template "water:{Agent Comment}" ;
+      rr:template "waterinfo:{Agent Comment}" ;
       rr:termType rr:IRI
     ]
   ] ;
@@ -252,7 +252,7 @@
   rr:predicateObjectMap [
     rr:predicate ex:stationComment ;
     rr:objectMap [
-      rr:template "water:{Station Comment}" ;
+      rr:template "waterinfo:{Station Comment}" ;
       rr:termType rr:IRI
     ]
   ] ;
@@ -261,7 +261,7 @@
   rr:predicateObjectMap [
     rr:predicate ex:parameterComment ;
     rr:objectMap [
-      rr:template "water:{Parameter Comment}" ;
+      rr:template "waterinfo:{Parameter Comment}" ;
       rr:termType rr:IRI
     ]
   ] ;
@@ -270,7 +270,7 @@
   rr:predicateObjectMap [
     rr:predicate ex:dataComment ;
     rr:objectMap [
-      rr:template "water:{Data Comment}" ;
+      rr:template "waterinfo:{Data Comment}" ;
       rr:termType rr:IRI
     ]
   ] ;
@@ -279,7 +279,7 @@
   rr:predicateObjectMap [
     rr:predicate ex:releaseState ;
     rr:objectMap [
-      rr:template "water:{Release State}" ;
+      rr:template "waterinfo:{Release State}" ;
       rr:termType rr:IRI
     ]
   ] .
