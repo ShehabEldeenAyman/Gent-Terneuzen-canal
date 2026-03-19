@@ -50,14 +50,14 @@
     ]
   ] ;
 
-  # Interpolation Type
+# Interpolation Type -> String
   rr:predicateObjectMap [
     rr:predicate ex:interpolationType ;
     rr:objectMap [
-      rr:template "waterinfo:{Interpolation Type}" ;
-      rr:termType rr:IRI
+      rml:reference "Interpolation Type" ;
+      rr:datatype xsd:string
     ]
-  ] ;
+  ];
 
   # Quality Code
   rr:predicateObjectMap [
@@ -68,30 +68,31 @@
     ]
   ] ;
 
-  # Quality Code Name
+# Quality Code Name -> Now a String
   rr:predicateObjectMap [
     rr:predicate ex:qualityCodeName ;
     rr:objectMap [
-      rr:template "waterinfo:{Quality Code Name}" ;
-      rr:termType rr:IRI
+      rml:reference "Quality Code Name" ;
+      rr:datatype xsd:string
     ]
   ] ;
 
-  # Quality Code Description
+# Quality Code Description -> Now a String
   rr:predicateObjectMap [
     rr:predicate ex:qualityCodeDescription ;
     rr:objectMap [
-      rr:template "waterinfo:{Quality Code Description}" ;
-      rr:termType rr:IRI
+      rml:reference "Quality Code Description" ;
+      rr:datatype xsd:string
     ]
   ] ;
 
-  # Quality Code Color
+
+# Quality Code Color -> Now a String
   rr:predicateObjectMap [
     rr:predicate ex:qualityCodeColor ;
     rr:objectMap [
-      rr:template "waterinfo:{Quality Code Color}" ;
-      rr:termType rr:IRI
+      rml:reference "Quality Code Color" ;
+      rr:datatype xsd:string
     ]
   ] ;
 
@@ -113,12 +114,12 @@
     ]
   ] ;
 
-  # AV Interpolation Type
+# AV Interpolation Type -> String
   rr:predicateObjectMap [
     rr:predicate ex:avInterpolationType ;
     rr:objectMap [
-      rr:template "waterinfo:{AV Interpolation Type}" ;
-      rr:termType rr:IRI
+      rml:reference "AV Interpolation Type" ;
+      rr:datatype xsd:string
     ]
   ] ;
 
@@ -158,12 +159,12 @@
     ]
   ] ;
 
-  # RV Interpolation Type
+# RV Interpolation Type -> String
   rr:predicateObjectMap [
     rr:predicate ex:rvInterpolationType ;
     rr:objectMap [
-      rr:template "waterinfo:{RV Interpolation Type}" ;
-      rr:termType rr:IRI
+      rml:reference "RV Interpolation Type" ;
+      rr:datatype xsd:string
     ]
   ] ;
 
