@@ -21,7 +21,7 @@ def fetch_timeseries():
     print("Timeseries fetching started.")
     for group_id in timeseriesgroup_ids:
         group_id_data = vmm.get_timeseries_values(
-            group_id, start="2023-01-01T00:00:00Z", end="2025-12-31T23:59:59Z"
+            group_id, start="2020-01-01T00:00:00Z", end="2025-12-31T23:59:59Z"
         )
         frames.append(pd.DataFrame(group_id_data))
     df = pd.concat(frames, ignore_index=True)
