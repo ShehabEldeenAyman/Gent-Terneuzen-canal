@@ -16,7 +16,7 @@ def fetch_stations():
     print("Station fetching finished & file saved.")
 
 def fetch_timeseries():
-    timeseriesgroup_ids = ["289433042", "289435042", "289421042", "289423042","289427042", "289429042", "289441042", "289439042"]
+    timeseriesgroup_ids = ["289435042", "289423042", "289429042", "289441042"]
     frames = []
     print("Timeseries fetching started.")
     for group_id in timeseriesgroup_ids:
