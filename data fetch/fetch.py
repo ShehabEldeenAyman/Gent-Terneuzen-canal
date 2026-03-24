@@ -12,7 +12,7 @@ def fetch_stations():
         station_data = vmm.get_timeseries_list(station_no=station)
         frames.append(pd.DataFrame(station_data))
     df = pd.concat(frames, ignore_index=True)
-    df.to_csv("./data/stations.csv", index=False)
+    df.to_csv("../data/stations.csv", index=False)
     print("Station fetching finished & file saved.")
 
 def fetch_timeseries():
@@ -25,7 +25,7 @@ def fetch_timeseries():
         )
         frames.append(pd.DataFrame(group_id_data))
     df = pd.concat(frames, ignore_index=True)
-    df.to_csv("./data/timeseries.csv", index=False)
+    df.to_csv("../data/timeseries.csv", index=False)
     print("Timeseries fetching finished & file saved.")
 
 def main():
