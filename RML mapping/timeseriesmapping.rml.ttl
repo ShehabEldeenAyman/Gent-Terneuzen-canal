@@ -282,5 +282,14 @@
     rr:objectMap [
       rml:reference "Release State" ;
       rr:datatype xsd:string
-    ]
+    ] 
+  ] ;
+
+    # unix timestamp
+  rr:predicateObjectMap [
+    rr:predicate ex:unixTimestamp ;
+    rr:objectMap [
+      rml:reference "unixtimestamp" ;
+      rr:datatype xsd:integer
+    ];
   ] .
