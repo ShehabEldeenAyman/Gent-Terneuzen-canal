@@ -40,12 +40,11 @@ def create_sensor_set(graph):
     }
     '''
     print('Started identifying unique sensors...')
-    print('faaaaa')
     for sensor in graph.query(get_sensor_query):
         sensor_term = sensor[0]
         sensor_set.add(sensor_term)
         print(f'Identified sensor: {sensor_term}')
-        print('help')
+
 
     print(f'{len(sensor_set)} Sensors identified successfully.')
     return sensor_set
@@ -149,7 +148,6 @@ def main():
     output_path = "../data/TSSgraph.ttl"
 
     print("--- Program Started ---")
-    
     # 1. Load data
     original_graph = load_graph(input_path)
     

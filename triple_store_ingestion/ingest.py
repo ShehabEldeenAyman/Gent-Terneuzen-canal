@@ -4,10 +4,10 @@ PASSWORD = "dba"
 ttl_timeseries_path = "../data/timeseries.ttl"
 ttl_stations_path = "../data/stations.ttl"
 VIRTUOSO_URL = "http://localhost:8890/sparql-graph-crud"
-GRAPH_URI = "http://example.com/Gent-Terneuzen"
 
 
-def upload_graph(ttl_data_path):
+
+def upload_graph(ttl_data_path,GRAPH_URI):
     # 1. Prepare parameters and headers
     params = {'graph-uri': GRAPH_URI}
     headers = {'Content-Type': 'text/turtle'}
@@ -35,7 +35,7 @@ def upload_graph(ttl_data_path):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def delete_graph():
+def delete_graph(GRAPH_URI):
     """Removes the entire named graph from Virtuoso."""
     params = {'graph-uri': GRAPH_URI}
     
@@ -61,9 +61,10 @@ def delete_graph():
         return False
 
 def main():
-    delete_graph()
-    upload_graph(ttl_timeseries_path)
-    upload_graph(ttl_stations_path)
+    GRAPH_URI = "http://example.com/Gent-Terneuzen"
+    delete_graph(GRAPH_URI)
+    upload_graph(ttl_timeseries_path, GRAPH_URI)
+    upload_graph(ttl_stations_path, GRAPH_URI)
 
 
 if __name__ == "__main__":
