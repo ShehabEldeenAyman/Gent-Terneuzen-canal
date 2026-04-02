@@ -134,6 +134,7 @@ def create_tss(sensor_set, graph):
         final_graph.add((snippet, TSS.points, Literal(json_output, datatype=RDF.JSON)))
         final_graph.add((snippet, TSS.about, template))
         final_graph.add((snippet, TSS.context, Literal(context_data_dump, datatype=RDF.JSON)))
+        final_graph.add((snippet, TSS.pointType , SOSA.Observation))
         
         final_graph.add((template, RDF.type, TSS.PointTemplate))
         final_graph.add((template, SOSA.madeBySensor, sensor))
