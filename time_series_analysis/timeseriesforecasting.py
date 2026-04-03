@@ -171,7 +171,7 @@ def featureengineering(final_df):
 
 def datapreparation(df_featured):
     # Split based on your specific dates
-    train_data = df_featured[:'2025-07-31'] # all data up to July 2025
+    train_data = df_featured[:'2025-06-30'] # all data up to June 2025
     test_data = df_featured['2025-07-01':'2025-07-30'] # ground truth month
 
     X_train = train_data.drop(columns=sensors)  # Drop original sensor columns
@@ -187,11 +187,12 @@ def datapreparation(df_featured):
 #####################################################################################################
 def lightGBM_train(X_train, y_train, X_test, y_test):
     model = lgb.LGBMRegressor(
+        min_gain_to_split=0.0,
         n_estimators=5000,      # Increased: More trees for better learning
         learning_rate=0.01,     # Decreased: Slower, more precise learning
-        num_leaves=128,         # Increased: Allows for more complex patterns
-        max_depth=12,           # Limited: Prevents the trees from growing too deep
-        min_data_in_leaf=50,   # Regularization: Prevents overfitting to noise (lower = more sensitive)
+        num_leaves=64,         # Increased: Allows for more complex patterns
+        max_depth=8,           # Limited: Prevents the trees from growing too deep
+        min_data_in_leaf=20,   # Regularization: Prevents overfitting to noise (lower = more sensitive)
         feature_fraction=0.8,   # Generalization: Don't rely on all sensors at once
         n_jobs=-1,
         subsample=0.8,          # ADD: row subsampling for better generalisation
@@ -229,7 +230,7 @@ def lightGBM_visualization(y_test, forecast):
     # 672 rows = 7 days * 24 hours * 4 readings/hour
     plt.plot(results['Forecast'].iloc[:2688], label='LightGBM Forecast', color='red', linestyle='--')
 
-    plt.title('Conductivity Forecast vs Ground Truth (Month of September 2025)')
+    plt.title('Conductivity Forecast vs Ground Truth (Month of '' 2025)')
     plt.xlabel('Date')
     plt.ylabel('Conductivity (μS/cm)')
     plt.legend()
