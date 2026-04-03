@@ -293,7 +293,8 @@ def xgboost_visualization(predictions_xgb, y_test):
     plt.ylabel('Conductivity (μS/cm)')
     plt.legend()
     plt.grid(True, alpha=0.3)
-    plt.show()
+    plt.show(block=False)
+    plt.pause(0.1) # Gives the GUI time to render
 #####################################################################################################
 def comparisonforecast(forecast, predictions_xgb, y_test):
     # Head to head comparison
@@ -317,7 +318,8 @@ def comparison_visualization(comparison):
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
-    plt.show()      
+    plt.show(block=False)
+    plt.pause(0.1) # Gives the GUI time to render     
 #####################################################################################################
 def main():
     sensor_set = identify_unique_sensors()
