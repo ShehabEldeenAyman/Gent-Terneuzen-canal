@@ -1,0 +1,1566 @@
+@prefix ldes: <https://w3id.org/ldes#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
+@prefix tree: <https://w3id.org/tree#> .
+@prefix tss: <https://w3id.org/tss#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://example.org/tss/snippet/http://example.com/waterinfo/289423042/20220319> {
+    <https://example.org/tss/snippet/http://example.com/waterinfo/289423042/20220319> a tss:Snippet ;
+        tss:about _:https://example.org/tss/snippet/http://example.com/waterinfo/289423042_template_20220319 ;
+        tss:from "2022-03-19T00:00:00+00:00"^^xsd:dateTime ;
+        tss:pointType "http://www.w3.org/ns/sosa/Observation" ;
+        tss:points """[
+ {
+  "id": "https://example.org/tss/snippet/reading/2",
+  "time": "2022-03-19T02:45:00+00:00",
+  "value": 1229.32
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/2",
+  "time": "2022-03-19T05:45:00+00:00",
+  "value": 1240.95
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/2",
+  "time": "2022-03-19T08:45:00+00:00",
+  "value": 1206.73
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/2",
+  "time": "2022-03-19T09:30:00+00:00",
+  "value": 1204.61
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/2",
+  "time": "2022-03-19T09:45:00+00:00",
+  "value": 1200.14
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/2",
+  "time": "2022-03-19T15:00:00+00:00",
+  "value": 1250.25
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/2",
+  "time": "2022-03-19T18:00:00+00:00",
+  "value": 1281.33
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/2",
+  "time": "2022-03-19T19:30:00+00:00",
+  "value": 1217.02
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/2",
+  "time": "2022-03-19T21:00:00+00:00",
+  "value": 1205.36
+ }
+]"""^^rdf:JSON ;
+        tss:until "2022-03-19T23:59:59+00:00"^^xsd:dateTime .
+
+    _:https://example.org/tss/snippet/http://example.com/waterinfo/289423042_template_20220319 a tss:PointTemplate ;
+        sosa:madeBySensor <http://example.com/waterinfo/289423042> ;
+        sosa:observedProperty <http://example.com/waterinfo/Conductivity> .
+}
+
+{
+    <https://shehabeldeenayman.github.io/Mol_sluis_Dessel_Usecase/LDESTSS/LDESTSS#eventstream> a ldes:EventStream ;
+        ldes:timestampPath tss:from ;
+        tree:member <https://example.org/tss/snippet/http://example.com/waterinfo/289423042/20220319>,
+            <https://example.org/tss/snippet/http://example.com/waterinfo/289429042/20220319>,
+            <https://example.org/tss/snippet/http://example.com/waterinfo/289435042/20220319>,
+            <https://example.org/tss/snippet/http://example.com/waterinfo/289441042/20220319> ;
+        tree:view <https://shehabeldeenayman.github.io/Mol_sluis_Dessel_Usecase/LDESTSS/LDESTSS.trig> .
+
+    <https://example.org/tss/snippet/http://example.com/waterinfo/289423042/20220319> tss:from "2022-03-19T00:00:00+00:00"^^xsd:dateTime .
+
+    <https://example.org/tss/snippet/http://example.com/waterinfo/289429042/20220319> tss:from "2022-03-19T00:00:00+00:00"^^xsd:dateTime .
+
+    <https://example.org/tss/snippet/http://example.com/waterinfo/289435042/20220319> tss:from "2022-03-19T00:00:00+00:00"^^xsd:dateTime .
+
+    <https://example.org/tss/snippet/http://example.com/waterinfo/289441042/20220319> tss:from "2022-03-19T00:00:00+00:00"^^xsd:dateTime .
+}
+
+<https://example.org/tss/snippet/http://example.com/waterinfo/289435042/20220319> {
+    <https://example.org/tss/snippet/http://example.com/waterinfo/289435042/20220319> a tss:Snippet ;
+        tss:about _:https://example.org/tss/snippet/http://example.com/waterinfo/289435042_template_20220319 ;
+        tss:from "2022-03-19T00:00:00+00:00"^^xsd:dateTime ;
+        tss:pointType "http://www.w3.org/ns/sosa/Observation" ;
+        tss:points """[
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T00:00:00+00:00",
+  "value": 3033.27
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T00:15:00+00:00",
+  "value": 3046.66
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T00:30:00+00:00",
+  "value": 3051.23
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T00:45:00+00:00",
+  "value": 3054.83
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T01:00:00+00:00",
+  "value": 3033.2
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T01:15:00+00:00",
+  "value": 3005.72
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T01:30:00+00:00",
+  "value": 3006.39
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T01:45:00+00:00",
+  "value": 3001.39
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T02:00:00+00:00",
+  "value": 2992.77
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T02:15:00+00:00",
+  "value": 2986.83
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T02:30:00+00:00",
+  "value": 2988.07
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T02:45:00+00:00",
+  "value": 2984.46
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T03:00:00+00:00",
+  "value": 2974.96
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T03:15:00+00:00",
+  "value": 2990.33
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T03:30:00+00:00",
+  "value": 3002.73
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T03:45:00+00:00",
+  "value": 3001.64
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T04:00:00+00:00",
+  "value": 2983.87
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T04:15:00+00:00",
+  "value": 2988.73
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T04:30:00+00:00",
+  "value": 2984.84
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T04:45:00+00:00",
+  "value": 3005.31
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T05:00:00+00:00",
+  "value": 3022.87
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T05:15:00+00:00",
+  "value": 3038.09
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T05:30:00+00:00",
+  "value": 3037.99
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T05:45:00+00:00",
+  "value": 3005.79
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T06:00:00+00:00",
+  "value": 3010.82
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T06:15:00+00:00",
+  "value": 2998.38
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T06:30:00+00:00",
+  "value": 2992.68
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T06:45:00+00:00",
+  "value": 3012.04
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T07:00:00+00:00",
+  "value": 3008.5
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T07:15:00+00:00",
+  "value": 3019.69
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T07:30:00+00:00",
+  "value": 3040.79
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T07:45:00+00:00",
+  "value": 3047.43
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T08:00:00+00:00",
+  "value": 3054.18
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T08:15:00+00:00",
+  "value": 3047.85
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T08:30:00+00:00",
+  "value": 3048.68
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T08:45:00+00:00",
+  "value": 3101.83
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T09:00:00+00:00",
+  "value": 3120.07
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T09:15:00+00:00",
+  "value": 3137.11
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T09:30:00+00:00",
+  "value": 3134.56
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T09:45:00+00:00",
+  "value": 3126.66
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T10:00:00+00:00",
+  "value": 3118.0
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T10:15:00+00:00",
+  "value": 3113.89
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T10:30:00+00:00",
+  "value": 3119.82
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T10:45:00+00:00",
+  "value": 3127.05
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T11:00:00+00:00",
+  "value": 3193.81
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T11:15:00+00:00",
+  "value": 3248.02
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T11:30:00+00:00",
+  "value": 3239.08
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T11:45:00+00:00",
+  "value": 3232.41
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T12:00:00+00:00",
+  "value": 3222.63
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T12:15:00+00:00",
+  "value": 3192.03
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T12:30:00+00:00",
+  "value": 3208.13
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T12:45:00+00:00",
+  "value": 3390.5
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T13:00:00+00:00",
+  "value": 3717.0
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T13:15:00+00:00",
+  "value": 3789.07
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T13:30:00+00:00",
+  "value": 3769.39
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T13:45:00+00:00",
+  "value": 3680.41
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T14:00:00+00:00",
+  "value": 3666.76
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T14:15:00+00:00",
+  "value": 3575.65
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T14:30:00+00:00",
+  "value": 3484.68
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T14:45:00+00:00",
+  "value": 3477.51
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T15:00:00+00:00",
+  "value": 3522.86
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T15:15:00+00:00",
+  "value": 3567.59
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T15:30:00+00:00",
+  "value": 3553.04
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T15:45:00+00:00",
+  "value": 3546.36
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T16:00:00+00:00",
+  "value": 3532.38
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T16:15:00+00:00",
+  "value": 3565.39
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T16:30:00+00:00",
+  "value": 3562.52
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T16:45:00+00:00",
+  "value": 3603.62
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T17:00:00+00:00",
+  "value": 3672.05
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T17:15:00+00:00",
+  "value": 3618.26
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T17:30:00+00:00",
+  "value": 3587.29
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T17:45:00+00:00",
+  "value": 3636.12
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T18:00:00+00:00",
+  "value": 3629.14
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T18:15:00+00:00",
+  "value": 3640.56
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T18:30:00+00:00",
+  "value": 3681.24
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T18:45:00+00:00",
+  "value": 3672.15
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T19:00:00+00:00",
+  "value": 3698.91
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T19:15:00+00:00",
+  "value": 3712.16
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T19:30:00+00:00",
+  "value": 3737.24
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T19:45:00+00:00",
+  "value": 3742.98
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T20:00:00+00:00",
+  "value": 3725.38
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T20:15:00+00:00",
+  "value": 3706.08
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T20:30:00+00:00",
+  "value": 3722.68
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T20:45:00+00:00",
+  "value": 3691.46
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T21:00:00+00:00",
+  "value": 3674.04
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T21:15:00+00:00",
+  "value": 3716.94
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T21:30:00+00:00",
+  "value": 3685.08
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T21:45:00+00:00",
+  "value": 3681.73
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T22:00:00+00:00",
+  "value": 3694.66
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T22:15:00+00:00",
+  "value": 3678.0
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T22:30:00+00:00",
+  "value": 3666.59
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T22:45:00+00:00",
+  "value": 3639.81
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T23:00:00+00:00",
+  "value": 3625.8
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T23:15:00+00:00",
+  "value": 3663.35
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T23:30:00+00:00",
+  "value": 3672.98
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/1",
+  "time": "2022-03-19T23:45:00+00:00",
+  "value": 3653.2
+ }
+]"""^^rdf:JSON ;
+        tss:until "2022-03-19T23:59:59+00:00"^^xsd:dateTime .
+
+    _:https://example.org/tss/snippet/http://example.com/waterinfo/289435042_template_20220319 a tss:PointTemplate ;
+        sosa:madeBySensor <http://example.com/waterinfo/289435042> ;
+        sosa:observedProperty <http://example.com/waterinfo/Conductivity> .
+}
+
+<https://example.org/tss/snippet/http://example.com/waterinfo/289429042/20220319> {
+    <https://example.org/tss/snippet/http://example.com/waterinfo/289429042/20220319> a tss:Snippet ;
+        tss:about _:https://example.org/tss/snippet/http://example.com/waterinfo/289429042_template_20220319 ;
+        tss:from "2022-03-19T00:00:00+00:00"^^xsd:dateTime ;
+        tss:pointType "http://www.w3.org/ns/sosa/Observation" ;
+        tss:points """[
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T00:00:00+00:00",
+  "value": 2632.79
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T00:15:00+00:00",
+  "value": 2620.59
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T00:30:00+00:00",
+  "value": 2612.6
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T00:45:00+00:00",
+  "value": 2613.55
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T01:00:00+00:00",
+  "value": 2600.23
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T01:15:00+00:00",
+  "value": 2598.44
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T01:30:00+00:00",
+  "value": 2605.07
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T01:45:00+00:00",
+  "value": 2597.99
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T02:00:00+00:00",
+  "value": 2581.35
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T02:15:00+00:00",
+  "value": 2590.41
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T02:30:00+00:00",
+  "value": 2602.03
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T02:45:00+00:00",
+  "value": 2595.07
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T03:00:00+00:00",
+  "value": 2594.27
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T03:15:00+00:00",
+  "value": 2598.85
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T03:30:00+00:00",
+  "value": 2602.41
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T03:45:00+00:00",
+  "value": 2606.04
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T04:00:00+00:00",
+  "value": 2613.28
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T04:15:00+00:00",
+  "value": 2612.6
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T04:30:00+00:00",
+  "value": 2608.14
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T04:45:00+00:00",
+  "value": 2612.02
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T05:00:00+00:00",
+  "value": 2609.17
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T05:15:00+00:00",
+  "value": 2617.02
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T05:30:00+00:00",
+  "value": 2595.15
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T05:45:00+00:00",
+  "value": 2603.79
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T06:00:00+00:00",
+  "value": 2609.94
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T06:15:00+00:00",
+  "value": 2618.89
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T06:30:00+00:00",
+  "value": 2617.38
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T06:45:00+00:00",
+  "value": 2612.1
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T07:00:00+00:00",
+  "value": 2614.46
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T07:15:00+00:00",
+  "value": 2605.38
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T07:30:00+00:00",
+  "value": 2598.93
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T07:45:00+00:00",
+  "value": 2616.77
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T08:00:00+00:00",
+  "value": 2624.43
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T08:15:00+00:00",
+  "value": 2624.68
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T08:30:00+00:00",
+  "value": 2633.65
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T08:45:00+00:00",
+  "value": 2634.4
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T09:00:00+00:00",
+  "value": 2635.12
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T09:15:00+00:00",
+  "value": 2627.45
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T09:30:00+00:00",
+  "value": 2643.72
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T09:45:00+00:00",
+  "value": 2648.62
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T10:00:00+00:00",
+  "value": 2646.66
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T10:15:00+00:00",
+  "value": 2646.7
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T10:30:00+00:00",
+  "value": 2648.42
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T10:45:00+00:00",
+  "value": 2647.47
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T11:00:00+00:00",
+  "value": 2644.74
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T11:15:00+00:00",
+  "value": 2653.37
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T11:30:00+00:00",
+  "value": 2658.03
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T11:45:00+00:00",
+  "value": 2657.85
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T12:00:00+00:00",
+  "value": 2665.36
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T12:15:00+00:00",
+  "value": 2661.71
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T12:30:00+00:00",
+  "value": 2656.13
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T12:45:00+00:00",
+  "value": 2663.37
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T13:00:00+00:00",
+  "value": 2671.44
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T13:15:00+00:00",
+  "value": 2670.44
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T13:30:00+00:00",
+  "value": 2667.44
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T13:45:00+00:00",
+  "value": 2673.35
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T14:00:00+00:00",
+  "value": 2669.85
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T14:15:00+00:00",
+  "value": 2665.4
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T14:30:00+00:00",
+  "value": 2667.2
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T14:45:00+00:00",
+  "value": 2664.21
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T15:00:00+00:00",
+  "value": 2662.78
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T15:15:00+00:00",
+  "value": 2661.07
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T15:30:00+00:00",
+  "value": 2674.4
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T15:45:00+00:00",
+  "value": 2683.54
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T16:00:00+00:00",
+  "value": 2685.18
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T16:15:00+00:00",
+  "value": 2682.87
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T16:30:00+00:00",
+  "value": 2686.27
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T16:45:00+00:00",
+  "value": 2683.34
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T17:00:00+00:00",
+  "value": 2678.87
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T17:15:00+00:00",
+  "value": 2674.06
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T17:30:00+00:00",
+  "value": 2667.37
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T17:45:00+00:00",
+  "value": 2669.14
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T18:00:00+00:00",
+  "value": 2670.19
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T18:15:00+00:00",
+  "value": 2667.69
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T18:30:00+00:00",
+  "value": 2662.12
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T18:45:00+00:00",
+  "value": 2659.25
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T19:00:00+00:00",
+  "value": 2669.24
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T19:15:00+00:00",
+  "value": 2627.57
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T19:30:00+00:00",
+  "value": 2662.56
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T19:45:00+00:00",
+  "value": 2666.65
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T20:00:00+00:00",
+  "value": 2691.07
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T20:15:00+00:00",
+  "value": 2691.94
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T20:30:00+00:00",
+  "value": 2686.96
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T20:45:00+00:00",
+  "value": 2685.12
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T21:00:00+00:00",
+  "value": 2689.6
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T21:15:00+00:00",
+  "value": 2687.57
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T21:30:00+00:00",
+  "value": 2700.88
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T21:45:00+00:00",
+  "value": 2692.64
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T22:00:00+00:00",
+  "value": 2697.99
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T22:15:00+00:00",
+  "value": 2699.45
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T22:30:00+00:00",
+  "value": 2689.94
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T22:45:00+00:00",
+  "value": 2691.0
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T23:00:00+00:00",
+  "value": 2687.09
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T23:15:00+00:00",
+  "value": 2693.13
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T23:30:00+00:00",
+  "value": 2699.51
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/0",
+  "time": "2022-03-19T23:45:00+00:00",
+  "value": 2698.8
+ }
+]"""^^rdf:JSON ;
+        tss:until "2022-03-19T23:59:59+00:00"^^xsd:dateTime .
+
+    _:https://example.org/tss/snippet/http://example.com/waterinfo/289429042_template_20220319 a tss:PointTemplate ;
+        sosa:madeBySensor <http://example.com/waterinfo/289429042> ;
+        sosa:observedProperty <http://example.com/waterinfo/Conductivity> .
+}
+
+<https://example.org/tss/snippet/http://example.com/waterinfo/289441042/20220319> {
+    <https://example.org/tss/snippet/http://example.com/waterinfo/289441042/20220319> a tss:Snippet ;
+        tss:about _:https://example.org/tss/snippet/http://example.com/waterinfo/289441042_template_20220319 ;
+        tss:from "2022-03-19T00:00:00+00:00"^^xsd:dateTime ;
+        tss:pointType "http://www.w3.org/ns/sosa/Observation" ;
+        tss:points """[
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T00:00:00+00:00",
+  "value": 4277.22
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T00:15:00+00:00",
+  "value": 4314.23
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T00:30:00+00:00",
+  "value": 4385.37
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T00:45:00+00:00",
+  "value": 4294.53
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T01:00:00+00:00",
+  "value": 4290.64
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T01:15:00+00:00",
+  "value": 4276.2
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T01:30:00+00:00",
+  "value": 4264.41
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T01:45:00+00:00",
+  "value": 4276.43
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T02:00:00+00:00",
+  "value": 4258.4
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T02:15:00+00:00",
+  "value": 4244.91
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T02:30:00+00:00",
+  "value": 4363.71
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T02:45:00+00:00",
+  "value": 4388.65
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T03:00:00+00:00",
+  "value": 4309.34
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T03:15:00+00:00",
+  "value": 4319.74
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T03:30:00+00:00",
+  "value": 4289.13
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T03:45:00+00:00",
+  "value": 4235.33
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T04:00:00+00:00",
+  "value": 4251.22
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T04:15:00+00:00",
+  "value": 4248.02
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T04:30:00+00:00",
+  "value": 4342.26
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T04:45:00+00:00",
+  "value": 4410.81
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T05:00:00+00:00",
+  "value": 4439.79
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T05:15:00+00:00",
+  "value": 4390.47
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T05:30:00+00:00",
+  "value": 4308.82
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T05:45:00+00:00",
+  "value": 4318.78
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T06:00:00+00:00",
+  "value": 4320.0
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T06:15:00+00:00",
+  "value": 4271.95
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T06:30:00+00:00",
+  "value": 4275.59
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T06:45:00+00:00",
+  "value": 4292.62
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T07:00:00+00:00",
+  "value": 4302.26
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T07:15:00+00:00",
+  "value": 4510.98
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T07:30:00+00:00",
+  "value": 4605.53
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T07:45:00+00:00",
+  "value": 4636.45
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T08:00:00+00:00",
+  "value": 4567.45
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T08:15:00+00:00",
+  "value": 4568.13
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T08:30:00+00:00",
+  "value": 4532.66
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T08:45:00+00:00",
+  "value": 4519.37
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T09:00:00+00:00",
+  "value": 4546.16
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T09:15:00+00:00",
+  "value": 4601.76
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T09:30:00+00:00",
+  "value": 4954.13
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T09:45:00+00:00",
+  "value": 5127.89
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T10:00:00+00:00",
+  "value": 4885.21
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T10:15:00+00:00",
+  "value": 4775.35
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T10:30:00+00:00",
+  "value": 4662.1
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T10:45:00+00:00",
+  "value": 4717.86
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T11:00:00+00:00",
+  "value": 4855.31
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T11:15:00+00:00",
+  "value": 4896.79
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T11:30:00+00:00",
+  "value": 4936.36
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T11:45:00+00:00",
+  "value": 5229.15
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T12:00:00+00:00",
+  "value": 5014.51
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T12:15:00+00:00",
+  "value": 4871.42
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T12:30:00+00:00",
+  "value": 5059.5
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T12:45:00+00:00",
+  "value": 4879.1
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T13:00:00+00:00",
+  "value": 4920.4
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T13:15:00+00:00",
+  "value": 4965.3
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T13:30:00+00:00",
+  "value": 4816.11
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T13:45:00+00:00",
+  "value": 4853.45
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T14:00:00+00:00",
+  "value": 4983.97
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T14:15:00+00:00",
+  "value": 5058.44
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T14:30:00+00:00",
+  "value": 5020.44
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T14:45:00+00:00",
+  "value": 5022.52
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T15:00:00+00:00",
+  "value": 4940.83
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T15:15:00+00:00",
+  "value": 4925.64
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T15:30:00+00:00",
+  "value": 4953.02
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T15:45:00+00:00",
+  "value": 4937.33
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T16:00:00+00:00",
+  "value": 5007.17
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T16:15:00+00:00",
+  "value": 5102.75
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T16:30:00+00:00",
+  "value": 5109.65
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T16:45:00+00:00",
+  "value": 5070.51
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T17:00:00+00:00",
+  "value": 5013.77
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T17:15:00+00:00",
+  "value": 5021.46
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T17:30:00+00:00",
+  "value": 5024.81
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T17:45:00+00:00",
+  "value": 5048.49
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T18:00:00+00:00",
+  "value": 5103.59
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T18:15:00+00:00",
+  "value": 5220.75
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T18:30:00+00:00",
+  "value": 5205.87
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T18:45:00+00:00",
+  "value": 5199.46
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T19:00:00+00:00",
+  "value": 5119.32
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T19:15:00+00:00",
+  "value": 5063.74
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T19:30:00+00:00",
+  "value": 5102.77
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T19:45:00+00:00",
+  "value": 5096.47
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T20:00:00+00:00",
+  "value": 5172.28
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T20:15:00+00:00",
+  "value": 5271.83
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T20:30:00+00:00",
+  "value": 5216.5
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T20:45:00+00:00",
+  "value": 5155.43
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T21:00:00+00:00",
+  "value": 5185.22
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T21:15:00+00:00",
+  "value": 5199.8
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T21:30:00+00:00",
+  "value": 5156.61
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T21:45:00+00:00",
+  "value": 5170.68
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T22:00:00+00:00",
+  "value": 5180.95
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T22:15:00+00:00",
+  "value": 5161.78
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T22:30:00+00:00",
+  "value": 5185.98
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T22:45:00+00:00",
+  "value": 5191.84
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T23:00:00+00:00",
+  "value": 5163.72
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T23:15:00+00:00",
+  "value": 5148.98
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T23:30:00+00:00",
+  "value": 5161.18
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2022-03-19T23:45:00+00:00",
+  "value": 5171.61
+ }
+]"""^^rdf:JSON ;
+        tss:until "2022-03-19T23:59:59+00:00"^^xsd:dateTime .
+
+    _:https://example.org/tss/snippet/http://example.com/waterinfo/289441042_template_20220319 a tss:PointTemplate ;
+        sosa:madeBySensor <http://example.com/waterinfo/289441042> ;
+        sosa:observedProperty <http://example.com/waterinfo/Conductivity> .
+}
+
