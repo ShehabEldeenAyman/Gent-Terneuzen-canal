@@ -9,6 +9,7 @@ from statsmodels.tsa.stattools import acf
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error
 import lightgbm as lgb
+import xgboost as xgb
 
 
 #VIRTUOSO_URL = "http://localhost:8890/sparql-graph-crud"
@@ -112,7 +113,8 @@ def plot_sensor_data(final_df):
     plt.xlabel("Time")
     plt.xticks(rotation=45)
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-    plt.show()
+    plt.show(block=False)
+    plt.pause(0.1) # Gives the GUI time to render
 
 #####################################################################################################
 def featureengineering(final_df):
@@ -235,8 +237,87 @@ def lightGBM_visualization(y_test, forecast):
     plt.ylabel('Conductivity (μS/cm)')
     plt.legend()
     plt.grid(True, alpha=0.3)
-    plt.show()
+    plt.show(block=False)
+    plt.pause(0.1) # Gives the GUI time to render
+#####################################################################################################
+def xgboost_train(X_train, y_train, X_test, y_test):
+    dtrain = xgb.DMatrix(X_train, label=y_train)
+    dtest = xgb.DMatrix(X_test, label=y_test)
+    params = {
+        'objective': 'reg:squarederror', # We are predicting a number (conductivity)
+        'max_depth': 6,                 # Depth of trees
+        'eta': 0.01,                    # Learning rate (same as 'learning_rate')
+        'subsample': 0.8,               # Use 80% of data to grow each tree (prevents overfitting)
+        'colsample_bytree': 0.8,        # Use 80% of sensors for each tree
+        'eval_metric': 'mae'
+    }
+    # We use 'evallist' to watch the error in real-time
+    evallist = [(dtrain, 'train'), (dtest, 'eval')]
+    num_round = 2000
+    bst = xgb.train(params, dtrain, num_round, evallist, early_stopping_rounds=50)
+    # 4. Forecast 
+    predictions_xgb = bst.predict(dtest)
+    return predictions_xgb
 
+def xgboost_forecast_bias(predictions_xgb, y_test):
+    mae_xgb = mean_absolute_error(y_test, predictions_xgb)
+    print(f"XGBoost  MAE: {mae_xgb:.4f}")
+    return mae_xgb
+
+def xgboost_visualization(predictions_xgb, y_test):
+    # 1. Create a DataFrame for XGBoost results
+    # Ensure 'predictions_xgb' is the output from bst.predict(dtest)
+    results_xgb = pd.DataFrame({
+        'Actual': y_test,
+        'XGBoost_Forecast': predictions_xgb
+    }, index=y_test.index)
+
+    # 2. Plotting the 28-day window (2688 rows)
+    plt.figure(figsize=(15, 7))
+
+    # Plot Actual Data
+    plt.plot(results_xgb['Actual'].iloc[:2688], 
+            label='Ground Truth (Actual)', 
+            color='blue', 
+            alpha=0.6)
+
+    # Plot XGBoost Forecast
+    plt.plot(results_xgb['XGBoost_Forecast'].iloc[:2688], 
+            label='XGBoost Forecast', 
+            color='green',           # Using Green to distinguish from LightGBM's Red
+            linestyle='--', 
+            linewidth=1.5)
+
+    plt.title('Conductivity Forecast vs Ground Truth (XGBoost - Sept 2025)')
+    plt.xlabel('Date')
+    plt.ylabel('Conductivity (μS/cm)')
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.show()
+#####################################################################################################
+def comparisonforecast(forecast, predictions_xgb, y_test):
+    # Head to head comparison
+    comparison = pd.DataFrame({
+        'Actual':   y_test.values[:2688],
+        'LightGBM': forecast[:2688],
+        'XGBoost':  predictions_xgb[:2688]
+    }, index=y_test.index[:2688]) 
+    return comparison
+
+def comparison_visualization(comparison): 
+    plt.figure(figsize=(15, 8))
+    plt.plot(comparison['Actual'],   label='Actual',    color='black', alpha=0.4, linewidth=2)
+    plt.plot(comparison['LightGBM'], label='LightGBM',  color='red',   linestyle=':',  alpha=0.8)
+    plt.plot(comparison['XGBoost'],  label='XGBoost',   color='green', linestyle='--', alpha=0.8)
+
+    plt.title('Comparison: LightGBM vs XGBoost vs Ground Truth')
+    plt.xlabel('Date')
+    plt.ylabel('Conductivity (μS/cm)')
+    plt.xticks(rotation=45)
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.show()      
 #####################################################################################################
 def main():
     sensor_set = identify_unique_sensors()
@@ -244,10 +325,17 @@ def main():
     plot_sensor_data(final_df)
     df_featured = featureengineering(final_df)
     X_train, y_train, X_test, y_test = datapreparation(df_featured)
+
     model = lightGBM_train(X_train, y_train, X_test, y_test)
     forecast, mae, error = lightGBM_forecast_bias(model, X_test, y_test)
     lightGBM_visualization(y_test, forecast)
 
+    predictions_xgb = xgboost_train(X_train, y_train, X_test, y_test)
+    mae_xgb = xgboost_forecast_bias(predictions_xgb, y_test)
+    xgboost_visualization(predictions_xgb, y_test)
+
+    comparison = comparisonforecast(forecast, predictions_xgb, y_test)
+    comparison_visualization(comparison)
 
 if __name__ == "__main__":
     main()
