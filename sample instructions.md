@@ -3,6 +3,7 @@ java -jar rmlmapper.jar -m stationmapping.rml.ttl -o stations.ttl -s turtle
 
 fastapi dev
 
+npm run dev
 
 PREFIX sosa: <http://www.w3.org/ns/sosa/>
 SELECT ?observation ?time ?value
