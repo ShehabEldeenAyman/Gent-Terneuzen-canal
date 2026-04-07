@@ -271,6 +271,32 @@ app = FastAPI(lifespan=lifespan)
 async def root():
     return {"message": "Hello World"}
 
+@app.get("/sensor_data")
+async def plot_sensor_data(request: Request):
+    fig, axes = plt.subplots(nrows=4, ncols=1, figsize=(12, 10), sharex=True)
+
+    for i, sensor in enumerate(sensors):
+        ax = axes[i]
+        ax.plot(request.app.state.final_df.index, request.app.state.final_df[sensor], label=f"Sensor {sensor}", color=colors[i])
+        ax.set_ylabel("Value")
+        ax.legend(loc='upper right')
+        ax.grid(True, alpha=0.3)
+
+    plt.suptitle("Sensor Data Analysis", fontsize=16)
+    plt.xlabel("Time")
+    plt.xticks(rotation=45)
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+
+    # 2. Save plot to a bytes buffer instead of plt.show()
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png")
+    buf.seek(0)
+    plt.close() # Important: Close the plot to free up server memory
+
+    # 3. Return the buffer as a streaming response
+    return Response(content=buf.getvalue(), media_type="image/png")
+
+
 @app.get("/lightGBM_forecast")
 async def lightGBM_visualization(request: Request):
     # 1. Create a DataFrame for easy plotting
@@ -300,7 +326,41 @@ async def lightGBM_visualization(request: Request):
     # 3. Return the buffer as a streaming response
     return Response(content=buf.getvalue(), media_type="image/png")
 
-    #plt.show(block=False)
-    #plt.pause(0.1) # Gives the GUI time to render
-##@app.get("/test")
+@app.get("/xgboost_forecast")
+async def xgboost_visualization(request: Request):
+    results_xgb = pd.DataFrame({
+        'Actual':  request.app.state.y_test,
+        'XGBoost_Forecast': request.app.state.predictions_xgb
+    }, index=request.app.state.y_test.index)
+
+    # 2. Plotting the 28-day window (2688 rows)
+    plt.figure(figsize=(15, 7))
+
+    # Plot Actual Data
+    plt.plot(results_xgb['Actual'].iloc[:2688], 
+            label='Ground Truth (Actual)', 
+            color='blue', 
+            alpha=0.6)
+
+    # Plot XGBoost Forecast
+    plt.plot(results_xgb['XGBoost_Forecast'].iloc[:2688], 
+            label='XGBoost Forecast', 
+            color='green',           # Using Green to distinguish from LightGBM's Red
+            linestyle='--', 
+            linewidth=1.5)
+
+    plt.title('Conductivity Forecast vs Ground Truth (XGBoost - Sept 2025)')
+    plt.xlabel('Date')
+    plt.ylabel('Conductivity (μS/cm)')
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    
+    # 2. Save plot to a bytes buffer instead of plt.show()
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png")
+    buf.seek(0)
+    plt.close() # Important: Close the plot to free up server memory
+
+    # 3. Return the buffer as a streaming response
+    return Response(content=buf.getvalue(), media_type="image/png")
 
