@@ -296,6 +296,32 @@ def xgboost_visualization(predictions_xgb, y_test):
     plt.show(block=False)
     plt.pause(0.1) # Gives the GUI time to render
 #####################################################################################################
+def ensemble(forecast, predictions_xgb, y_test):
+    final_ensemble = (forecast + predictions_xgb) / 2
+    mae_ensemble = mean_absolute_error(y_test, final_ensemble)
+    print(f"Final Ensemble MAE: {mae_ensemble:.4f}")
+    return final_ensemble, mae_ensemble    
+
+def ensemble_visualization(final_ensemble, y_test):
+    results = pd.DataFrame({
+        'Actual':   y_test.values[:2688],
+        'Forecast': final_ensemble[:2688]
+    }, index=y_test.index[:2688])
+
+    plt.figure(figsize=(15, 7))
+    plt.plot(results['Actual'],   label='Ground Truth (Actual)', color='blue', alpha=0.7)
+    plt.plot(results['Forecast'], label='LightGBM Forecast',     color='red',  linestyle='--')
+
+    plt.title('Conductivity Forecast vs Ground Truth')
+    plt.xlabel('Date')
+    plt.ylabel('Conductivity (μS/cm)')
+    plt.xticks(rotation=45)
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.show(block=False)
+    plt.pause(0.1)
+#####################################################################################################
 def comparisonforecast(forecast, predictions_xgb, y_test):
     # Head to head comparison
     comparison = pd.DataFrame({
@@ -338,6 +364,10 @@ def main():
 
     comparison = comparisonforecast(forecast, predictions_xgb, y_test)
     comparison_visualization(comparison)
+
+    final_ensemble, mae_ensemble = ensemble(forecast, predictions_xgb, y_test)
+    ensemble_visualization(final_ensemble, y_test)
+
 
 if __name__ == "__main__":
     main()
