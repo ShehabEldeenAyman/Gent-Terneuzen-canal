@@ -77,11 +77,13 @@ export const MapCardHead = () => {
 export const MapCardBody = () => {
   // 1. Local state for the sub-menu
   const [activeSubTab, setActiveSubTab] = useState('UseCase');
-  const menuItems = ['UseCase', 'Parameters', 'Attributes', 'Map'];
+  const menuItems = ['UseCase', 'Stations', 'Parameters', 'Attributes', 'Map'];
 const renderSubContent = () => {
     switch (activeSubTab) {
       case 'UseCase':
         return <UsecaseTab />;
+      case 'Stations':
+        return <StationsTab />;
       case 'Parameters':
         return <ParametersTab />;
       case 'Attributes':
@@ -154,6 +156,67 @@ Conductivity is the primary proxy for salinity: the more dissolved ions (largely
       </p>
      </div>
 );
+
+const StationsTab = () => {
+  // Data organized into an array for easy mapping
+  const stationData = [
+    {
+      station: "Autrichehaven (Westdorpe)",
+      code: "IOW50",
+      country: "NL",
+      stationNo: "HIS_BWO_VITO_IOW50",
+      tsId: "289433042, 284141042, 289435042, 284153042"
+    },
+    {
+      station: "Grootdok (Ghent)",
+      code: "IOW48",
+      country: "BE",
+      stationNo: "HIS_BWO_VITO_IOW48",
+      tsId: "284105042, 289421042, 289423042, 284117042"
+    },
+    {
+      station: "Zevenaarshaven (Terneuzen)",
+      code: "IOW51",
+      country: "NL",
+      stationNo: "BWO_VITO_IOW49",
+      tsId: "289427042, 289429042, 284123042, 284135042"
+    },
+    {
+      station: "Rodenhuizedok (Ghent)",
+      code: "IOW49",
+      country: "BE",
+      stationNo: "BWO_VITO_IOW51",
+      tsId: "289441042, 284159042, 289439042, 284171042"
+    }
+  ];
+
+  return (
+    <div style={styles.tableWrapper}>
+      <table style={styles.table}>
+        <thead>
+          <tr style={styles.headerRow}>
+            <th style={{...styles.th, width: '25%'}}>Station</th>
+            <th style={{...styles.th, width: '10%'}}>Code</th>
+            <th style={{...styles.th, width: '10%'}}>Country</th>
+            <th style={{...styles.th, width: '25%'}}>Station No.</th>
+            <th style={{...styles.th, width: '30%'}}>TS_ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          {stationData.map((row, index) => (
+            <tr key={index} style={index % 2 === 0 ? styles.evenRow : styles.oddRow}>
+              <td style={styles.td}>{row.station}</td>
+              <td style={{...styles.td, ...styles.codeColumn}}>{row.code}</td>
+              <td style={styles.td}>{row.country}</td>
+              <td style={styles.td}>{row.stationNo}</td>
+              <td style={{...styles.td, fontSize: '0.75rem'}}>{row.tsId}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
 const ParametersTab = () => (
   <div>
