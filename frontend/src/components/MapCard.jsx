@@ -66,20 +66,10 @@ export const MapCardHead = () => {
   return (
     <div >
       <h2 style={headStyles.title}>
-        Mol Sluis / Kl Dessel–Kwaadmechelen
+        Gent-Terneuzen Canal 
       </h2>
-      <p style={headStyles.description}>
-        At the Mol Sluis station on the Dessel–Kwaadmechelen Canal, two key 
-        hydrological parameters — river stage and river discharge 
-        — are continuously monitored by the Flemish Hydrological 
-        Information Centre. These two datasets describe complementary 
-        aspects of the canal’s behavior: the water level (stage) in meters and the 
-        flow rate (discharge) in cubic meters per second. Integrating these 
-        parameters provides a richer, multidimensional view of the canal’s condition, 
-        essential for both operational management and scientific analysis. Each 
-        record contains timestamps in UTC, the measured value, station coordinates, 
-        and metadata identifying the provider and measurement type. 
-      </p>
+
+       
     </div>
   );
 };
@@ -158,22 +148,18 @@ const MapTab = () => {
 const UsecaseTab = () => (
 <div>
         <p style={headStyles.description}>
-        For a water data scientist, this integrated dataset enables a complete monitoring and forecasting workflow. By aligning the stage and discharge data from the same location, the scientist can detect abnormal relationships — for example, sudden increases in water level without corresponding discharge changes, which might indicate a sluice malfunction or obstruction. The dataset also supports short-term forecasting of stage and flow, crucial for navigation safety, sluice operation scheduling, and flood risk management. Using statistical or machine learning models, future water levels and discharges can be predicted up to 72 hours. This helps operators anticipate peak flows, low-water conditions, or abrupt level changes that could affect shipping or infrastructure.
+        The Gent-Terneuzen canal connects the port of Ghent to the Westerschelde estuary in the Netherlands. Salt water from the North Sea can push inland — a process known as salt intrusion. Industrial partners along the canal are sensitive to elevated salinity levels.
+Conductivity is the primary proxy for salinity: the more dissolved ions (largely salt) in the water, the higher the conductivity. VITO operates a network of sensors along the canal that publish live readings through the waterinfo.be.
+
       </p>
-              <p style={headStyles.description}>
-Through this integration, the Mol Sluis dataset becomes more than a collection of raw measurements — it becomes an operational intelligence layer for canal management. It supports proactive decision-making by enabling early anomaly detection, improved calibration of hydraulic models, and automated alerts for critical thresholds. Ultimately, this unified dataset empowers the water data scientist to deliver insights that improve safety, efficiency, and resilience in the canal’s daily operations.      </p>
-  </div>
+     </div>
 );
 
 const ParametersTab = () => (
   <div>
-    <h3>River Stage (Water Level)</h3>
-    <p style={headStyles.description}>The vertical distance from the water's surface to a fixed reference point on the riverbed. It is often measured in meters (m) or feet (ft). It indicates if the river is "running high" or "running low."  </p>
-    <h3>River Discharge (Flow Rate)</h3>
-    <p style={headStyles.description}>The amount of water passing through a specific point every second. It is calculated by multiplying the area of the river (width × depth) by velocity. It is measured in cubic meters per second (m^3/s) or cubic feet per second (cfs). If the Stage (height) increases, the Discharge (volume) also increases.  </p>
-    <h3>Discharge Runoff</h3>
-    <p style={headStyles.description}>The portion of rain (or snowmelt) didn't soak into the ground but instead "ran off" the surface and into the river. It is measured in  Liters per second (L/s). It helps understand how the surrounding land responds to a storm. If the land is paved or saturated, the runoff value will spike after it rains.  </p>
-
+      <h2> EC20 measurements</h2>
+       <p style={headStyles.description}> Raw conductivity (EC) fluctuates with water temperature throughout the day and across seasons, making it hard to compare readings over time. EC20 normalizes all measurements to a reference temperature of 20°C, isolating the actual ion concentration. This is the value to use for trend analysis, threshold alerting, and comparison between stations. </p>
+  
   </div>
 );
 
