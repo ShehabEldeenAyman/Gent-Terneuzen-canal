@@ -12,8 +12,8 @@ import { BrowseDataHead,BrowseDataBody } from './components/BrowseData';
 import { LDESClientCard } from './components/LDESClientCard';
 import { base_url } from './constants';
 
-
 const App = () => {
+
   // 1. Initialize state to track the active section
   const [activeTab, setActiveTab] = useState('Station Info');
 
@@ -70,6 +70,7 @@ const renderBodyContent = () => {
         return (
           <BodyCard Top={MapCardHead} Bottom={MapCardBody} />
   );
+
       case 'Benchmarks':
         return <BodyCard Top={BenchmarksCardHead} Bottom={() => (<ChartCardBody 
                 charts={[

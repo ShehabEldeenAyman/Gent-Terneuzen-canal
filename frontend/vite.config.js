@@ -10,6 +10,12 @@ export default defineConfig({
     ]
   },
   plugins: [react(),tailwindcss()],
-
+  worker: {
+    format: 'es'
+  },
+  optimizeDeps: {
+    // This prevents Vite from trying to pre-bundle the heavy pyodide files
+    exclude: ['react-py']
+  }
 
 });
