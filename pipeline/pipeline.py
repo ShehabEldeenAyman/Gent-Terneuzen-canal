@@ -39,12 +39,12 @@ def step_3_rml_mapping():
         print(f"RML Mapping failed: {e.stderr}")
         return False
 
-def step_4_ingest_virtuoso(ttl_timeseries, ttl_stations, graph_uri):
+def step_4_ingest_virtuoso(ttl_timeseries, , graph_uri):
     print("--- Step 4: Ingesting to Virtuoso ---")
     import ingest
     ingest.delete_graph(graph_uri)
     ingest.upload_graph(ttl_timeseries, graph_uri)
-    ingest.upload_graph(ttl_stations, graph_uri)
+    #ingest.upload_graph(ttl_stations, graph_uri)
 
 def step_5_rdf2tss(input_path, output_path):
     print("--- Step 5: RDF2TSS ---")
@@ -93,7 +93,7 @@ def main():
     step_2_preprocess()
     
     step_3_rml_mapping()
-    step_4_ingest_virtuoso(TIMESERIES_TTL, STATIONS_TTL, GRAPH_URI)
+    step_4_ingest_virtuoso(TIMESERIES_TTL, GRAPH_URI)
     #step_5_rdf2tss(TIMESERIES_TTL, TSS_GRAPH_TTL)
     #step_6_ingest_tss_virtuoso(TSS_GRAPH_TTL, TSS_GRAPH_URI)          
     #step_7_transform_ldes(TSS_GRAPH_TTL)
