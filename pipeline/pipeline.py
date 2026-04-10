@@ -39,7 +39,7 @@ def step_3_rml_mapping():
         print(f"RML Mapping failed: {e.stderr}")
         return False
 
-def step_4_ingest_virtuoso(ttl_timeseries, , graph_uri):
+def step_4_ingest_virtuoso(ttl_timeseries, graph_uri):
     print("--- Step 4: Ingesting to Virtuoso ---")
     import ingest
     ingest.delete_graph(graph_uri)
