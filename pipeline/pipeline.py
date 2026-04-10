@@ -27,7 +27,7 @@ def step_3_rml_mapping():
     command = [
         "java", 
         "-jar", "rmlmapper.jar", 
-        "-m", "./RML_mapping/timeseriesmapping.rml.ttl", 
+        "-m", "../RML_mapping/timeseriesmapping.rml.ttl", 
         "-o", "../data/timeseries.ttl", 
         "-s", "turtle"
     ]
