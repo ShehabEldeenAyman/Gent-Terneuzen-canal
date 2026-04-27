@@ -89,14 +89,14 @@ def main():
     # Execution Pipeline
     setup_environment()
     
-    step_1_fetch_data()
-    step_2_preprocess()
+    # step_1_fetch_data()
+    # step_2_preprocess()
     
-    step_3_rml_mapping()
-    step_4_ingest_virtuoso(TIMESERIES_TTL, GRAPH_URI)
-    #step_5_rdf2tss(TIMESERIES_TTL, TSS_GRAPH_TTL)
+    # step_3_rml_mapping()
+    # step_4_ingest_virtuoso(TIMESERIES_TTL, GRAPH_URI)
+    step_5_rdf2tss(TIMESERIES_TTL, TSS_GRAPH_TTL)
     #step_6_ingest_tss_virtuoso(TSS_GRAPH_TTL, TSS_GRAPH_URI)          
-    #step_7_transform_ldes(TSS_GRAPH_TTL)
+    step_7_transform_ldes(TSS_GRAPH_TTL)
 
 if __name__ == "__main__":
     main()
