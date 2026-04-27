@@ -30,7 +30,7 @@ export function LDESClientCard() {
       try {
         const ldesClient = replicateLDES({
       url: data_url_LDES,
-      fetchOptions: { redirect: "follow" },
+      //fetchOptions: { redirect: "follow" },
       before: new Date("2026-01-01T00:00:00Z"),
       after: new Date("2025-01-01T00:00:00Z"),
     });
@@ -50,7 +50,7 @@ export function LDESClientCard() {
           const member = result.value;
           ldesState.store.addQuads(member.quads);
 
-          if (ldesState.count <= 1) {
+          if (ldesState.count <= 5) {
             console.log(`--- Member ${ldesState.count} ---`, member);
              const triples = member.quads.map((quad) => ({
               subject:   quad.subject.value,
