@@ -1,13 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef  } from "react";
 import { replicateLDES } from "ldes-client";
-
+import { Store } from "n3";
 export const data_url_LDES = "https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/LDESTSS/LDESTSS.trig";
-
+export const ldesState = {
+  count: 0,
+  status: "Initializing...",
+  dataLoaded: false,
+  store: new Store()
+};
 export function LDESClientCard() {
-  const [status, setStatus] = useState("Initializing...");
-  const [count, setCount] = useState(0);
+  const [status, setStatus] = useState(ldesState.status);
+  const [count, setCount] = useState(ldesState.count);
+  //const store = useRef(new Store()); // persists across renders
 
   useEffect(() => {
+
+    if (ldesState.dataLoaded) {
+      console.log("Data already loaded, skipping fetch.");
+      setStatus("Already Loaded");
+      return;
+    }
+    
+      ldesState.store = new Store();
     // We define the async logic INSIDE the effect
     const startStreaming = async () => {
       console.log(`fetching LDES data from ${data_url_LDES}...`);
@@ -29,28 +43,29 @@ export function LDESClientCard() {
         let objects = [];
 
         while (!result.done) {
-          memberCount++;
-          setCount(memberCount); // Update UI with progress
+          ldesState.count++;
+          setCount(ldesState.count); // Update UI with progress
           objects.push(result.value);
 
           const member = result.value;
-          if (member.quads && Array.isArray(member.quads)&&memberCount==1) { // Limit to first 10 members for logging
-          member.quads.forEach((quad) => {
-            // Accessing the components
-            const subject = quad.subject.value;
-            const predicate = quad.predicate.value;
-            const object = quad.object.value;
+          ldesState.store.addQuads(member.quads);
 
-            console.log(`S: ${subject} | P: ${predicate} | O: ${object}`);
-          });
-        }
+          if (ldesState.count <= 1) {
+            console.log(`--- Member ${ldesState.count} ---`, member);
+             const triples = member.quads.map((quad) => ({
+              subject:   quad.subject.value,
+              predicate: quad.predicate.value,
+              object:    quad.object.value,
+            }));
+            console.table(triples); // renders as a nice table in the browser console
+          }
           // Process your quads here if needed
           // const quads = result.value.quads;
 
           result = await reader.read();
         }
 
-        console.log(`Finished streaming. Total members: ${memberCount}`);
+        console.log(`Finished streaming. Total members: ${ldesState.count}`);
         //console.log("Processed objects:", objects);
 
 
@@ -61,7 +76,11 @@ export function LDESClientCard() {
       }
     };
 
+    
     startStreaming();
+    ldesState.dataLoaded = true;
+  
+
   }, []); // The empty array [] ensures this runs only ONCE on mount
 
   return (

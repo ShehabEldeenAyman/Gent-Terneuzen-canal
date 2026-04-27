@@ -11,6 +11,7 @@ import { QueryCard } from './components/QueryCard';
 import { BrowseDataHead,BrowseDataBody } from './components/BrowseData';
 import { LDESClientCard } from './components/LDESClientCard';
 import { base_url } from './constants';
+import { TestCard } from './components/testCard';
 
 const App = () => {
 
@@ -18,7 +19,7 @@ const App = () => {
   const [activeTab, setActiveTab] = useState('Station Info');
 
   //const navItems = ['Station Info','Browse Data', 'LDES Client', 'LDES', 'LDES + TSS', 'TTL','SQL', 'Benchmarks', 'Query'];
-  const navItems = ['Station Info', 'LDES Client'];
+  const navItems = ['Station Info', 'LDES Client','Test'];
 
 
   const styles = {
@@ -213,6 +214,14 @@ const renderBodyContent = () => {
           <BodyCard
           Top={() => <ChartCardHead title="LDES Client Test"/>}
           Bottom={LDESClientCard} />
+        );
+
+        case 'Test':
+        return (
+
+          <BodyCard
+          Top={() => <ChartCardHead title="Test Card"/>}
+          Bottom={TestCard} />
         );
 
       default:
