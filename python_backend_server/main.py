@@ -298,7 +298,7 @@ async def plot_sensor_data(request: Request):
 
 
 @app.get("/lightGBM_forecast")
-async def lightGBM_visualization(request: Request):
+async def lightGBM_visualization(request: Request,):
     # 1. Create a DataFrame for easy plotting
     results = pd.DataFrame({
         'Actual': request.app.state.y_test,
