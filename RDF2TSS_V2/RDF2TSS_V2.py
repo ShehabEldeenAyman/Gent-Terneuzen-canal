@@ -2,6 +2,7 @@ import json
 import argparse
 from rdflib import Graph, URIRef, Namespace, BNode, Literal
 from rdflib.namespace import XSD, RDF, RDFS
+import uuid
 
 # --- Configuration & Namespaces ---
 EX = Namespace('http://example.com/attributes/')
@@ -127,6 +128,7 @@ def create_tss(sensor_set, graph):
         # RDF construction
         snippet = URIRef(BASE_SNIPPET[f"{sensor}"])
         template = BNode()
+        #template = BNode(str(uuid.uuid4()).replace('-', ''))
 
         final_graph.add((snippet, RDF.type, TSS.Snippet))
         final_graph.add((snippet, TSS["from"], results_list[0].TIME))
@@ -145,7 +147,7 @@ def create_tss(sensor_set, graph):
 
 def main():
     # You can easily swap these for argparse if you want to pass paths via CLI
-    input_path = "../data/timeseriessample.ttl"
+    input_path = "../data/timeseries.ttl"
     output_path = "../data/TSSgraph.ttl"
 
     print("--- Program Started ---")

@@ -110,8 +110,8 @@ def divide_data(result):
             # scope the BNode and snippet IRI to this specific day
             day_suffix     = f"{year:04d}{month:02d}{day:02d}"
             day_snippet_iri = URIRef(str(snippet_iri) + f"/{day_suffix}")
-            template_bnode  = BNode(value=str(snippet_iri) + f"_template_{day_suffix}")
-
+            #template_bnode  = BNode(value=str(snippet_iri) + f"_template_{day_suffix}")
+            template_bnode  = BNode()
             g_snip = ds.graph(day_snippet_iri)
 
             g_snip.add((day_snippet_iri, RDF.type,       TSS.Snippet))
