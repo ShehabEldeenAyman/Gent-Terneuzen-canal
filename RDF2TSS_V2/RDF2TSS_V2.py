@@ -126,7 +126,8 @@ def create_tss(sensor_set, graph):
         context_data_dump = json.dumps(context_data, indent=1)
 
         # RDF construction
-        snippet = URIRef(BASE_SNIPPET[f"{sensor}"])
+        #snippet = URIRef(BASE_SNIPPET[f"{sensor}"])
+        snippet = URIRef(f"{sensor}")
         template = BNode()
         #template = BNode(str(uuid.uuid4()).replace('-', ''))
 
