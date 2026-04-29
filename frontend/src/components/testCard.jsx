@@ -11,12 +11,17 @@ const PREFIXES = {
   RDF: "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
 };
 
-const TARGET_SENSOR_IDS = ["289435042", "289429042", "289441042", "289423042"];
+export const TARGET_SENSOR_IDS = ["289435042", "289429042", "289441042", "289423042"];
+
+export const sensor_data = {
+  sensorDataMap: {}, // { "sensorID": [[time, value], ...] }
+  activeSensors: [] // List of sensor IDs we found data for
+}
 
 export function TestCard() {
   // We use an object to store data grouped by ID: { "sensorID": [[time, value], ...] }
-  const [sensorDataMap, setSensorDataMap] = useState({});
-  const [activeSensors, setActiveSensors] = useState([]);
+  const [sensorDataMap, setSensorDataMap] = useState(sensor_data.sensorDataMap);
+  const [activeSensors, setActiveSensors] = useState(sensor_data.activeSensors);
 
   /**
    * DATA PROCESSING LOGIC

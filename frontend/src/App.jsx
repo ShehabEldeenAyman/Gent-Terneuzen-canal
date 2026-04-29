@@ -12,6 +12,8 @@ import { BrowseDataHead,BrowseDataBody } from './components/BrowseData';
 import { LDESClientCard } from './components/LDESClientCard';
 import { base_url } from './constants';
 import { TestCard } from './components/testCard';
+import tensorflowbrowser from './components/tensorflowbrowser';
+import customtensorflowbrowser from './components/customtensorflowbrowser';
 
 const App = () => {
 
@@ -19,7 +21,7 @@ const App = () => {
   const [activeTab, setActiveTab] = useState('Station Info');
 
   //const navItems = ['Station Info','Browse Data', 'LDES Client', 'LDES', 'LDES + TSS', 'TTL','SQL', 'Benchmarks', 'Query'];
-  const navItems = ['Station Info', 'LDES Client','Test'];
+  const navItems = ['Station Info', 'LDES Client','Test','TF','Custom TF'];
 
 
   const styles = {
@@ -223,6 +225,23 @@ const renderBodyContent = () => {
           Top={() => <ChartCardHead title="Test Card"/>}
           Bottom={TestCard} />
         );
+
+        case 'TF':
+        return (
+
+          <BodyCard
+          Top={() => <ChartCardHead title="TensorFlow Browser"/>}
+          Bottom={tensorflowbrowser} />
+        );  
+
+        case 'Custom TF':
+        return (
+
+          <BodyCard
+          Top={() => <ChartCardHead title="Custom TensorFlow Model"/>}
+          Bottom={customtensorflowbrowser} />
+        );
+        
 
       default:
         return <div>Coming Soon...</div>;
