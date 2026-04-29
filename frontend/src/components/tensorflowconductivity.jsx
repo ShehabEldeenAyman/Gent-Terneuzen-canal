@@ -14,9 +14,12 @@ useEffect(() => {
 
 }, [])
 
-return (<div>
-    <h2>TensorFlow Conductivity Component</h2>
-    <p>This component is set up to work with TensorFlow.js and the conductivity sensor data.</p>
-    <p>Check the console for the loaded sensor data and target sensor IDs.</p>
+return (<div style={{ padding: '20px' }}>
+    <h3>Target Sensor IDs:</h3>
+      <ul>
+        {TARGET_SENSOR_IDS.map((id) => (
+          <li key={id}>{id}</li>
+        ))}
+      </ul>
 </div>);
 }
