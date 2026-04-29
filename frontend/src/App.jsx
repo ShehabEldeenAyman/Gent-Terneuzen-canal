@@ -14,6 +14,7 @@ import { base_url } from './constants';
 import { TestCard } from './components/testCard';
 import tensorflowbrowser from './components/tensorflowbrowser';
 import customtensorflowbrowser from './components/customtensorflowbrowser';
+import TensorflowConductivity from './components/tensorflowconductivity';
 
 const App = () => {
 
@@ -21,7 +22,7 @@ const App = () => {
   const [activeTab, setActiveTab] = useState('Station Info');
 
   //const navItems = ['Station Info','Browse Data', 'LDES Client', 'LDES', 'LDES + TSS', 'TTL','SQL', 'Benchmarks', 'Query'];
-  const navItems = ['Station Info', 'LDES Client','Test','TF','Custom TF'];
+  const navItems = ['Station Info', 'LDES Client','Test','TF','Custom TF','TensorflowConductivity'];
 
 
   const styles = {
@@ -240,6 +241,13 @@ const renderBodyContent = () => {
           <BodyCard
           Top={() => <ChartCardHead title="Custom TensorFlow Model"/>}
           Bottom={customtensorflowbrowser} />
+        );
+          case 'TensorflowConductivity':
+        return (
+
+          <BodyCard
+          Top={() => <ChartCardHead title="TensorFlow Conductivity"/>}
+          Bottom={TensorflowConductivity} />
         );
         
 

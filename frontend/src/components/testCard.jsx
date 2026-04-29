@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import ReactECharts from "echarts-for-react";
 import { DataFactory } from "n3";
 import { ldesState } from "./LDESClientCard";
@@ -22,6 +22,12 @@ export function TestCard() {
   // We use an object to store data grouped by ID: { "sensorID": [[time, value], ...] }
   const [sensorDataMap, setSensorDataMap] = useState(sensor_data.sensorDataMap);
   const [activeSensors, setActiveSensors] = useState(sensor_data.activeSensors);
+
+  // Whenever the internal state changes, sync it to the exported object
+  useEffect(() => {
+    sensor_data.sensorDataMap = sensorDataMap;
+    sensor_data.activeSensors = activeSensors;
+  }, [sensorDataMap, activeSensors]);
 
   /**
    * DATA PROCESSING LOGIC
