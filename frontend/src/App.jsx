@@ -22,7 +22,7 @@ const App = () => {
   const [activeTab, setActiveTab] = useState('Station Info');
 
   //const navItems = ['Station Info','Browse Data', 'LDES Client', 'LDES', 'LDES + TSS', 'TTL','SQL', 'Benchmarks', 'Query'];
-  const navItems = ['Station Info', 'LDES Client','Test','TF','Custom TF','TensorflowConductivity'];
+  const navItems = ['Station Info', 'LDES Client','Data Visualization'];
 
 
   const styles = {
@@ -219,7 +219,7 @@ const renderBodyContent = () => {
           Bottom={LDESClientCard} />
         );
 
-        case 'Test':
+        case 'Data Visualization':
         return (
 
           <BodyCard
