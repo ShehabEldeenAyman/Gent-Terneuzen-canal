@@ -180,7 +180,7 @@ async def ensemble_visualization(request: Request):
     # 3. Return the buffer as a streaming response
     return Response(content=buf.getvalue(), media_type="image/png")
 
-@app.get("random_forest")
+@app.get("/random_forest")
 async def random_forest_visualization(request: Request):
 
 
