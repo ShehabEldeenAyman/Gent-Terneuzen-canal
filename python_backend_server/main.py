@@ -22,7 +22,9 @@ import lightGBM
 import XGboost
 import Ensemble
 import Comparison
+import RandomForest
 
+# Find the data leakage #
 
 #####################################################################################################
 app = FastAPI()
@@ -183,31 +185,18 @@ async def ensemble_visualization(request: Request):
 @app.get("/random_forest")
 async def random_forest_visualization(request: Request):
 
-
-    # Initialize the Model
-    # n_estimators=100 is a good start; max_depth prevents overfitting
-    rf_model = RandomForestRegressor(n_estimators=200, max_depth=15, random_state=42)
-
-    # Train
-    rf_model.fit(app.state.X_train, app.state.y_train)
-
-    # 3. Predict & Evaluate
-    y_pred = rf_model.predict(app.state.X_test)
-
-    mae  = mean_absolute_error(app.state.y_test, y_pred)
-    rmse = np.sqrt(mean_squared_error(app.state.y_test, y_pred))
-    r2   = r2_score(app.state.y_test, y_pred)
+    app.state.predictions_rf, app.state.mae_rf, app.state.rmse_rf, app.state.r2_rf = await RandomForest.RandomForest(app.state.X_train, app.state.y_train, app.state.X_test, app.state.y_test)
 
     print(f"\n{'Metric':<10} {'Value':>10}")
     print("-" * 22)
-    print(f"{'MAE':<10} {mae:>10.4f}")
-    print(f"{'RMSE':<10} {rmse:>10.4f}")
-    print(f"{'R²':<10} {r2:>10.4f}")
+    print(f"{'MAE':<10} {app.state.mae_rf:>10.4f}")
+    print(f"{'RMSE':<10} {app.state.rmse_rf:>10.4f}")
+    print(f"{'R²':<10} {app.state.r2_rf:>10.4f}")
 
     # 4. Actual vs Predicted plot
     fig, ax = plt.subplots(figsize=(14, 4))
     ax.plot(app.state.y_test.index, app.state.y_test.values,  label='Actual',    alpha=0.8)
-    ax.plot(app.state.y_test.index, y_pred,          label='Predicted', alpha=0.8, linestyle='--')
+    ax.plot(app.state.y_test.index, app.state.predictions_rf,label='Predicted', alpha=0.8, linestyle='--')
     ax.set_title(f'Random Forest – Actual vs Predicted: {constants.target_sensor}')
     ax.set_xlabel('Time')
     ax.legend()
