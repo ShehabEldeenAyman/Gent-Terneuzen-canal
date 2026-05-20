@@ -12,7 +12,7 @@ matplotlib.use('Agg') # Non-interactive backend (required for servers)
 from statsmodels.graphics.tsaplots import plot_acf
 from statsmodels.tsa.stattools import acf
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import lightgbm as lgb
 import xgboost as xgb
 
@@ -20,7 +20,8 @@ import constants
 import start_preprocessing
 import lightGBM
 import XGboost
-
+import Ensemble
+import Comparison
 
 
 #####################################################################################################
@@ -148,3 +149,59 @@ async def xgboost_visualization(request: Request):
     # 3. Return the buffer as a streaming response
     return Response(content=buf.getvalue(), media_type="image/png")
 
+@app.get("/ensemble_forecast")
+async def ensemble_visualization(request: Request):
+
+    app.state.final_ensemble, app.state.mae_ensemble = Ensemble.ensemble(app.state.forecast, app.state.predictions_xgb, app.state.y_test)
+
+    results = pd.DataFrame({
+        'Actual':   app.state.y_test.values[:2688],
+        'Forecast': app.state.final_ensemble[:2688]
+    }, index=app.state.y_test.index[:2688])
+
+    plt.figure(figsize=(15, 7))
+    plt.plot(results['Actual'],   label='Ground Truth (Actual)', color='blue', alpha=0.7)
+    plt.plot(results['Forecast'], label='LightGBM Forecast',     color='red',  linestyle='--')
+
+    plt.title('Conductivity Forecast vs Ground Truth')
+    plt.xlabel('Date')
+    plt.ylabel('Conductivity (μS/cm)')
+    plt.xticks(rotation=45)
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    
+    # 2. Save plot to a bytes buffer instead of plt.show()
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png")
+    buf.seek(0)
+    plt.close() # Important: Close the plot to free up server memory
+
+    # 3. Return the buffer as a streaming response
+    return Response(content=buf.getvalue(), media_type="image/png")
+
+@app.get("/comparison_forecast")
+async def comparison_visualization(request: Request):
+    results = Comparison.comparisonforecast(app.state.forecast, app.state.predictions_xgb, app.state.y_test)
+
+    plt.figure(figsize=(15, 7))
+    plt.plot(results['Actual'],   label='Ground Truth (Actual)', color='blue', alpha=0.7)
+    plt.plot(results['LightGBM'], label='LightGBM Forecast',     color='red',  linestyle='--')
+    plt.plot(results['XGBoost'],  label='XGBoost Forecast',      color='green', linestyle='--')
+
+    plt.title('Conductivity Forecast vs Ground Truth')
+    plt.xlabel('Date')
+    plt.ylabel('Conductivity (μS/cm)')
+    plt.xticks(rotation=45)
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    
+    # 2. Save plot to a bytes buffer instead of plt.show()
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png")
+    buf.seek(0)
+    plt.close() # Important: Close the plot to free up server memory
+
+    # 3. Return the buffer as a streaming response
+    return Response(content=buf.getvalue(), media_type="image/png")
