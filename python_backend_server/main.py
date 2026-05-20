@@ -23,7 +23,7 @@ import XGboost
 import Ensemble
 import Comparison
 import RandomForest
-
+import SupportVectorMachine
 # Find the data leakage #
 
 #####################################################################################################
@@ -210,6 +210,38 @@ async def random_forest_visualization(request: Request):
 
     # 3. Return the buffer as a streaming response
     return Response(content=buf.getvalue(), media_type="image/png")
+
+@app.get("/SVR")
+async def SVR_visualization(request: Request):
+
+    y_pred, mae, rmse, r2 = await SupportVectorMachine.SupportVectorMachine(app.state.X_train, app.state.y_train, app.state.X_test, app.state.y_test)
+
+    print(f"R-squared Accuracy: {r2:.4f}")
+    # 3. Visualization
+    plt.figure(figsize=(12, 6))
+
+    # Use the index if your timestamp is the index, 
+    # or use data['unixtime'] if you want to see the raw numbers.
+    # If you have a human-readable column, use that here:
+    #time_axis = data['unixtime'] 
+
+    plt.plot(app.state.y_test.index, app.state.y_test.values, label='Actual Sensor (289429042)', color='blue', alpha=0.6, linewidth=2)
+    plt.plot(app.state.y_test.index, y_pred, label='SVR Prediction', color='red', linestyle='--', alpha=0.9)
+
+    plt.title('Canal Water Conductivity: Actual vs. SVR Prediction')
+    plt.xlabel('Time (Unix Format)')
+    plt.ylabel('Conductivity (µS/cm)')
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    # 2. Save plot to a bytes buffer instead of plt.show()
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png")
+    buf.seek(0)
+    plt.close() # Important: Close the plot to free up server memory
+
+    # 3. Return the buffer as a streaming response
+    return Response(content=buf.getvalue(), media_type="image/png")
+
 
 
 #####################################################################################################
