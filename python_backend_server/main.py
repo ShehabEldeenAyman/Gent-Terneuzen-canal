@@ -256,8 +256,8 @@ async def lifespan(app: FastAPI):
     app.state.final_df = await reframe_data(app.state.sensor_set)
     app.state.df_featured = await featureengineering(app.state.final_df)
     app.state.X_train, app.state.y_train, app.state.X_test, app.state.y_test = await datapreparation(app.state.df_featured)
-    app.state.model = await lightGBM_train(app.state.X_train, app.state.y_train, app.state.X_test, app.state.y_test)
-    app.state.forecast, app.state.mae, app.state.error = await lightGBM_forecast_bias(app.state.model, app.state.X_test, app.state.y_test)
+    # app.state.model = await lightGBM_train(app.state.X_train, app.state.y_train, app.state.X_test, app.state.y_test)
+    # app.state.forecast, app.state.mae, app.state.error = await lightGBM_forecast_bias(app.state.model, app.state.X_test, app.state.y_test)
     app.state.predictions_xgb = await xgboost_train(app.state.X_train, app.state.y_train, app.state.X_test, app.state.y_test)
     app.state.mae_xgb = await xgboost_forecast_bias(app.state.predictions_xgb, app.state.y_test)
 
@@ -270,7 +270,7 @@ app = FastAPI(lifespan=lifespan)
 #####################################################################################################
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Welcome to the Gent-Terneuzen Canal Sensor Data API! Available endpoints: /sensor_data, /lightGBM_forecast, /xgboost_forecast" }
 
 @app.get("/sensor_data")
 async def plot_sensor_data(request: Request):
@@ -299,7 +299,9 @@ async def plot_sensor_data(request: Request):
 
 
 @app.get("/lightGBM_forecast")
-async def lightGBM_visualization(request: Request,):
+async def lightGBM_visualization(request: Request):
+    app.state.model = await lightGBM_train(app.state.X_train, app.state.y_train, app.state.X_test, app.state.y_test)
+    app.state.forecast, app.state.mae, app.state.error = await lightGBM_forecast_bias(app.state.model, app.state.X_test, app.state.y_test)
     # 1. Create a DataFrame for easy plotting
     results = pd.DataFrame({
         'Actual': request.app.state.y_test,
