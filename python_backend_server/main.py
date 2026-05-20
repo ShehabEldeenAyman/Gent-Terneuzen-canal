@@ -24,6 +24,7 @@ import Ensemble
 import Comparison
 import RandomForest
 import SupportVectorMachine
+import gradientBoosting1Sensor
 # Find the data leakage #
 
 #####################################################################################################
@@ -242,7 +243,32 @@ async def SVR_visualization(request: Request):
     # 3. Return the buffer as a streaming response
     return Response(content=buf.getvalue(), media_type="image/png")
 
+@app.get("/gradient_boosting_1_sensor")
+async def GradientBoosting1Sensor(request: Request):
 
+    forecasts, mae, r2 = await gradientBoosting1Sensor.GradientBoosting1Sensor(request.app.state.final_df)
+
+    print(f"\n24-Hour Forecast Accuracy:")
+    print(f"MAE:  {mae:.2f} µS/cm")
+    print(f"R²:   {r2:.4f}")
+
+    plt.figure(figsize=(14, 5))
+    plt.plot(request.app.state.y_test.index, request.app.state.y_test.values, label='Actual Conductivity', color='blue', linewidth=2, alpha=0.7)
+    plt.plot(request.app.state.y_test.index, forecasts, label='Gradient Boosting Forecast', color='red', linestyle='--', linewidth=2)
+    plt.title(f'24-Hour Future Forecast for Sensor {constants.target_sensor}')
+    plt.xlabel('Time')
+    plt.ylabel('Conductivity (µS/cm)')
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    # 2. Save plot to a bytes buffer instead of plt.show()
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png")
+    buf.seek(0)
+    plt.close() # Important: Close the plot to free up server memory
+
+    # 3. Return the buffer as a streaming response
+    return Response(content=buf.getvalue(), media_type="image/png")
 
 #####################################################################################################
 @app.get("/comparison_forecast")
