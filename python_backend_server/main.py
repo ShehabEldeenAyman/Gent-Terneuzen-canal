@@ -244,17 +244,17 @@ async def SVR_visualization(request: Request):
     return Response(content=buf.getvalue(), media_type="image/png")
 
 @app.get("/gradient_boosting_1_sensor")
-async def GradientBoosting1Sensor(request: Request):
+async def GradientBoosting1Sensor_visualization(request: Request):
 
-    forecasts, mae, r2 = await gradientBoosting1Sensor.GradientBoosting1Sensor(request.app.state.final_df)
+    forecasts, gb_y_test, mae, r2 = await gradientBoosting1Sensor.GradientBoosting1Sensor(request.app.state.final_df)
 
     print(f"\n24-Hour Forecast Accuracy:")
     print(f"MAE:  {mae:.2f} µS/cm")
     print(f"R²:   {r2:.4f}")
 
     plt.figure(figsize=(14, 5))
-    plt.plot(request.app.state.y_test.index, request.app.state.y_test.values, label='Actual Conductivity', color='blue', linewidth=2, alpha=0.7)
-    plt.plot(request.app.state.y_test.index, forecasts, label='Gradient Boosting Forecast', color='red', linestyle='--', linewidth=2)
+    plt.plot(gb_y_test.index, gb_y_test.values, label='Actual Conductivity', color='blue', linewidth=2, alpha=0.7)
+    plt.plot(gb_y_test.index, forecasts, label='Gradient Boosting Forecast', color='red', linestyle='--', linewidth=2)
     plt.title(f'24-Hour Future Forecast for Sensor {constants.target_sensor}')
     plt.xlabel('Time')
     plt.ylabel('Conductivity (µS/cm)')
