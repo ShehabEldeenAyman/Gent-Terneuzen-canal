@@ -180,6 +180,50 @@ async def ensemble_visualization(request: Request):
     # 3. Return the buffer as a streaming response
     return Response(content=buf.getvalue(), media_type="image/png")
 
+@app.get("random_forest")
+async def random_forest_visualization(request: Request):
+
+
+    # Initialize the Model
+    # n_estimators=100 is a good start; max_depth prevents overfitting
+    rf_model = RandomForestRegressor(n_estimators=200, max_depth=15, random_state=42)
+
+    # Train
+    rf_model.fit(app.state.X_train, app.state.y_train)
+
+    # 3. Predict & Evaluate
+    y_pred = rf_model.predict(app.state.X_test)
+
+    mae  = mean_absolute_error(app.state.y_test, y_pred)
+    rmse = np.sqrt(mean_squared_error(app.state.y_test, y_pred))
+    r2   = r2_score(app.state.y_test, y_pred)
+
+    print(f"\n{'Metric':<10} {'Value':>10}")
+    print("-" * 22)
+    print(f"{'MAE':<10} {mae:>10.4f}")
+    print(f"{'RMSE':<10} {rmse:>10.4f}")
+    print(f"{'R²':<10} {r2:>10.4f}")
+
+    # 4. Actual vs Predicted plot
+    fig, ax = plt.subplots(figsize=(14, 4))
+    ax.plot(app.state.y_test.index, app.state.y_test.values,  label='Actual',    alpha=0.8)
+    ax.plot(app.state.y_test.index, y_pred,          label='Predicted', alpha=0.8, linestyle='--')
+    ax.set_title(f'Random Forest – Actual vs Predicted: {constants.target_sensor}')
+    ax.set_xlabel('Time')
+    ax.legend()
+    plt.tight_layout()
+    
+    # 2. Save plot to a bytes buffer instead of plt.show()
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png")
+    buf.seek(0)
+    plt.close() # Important: Close the plot to free up server memory
+
+    # 3. Return the buffer as a streaming response
+    return Response(content=buf.getvalue(), media_type="image/png")
+
+
+#####################################################################################################
 @app.get("/comparison_forecast")
 async def comparison_visualization(request: Request):
     results = Comparison.comparisonforecast(app.state.forecast, app.state.predictions_xgb, app.state.y_test)
