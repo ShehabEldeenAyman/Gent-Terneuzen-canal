@@ -7,37 +7,14 @@ import React, { useState } from "react";
 //   label      – figure caption shown below the image
 //   apiUrl     – the endpoint that returns a PNG (GET request)
 // ─────────────────────────────────────────────────────────────────────────────
+const backendBase = "http://127.0.0.1:8000";
 const GRAPH_ITEMS = [
   {
     id: "browse-data",
     label: "Browse Data",
-    apiUrl: "http://127.0.0.1:8000/sensor_data",
+    apiUrl: `${backendBase}/sensor_data`,
   },
-  {
-    id: "river-discharge-virtuoso",
-    label: "River Discharge – Virtuoso (1 Year)",
-    apiUrl: "/api/virtuoso/plot/RiverDischarge1Year",
-  },
-  {
-    id: "river-stage-oxigraph",
-    label: "River Stage – Oxigraph (1 Year)",
-    apiUrl: "/api/oxigraph/plot/RiverStage1Year",
-  },
-  {
-    id: "river-discharge-oxigraph",
-    label: "River Discharge – Oxigraph (1 Year)",
-    apiUrl: "/api/oxigraph/plot/RiverDischarge1Year",
-  },
-  {
-    id: "conductivity-sensor-a",
-    label: "Conductivity – Sensor 289435042",
-    apiUrl: "/api/sensor/289435042/plot",
-  },
-  {
-    id: "conductivity-sensor-b",
-    label: "Conductivity – Sensor 289429042",
-    apiUrl: "/api/sensor/289429042/plot",
-  },
+  
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
