@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import * as tf from '@tensorflow/tfjs';
-import { sensor_data } from './testCard';
+import { sensor_data } from './datavisualization';
 
 export default function TensorflowConductivity() {
   const [modelStatus, setModelStatus] = useState("Waiting for data...");

@@ -18,7 +18,7 @@ export const sensor_data = {
   activeSensors: [] // List of sensor IDs we found data for
 }
 
-export function TestCard() {
+export function datavisualization() {
   // We use an object to store data grouped by ID: { "sensorID": [[time, value], ...] }
   const [sensorDataMap, setSensorDataMap] = useState(sensor_data.sensorDataMap);
   const [activeSensors, setActiveSensors] = useState(sensor_data.activeSensors);

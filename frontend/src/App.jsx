@@ -11,10 +11,11 @@ import { QueryCard } from './components/QueryCard';
 import { BrowseDataHead,BrowseDataBody } from './components/BrowseData';
 import { LDESClientCard } from './components/LDESClientCard';
 import { base_url } from './constants';
-import { TestCard } from './components/testCard';
+import { datavisualization } from './components/datavisualization';
 import tensorflowbrowser from './components/tensorflowbrowser';
 import customtensorflowbrowser from './components/customtensorflowbrowser';
 import TensorflowConductivity from './components/tensorflowconductivity';
+import { machineLearningCard } from './components/machineLearningCard';
 
 const App = () => {
 
@@ -22,7 +23,7 @@ const App = () => {
   const [activeTab, setActiveTab] = useState('Station Info');
 
   //const navItems = ['Station Info','Browse Data', 'LDES Client', 'LDES', 'LDES + TSS', 'TTL','SQL', 'Benchmarks', 'Query'];
-  const navItems = ['Station Info', 'LDES Client','Data Visualization'];
+  const navItems = ['Station Info', 'LDES Client','Data Visualization','Machine Learning'];
 
 
   const styles = {
@@ -223,8 +224,16 @@ const renderBodyContent = () => {
         return (
 
           <BodyCard
-          Top={() => <ChartCardHead title="Test Card"/>}
-          Bottom={TestCard} />
+          Top={() => <ChartCardHead title=" "/>}
+          Bottom={datavisualization} />
+        );
+
+        case 'Machine Learning':
+                  return (
+
+          <BodyCard
+          Top={() => <ChartCardHead title=" "/>}
+          Bottom={machineLearningCard} />
         );
 
         case 'TF':
