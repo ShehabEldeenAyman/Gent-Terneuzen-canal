@@ -10,10 +10,48 @@ import React, { useState } from "react";
 const backendBase = "http://127.0.0.1:8000";
 const GRAPH_ITEMS = [
   {
-    id: "browse-data",
+    id: "sensor_data",
     label: "Browse Data",
     apiUrl: `${backendBase}/sensor_data`,
   },
+    {
+    id: "lightGBM_forecast",
+    label: "LightGBM Forecast",
+    apiUrl: `${backendBase}/lightGBM_forecast`,
+  },
+      {
+    id: "xgboost_forecast",
+    label: "XGBoost Forecast",
+    apiUrl: `${backendBase}/xgboost_forecast`,
+  },
+        {
+    id: "ensemble_forecast",
+    label: "Ensemble Forecast",
+    apiUrl: `${backendBase}/ensemble_forecast`,
+  },
+          {
+    id: "random_forest",
+    label: "Random Forest",
+    apiUrl: `${backendBase}/random_forest`,
+  },
+            {
+    id: "SVR",
+    label: "SVR",
+    apiUrl: `${backendBase}/SVR`,
+  },
+
+              {
+    id: "gradient_boosting_1_sensor",
+    label: "gradient boosting 1 sensor",
+    apiUrl: `${backendBase}/gradient_boosting_1_sensor`,
+  },
+              {
+    id: "comparison_forecast",
+    label: "Comparison Forecast",
+    apiUrl: `${backendBase}/comparison_forecast`,
+  },
+
+  
   
 ];
 

@@ -26,6 +26,7 @@ import Comparison
 import RandomForest
 import SupportVectorMachine
 import gradientBoosting1Sensor
+import gradientBoostingMultipleSensors
 # Find the data leakage #
 
 #####################################################################################################
@@ -276,6 +277,29 @@ async def GradientBoosting1Sensor_visualization(request: Request):
 
     # 3. Return the buffer as a streaming response
     return Response(content=buf.getvalue(), media_type="image/png")
+
+@app.get("/gradient_boosting_multiple_sensors")
+async def GradientBoostingMultipleSensors_visualization(request: Request):
+
+    target_forecasts, y_test, mae, r2 = await gradientBoostingMultipleSensors.gradientBoostingMultipleSensors(request.app.state.final_df)
+    print(f"\nMultivariate 24-Hour Forecast Accuracy (Sensor {constants.target_sensor}):")
+    print(f"MAE:  {mae:.2f} µS/cm")
+    print(f"R²:   {r2:.4f}")
+
+    plt.figure(figsize=(14, 5))
+    plt.plot(y_test.index, y_test[constants.target_sensor].values, label='Actual Conductivity', color='blue', linewidth=2, alpha=0.7)
+    plt.plot(y_test.index, target_forecasts, label='Multivariate GB Forecast', color='red', linestyle='--', linewidth=2)
+    plt.title(f'24-Hour Future Forecast for Sensor {constants.target_sensor} (Using All Sensor Data)')
+    plt.xlabel('Time')
+    plt.ylabel('Conductivity (µS/cm)')
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+# 2. Save plot to a bytes buffer instead of plt.show()
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png")
+    buf.seek(0)
+    plt.close() # Important: Close the plot to free up server memory
 
 #####################################################################################################
 @app.get("/comparison_forecast")
