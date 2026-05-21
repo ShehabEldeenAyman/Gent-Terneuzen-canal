@@ -9,9 +9,9 @@ import React, { useState } from "react";
 // ─────────────────────────────────────────────────────────────────────────────
 const GRAPH_ITEMS = [
   {
-    id: "river-stage-virtuoso",
-    label: "River Stage – Virtuoso (1 Year)",
-    apiUrl: "/api/virtuoso/plot/RiverStage1Year",
+    id: "browse-data",
+    label: "Browse Data",
+    apiUrl: "http://127.0.0.1:8000/sensor_data",
   },
   {
     id: "river-discharge-virtuoso",
@@ -146,10 +146,10 @@ export function machineLearningCard({ items = GRAPH_ITEMS }) {
   return (
     <div style={styles.wrapper}>
       {/* ── Header bar ── */}
-      <div style={styles.header}>
+      {/* <div style={styles.header}>
         <h3 style={styles.heading}>Graph Overview</h3>
         <span style={styles.subheading}>{items.length} charts</span>
-      </div>
+      </div> */}
 
       {/* ── Grid ── */}
       <div style={styles.grid}>
