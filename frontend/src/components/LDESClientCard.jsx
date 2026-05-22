@@ -11,6 +11,8 @@ export const ldesState = {
 export function LDESClientCard() {
   const [status, setStatus] = useState(ldesState.status);
   const [count, setCount] = useState(ldesState.count);
+  const [sampleTriples, setSampleTriples] = useState([]);
+
   //const store = useRef(new Store()); // persists across renders
 
   useEffect(() => {
@@ -57,6 +59,7 @@ export function LDESClientCard() {
               predicate: quad.predicate.value,
               object:    quad.object.value,
             }));
+              setSampleTriples(prev => [...prev, ...triples]);
             console.table(triples); // renders as a nice table in the browser console
           }
           // Process your quads here if needed
@@ -84,10 +87,17 @@ export function LDESClientCard() {
   }, []); // The empty array [] ensures this runs only ONCE on mount
 
   return (
-    <div style={{ padding: "20px", border: "1px solid #ccc" }}>
+    <div>
+          <div style={{ padding: "20px", border: "1px solid #ccc" }}>
       <h3>LDES Sync Status</h3>
       <p>Status: <strong>{status}</strong></p>
       <p>Members Processed: <strong>{count}</strong></p>
     </div>
+    <pre style={{ fontSize: '11px', overflow: 'auto', maxHeight: '300px' }}>
+  {JSON.stringify(sampleTriples, null, 2)}
+</pre>
+    </div>
+
+    
   );
 }
