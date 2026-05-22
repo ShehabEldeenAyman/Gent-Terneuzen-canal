@@ -19,18 +19,19 @@ from sklearn.svm import SVR
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import r2_score
 
+import constants
+
 async def GradientBoosting1Sensor(final_df):
 
     data = final_df.copy().sort_index()
     # We will focus on predicting one target sensor for the next 24 hours
-    target_sensor = '289429042'
 
 
     # Create historical "Lag" features for the target sensor 
     # use the past 2 hours of data (8 steps of 15 minutes) as memory
     n_lags = 8
     for lag in range(1, n_lags + 1):
-        data[f'lag_{lag}'] = data[target_sensor].shift(lag)
+        data[f'lag_{lag}'] = data[constants.target_sensor].shift(lag)
 
     # Add time-based features to help the model learn cyclical patterns
     data['hour'] = data.index.hour
@@ -43,7 +44,7 @@ async def GradientBoosting1Sensor(final_df):
     # Define our features (X) and target (y)
     feature_cols = [f'lag_{i}' for i in range(1, n_lags + 1)] + ['hour', 'day_of_week', 'month']
     X = data[feature_cols]
-    y = data[target_sensor]
+    y = data[constants.target_sensor]
 
     # 2. Chronological Train-Test Split
     # To validate a 24-hour forecast, we withhold the final 24 hours (96 steps) as our test set
