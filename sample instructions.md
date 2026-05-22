@@ -22,3 +22,6 @@ WHERE {
 }
 
 DROP GRAPH <http://example.com/Gent-Terneuzen> ;
+
+
+python -c "import joblib; s=joblib.load('scaler_v2.pkl'); print(s.data_min_[0], s.data_max_[0])"   #extract scalar values
