@@ -1,0 +1,17 @@
+# 1. Create a clean environment with Python 3.10
+conda create -n tfjs_convert python=3.10 -y
+conda activate tfjs_convert
+
+# 2. Install compatible versions
+pip install numpy==1.23.5
+pip install tensorflow==2.13.0
+pip install tensorflowjs==4.10.0
+
+# 3. Navigate to your model folder
+cd "C:\Gent-Terneuzen canal\time_series_analysis\modeldump\exp2"
+
+# 4. Run the conversion with an output folder specified
+tensorflowjs_converter \
+  --input_format=keras \
+  forecaster_v2.keras \
+  ./tfjs_model/
