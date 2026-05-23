@@ -18,7 +18,7 @@ const N_FUTURE     = 288;   // 72 hours @ 15-min
 const INTERVAL_MS  = 15 * 60 * 1000; // 15 minutes in milliseconds
 
 // Path to your TF.js converted model (see note at bottom of file)
-const MODEL_URL = "/models/forecaster_v2/model.json";
+const MODEL_URL = "https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/model.json";
 
 
 // ── Step 1: Extract sensor data from ldesState ────────────────────────────────
@@ -190,12 +190,17 @@ export function LSTMInference() {
 
       // 4. Load TF.js model
       setStatus("Loading model...");
-      const model = await tf.loadLayersModel(MODEL_URL);
+      //const model = await tf.loadLayersModel(MODEL_URL);
+      const model = await tf.loadGraphModel(MODEL_URL);
 
       // 5. Run inference
       setStatus("Running inference...");
-      const outputTensor   = model.predict(inputTensor);
-      const scaledForecast = await outputTensor.data(); // Float32Array of length 288
+      const outputTensor   = await model.executeAsync({ Identity: inputTensor });
+      const scaledForecast = await outputTensor.data();
+    //   const outputTensor   = model.predict(inputTensor);
+    //   const scaledForecast = await outputTensor.data(); // Float32Array of length 288
+      
+        
 
       // 6. Inverse-transform back to μS/cm
       const forecastValues = minMaxInverse(Array.from(scaledForecast));
