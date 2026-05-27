@@ -16,6 +16,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import lightgbm as lgb
 import xgboost as xgb
+import matplotlib.dates as mdates
 
 import constants
 import start_preprocessing
@@ -27,6 +28,7 @@ import RandomForest
 import SupportVectorMachine
 import gradientBoosting1Sensor
 import gradientBoostingMultipleSensors
+import chronos2forecast
 # Find the data leakage #
 
 #####################################################################################################
@@ -38,13 +40,32 @@ async def lifespan(app: FastAPI):
 
     app.state.sensor_set = await start_preprocessing.identify_unique_sensors()
     app.state.final_df = await start_preprocessing.reframe_data(app.state.sensor_set)
-    app.state.df_featured = await start_preprocessing.featureengineering(app.state.final_df)
-    app.state.X_train, app.state.y_train, app.state.X_test, app.state.y_test = await start_preprocessing.datapreparation(app.state.df_featured)
+    #app.state.df_featured = await start_preprocessing.featureengineering(app.state.final_df)
+    #app.state.X_train, app.state.y_train, app.state.X_test, app.state.y_test = await start_preprocessing.datapreparation(app.state.df_featured)
+
+    # app.state.X_train_raw, app.state.y_train_raw, app.state.X_test_raw, app.state.y_test_raw = await start_preprocessing.datapreparation(app.state.final_df)
+    # app.state.X_train, app.state.y_train = await start_preprocessing.featureengineering(app.state.X_train_raw, app.state.y_train_raw, fit=True)
+    # app.state.X_test,  app.state.y_test  = await start_preprocessing.featureengineering(app.state.X_test_raw,  app.state.y_test_raw,  fit=False)
+
+    # NEW
+    train_df, test_df = await start_preprocessing.datapreparation(app.state.final_df)
+
+    app.state.X_train, app.state.y_train = await start_preprocessing.featureengineering(train_df, fit=True)
+
+    # Prepend last 2880 rows of train to test so lag features at the boundary aren't NaN
+    max_lag = 2880
+    context_df = pd.concat([train_df.iloc[-max_lag:], test_df])
+    X_test_ctx, y_test_ctx = await start_preprocessing.featureengineering(context_df, fit=False)
+    # Trim off the prepended context rows, keep only true test period
+    app.state.X_test = X_test_ctx[X_test_ctx.index >= test_df.index[0]]
+    app.state.y_test = y_test_ctx[y_test_ctx.index >= test_df.index[0]]
+
     # app.state.model = await lightGBM_train(app.state.X_train, app.state.y_train, app.state.X_test, app.state.y_test)
     # app.state.forecast, app.state.mae, app.state.error = await lightGBM_forecast_bias(app.state.model, app.state.X_test, app.state.y_test)
     # app.state.predictions_xgb = await xgboost_train(app.state.X_train, app.state.y_train, app.state.X_test, app.state.y_test)
     # app.state.mae_xgb = await xgboost_forecast_bias(app.state.predictions_xgb, app.state.y_test)
 
+    app.state.chronos_df = await start_preprocessing.prepare_for_chronos(app.state.final_df)
     print("Startup complete!")
     yield # The app runs while execution is paused here
     print("Shutting down...")
@@ -300,6 +321,7 @@ async def GradientBoostingMultipleSensors_visualization(request: Request):
     plt.savefig(buf, format="png")
     buf.seek(0)
     plt.close() # Important: Close the plot to free up server memory
+    return Response(content=buf.getvalue(), media_type="image/png")
 
 #####################################################################################################
 @app.get("/comparison_forecast")
@@ -326,4 +348,89 @@ async def comparison_visualization(request: Request):
     plt.close() # Important: Close the plot to free up server memory
 
     # 3. Return the buffer as a streaming response
+    return Response(content=buf.getvalue(), media_type="image/png")
+#####################################################################################################
+@app.get("/chronos2forecast")
+async def chronos2forecast_visualization(request: Request):
+    # 1. Get the historical averaged dataframe from the app state
+    df = request.app.state.chronos_df.copy()
+    
+    # 2. Run the forecast pipeline
+    forecast_df = await chronos2forecast.chronos2forecast(df)
+
+    # 3. Ensure timestamps are in datetime format to prevent math errors
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
+    forecast_df["timestamp"] = pd.to_datetime(forecast_df["timestamp"])
+    
+    # 4. Explicitly sort chronologically to guarantee continuous lines without overlapping loops
+    df = df.sort_values("timestamp")
+    forecast_df = forecast_df.sort_values("timestamp")
+    
+    # 5. Use the start of the forecast as our anchor point
+    forecast_start_time = forecast_df["timestamp"].min()
+    
+    # --- VISUALIZATION TIME FRAME WINDOW ---
+    # We pull the history close (last 3 days) so it doesn't squash the 24h prediction window
+    history_lookback_time = forecast_start_time - pd.Timedelta(days=3)
+    
+    # Filter historical data to only include this zoomed-in timeframe
+    recent_history_df = df[df["timestamp"] >= history_lookback_time]
+    # ---------------------------------------
+
+    # 6. Plotting the results
+    # We increase the width to 16 inches to give the forecasting section horizontal breathing room
+    fig, ax = plt.subplots(figsize=(16, 6))
+
+    # Plot the 3-day historical window of the average values
+    ax.plot(
+        recent_history_df["timestamp"], 
+        recent_history_df["target"], 
+        label="Historical Data (4-Sensor Avg)", 
+        color="black", 
+        linewidth=1.5
+    )
+
+    # Plot forecast median
+    ax.plot(
+        forecast_df["timestamp"], 
+        forecast_df["0.5"], 
+        label="Chronos-2 Forecast (Median)", 
+        color="blue", 
+        linestyle="--", 
+        linewidth=2    
+    )
+
+    # Plot prediction interval (80% confidence uncertainty band)
+    ax.fill_between(
+        forecast_df["timestamp"], 
+        forecast_df["0.1"], 
+        forecast_df["0.9"], 
+        alpha=0.2, 
+        color="blue", 
+        label="80% Prediction Interval"
+    )
+
+    # 7. Formatting X-Axis Dates so they remain legible and well-spaced
+    # Force a tick mark to appear at 12-hour intervals across the 4-day span (3 days history + 1 day forecast)
+    ax.xaxis.set_major_locator(mdates.HourLocator(byhour=[0, 12]))  
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d %H:%M')) 
+    
+    # Clean up labels: rotate 30 degrees and align their right side to the tick marks
+    plt.xticks(rotation=30, ha='right')  
+
+    # 8. Add chart details
+    plt.title("Chronos-2 Forecast (Zoomed High-Resolution View)", fontsize=14, fontweight='bold')
+    plt.xlabel("Date & Time", fontsize=12)
+    plt.ylabel("Averaged Conductivity", fontsize=12)
+    plt.legend(loc="upper left", fontsize=10)
+    plt.grid(True, linestyle=":", alpha=0.6)
+    plt.tight_layout() # Prevents labels from getting clipped off at the bottom edges
+    
+    # 9. Save plot to an in-memory bytes buffer
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png", dpi=100)
+    buf.seek(0)
+    plt.close(fig) # Explicitly clear server memory
+
+    # 10. Return the buffer as a streaming image response
     return Response(content=buf.getvalue(), media_type="image/png")

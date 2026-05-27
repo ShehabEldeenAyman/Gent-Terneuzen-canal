@@ -88,7 +88,52 @@ async def reframe_data(sensor_set):
     print(final_df.head())
     return final_df
 
-async def featureengineering(final_df):
+async def featureengineering(final_df, fit=True):
+    data = final_df.copy()
+
+    # 1. Time-based features (Seasonality)
+    data['hour'] = data.index.hour
+    data['day_of_week'] = data.index.dayofweek
+    data['month'] = data.index.month
+
+    # 2. Lag features for the TARGET (Sensor 4)
+    for lag in [1, 4, 96, 672, 2880]:
+        data[f'{constants.target_sensor}_lag_{lag}'] = data[constants.target_sensor].shift(lag)
+
+    # 3. Spatial Lag features for NEIGHBORS (Sensors 1, 2, 3)
+    neighbors = [c for c in final_df.columns if c != constants.target_sensor]
+
+    for s in neighbors:
+        data[f'{s}_lag_1']    = data[s].shift(1)
+        data[f'{s}_lag_4']    = data[s].shift(4)
+        data[f'{s}_lag_672']  = data[s].shift(672)
+        data[f'{s}_lag_2880'] = data[s].shift(2880)
+        data[f'{s}_roc_1']    = data[s].shift(1).diff(1)    # FIXED: was data[s].diff(1)
+        data[f'{s}_roc_4']    = data[s].shift(1).diff(4)    # FIXED: was data[s].diff(4)
+        data[f'{s}_roc_672']  = data[s].shift(1).diff(672)  # FIXED: was data[s].diff(672)
+        data[f'{s}_roc_2880'] = data[s].shift(1).diff(2880) # FIXED: was data[s].diff(2880)
+
+    # 4. Rolling statistics (Trend) — already correctly shifted
+    data['rolling_mean_6h'] = data[constants.target_sensor].shift(1).rolling(window=24).mean()
+
+    # 5. Rate of change for TARGET — FIXED: added .shift(1) before .diff()
+    data['roc_1']  = data[constants.target_sensor].shift(1).diff(1)   # FIXED
+    data['roc_4']  = data[constants.target_sensor].shift(1).diff(4)   # FIXED
+    data['roc_96'] = data[constants.target_sensor].shift(1).diff(96)  # FIXED
+
+    # 6. Volatility — already correctly shifted
+    data['rolling_std_6h']  = data[constants.target_sensor].shift(1).rolling(window=24).std()
+    data['rolling_std_24h'] = data[constants.target_sensor].shift(1).rolling(window=96).std()
+
+    # 7. Rolling min/max — already correctly shifted
+    data['rolling_max_24h'] = data[constants.target_sensor].shift(1).rolling(window=96).max()
+    data['rolling_min_24h'] = data[constants.target_sensor].shift(1).rolling(window=96).min()
+
+    data.dropna(inplace=True)
+    print(f"Feature shape: {data.shape}, Date range: {data.index.min()} → {data.index.max()}")
+    X = data.drop(columns=constants.sensors)
+    y = data[constants.target_sensor]
+    return X, y
     data = final_df.copy()
     
 
@@ -137,24 +182,47 @@ async def featureengineering(final_df):
 
 
     data.dropna(inplace=True)
-    df_featured = data.copy()
-    print(f"df_featured shape: {df_featured.shape}")
-    print(f"Date range: {df_featured.index.min()} → {df_featured.index.max()}")
-    return df_featured
+    print(f"Feature shape: {data.shape}, Date range: {data.index.min()} → {data.index.max()}")
+    X = data.drop(columns=constants.sensors)        # <-- drop sensors here, not in datapreparation
+    y = data[constants.target_sensor]
+    return X, y       
 
-async def datapreparation(df_featured):
-    # Split based on your specific dates
-    train_data = df_featured[:'2025-06-30'] # all data up to June 2025
-    test_data = df_featured['2025-07-01':'2025-07-30'] # ground truth month
-
-    X_train = train_data.drop(columns=constants.sensors)  # Drop original sensor columns
-    y_train = train_data[constants.target_sensor]
-
-    X_test = test_data.drop(columns=constants.sensors)
-    y_test = test_data[constants.target_sensor]
-
-    # Does the data contain high conductivity events? 
-    print("Train conductivity range:", y_train.min(), "→", y_train.max())
-    print("Test  conductivity range:", y_test.min(),  "→", y_test.max())
-    return X_train, y_train, X_test, y_test
+async def datapreparation(final_df):
+    train_df = final_df[:'2025-06-30']
+    test_df  = final_df['2025-07-01':'2025-07-30']
+    print("Train conductivity range:", train_df[constants.target_sensor].min(), "→", train_df[constants.target_sensor].max())
+    print("Test  conductivity range:", test_df[constants.target_sensor].min(),  "→", test_df[constants.target_sensor].max())
+    return train_df, test_df              # <-- returns raw DataFrames with ALL columns
 #####################################################################################################
+async def prepare_for_chronos(final_df, target_sensor=None):
+    df = final_df.copy()
+    
+    # 1. Drop unixtime — Chronos doesn't need it
+    df = df.drop(columns=['unixtime'], errors='ignore')
+    
+    # 2. Enforce strict frequency and handle missing data across all individual sensors
+    # Using 'time' interpolation followed by both bfill() and ffill() guarantees 
+    # absolutely zero NaN values remaining in the dataset.
+    df = df.resample('15min').interpolate(method='time')
+    df = df.bfill().ffill()
+
+    # 3. Calculate the row-wise average of all sensors
+    # Since 'time' is currently the index, all columns in 'df' right now are your sensors.
+    # axis=1 calculates the mean horizontally across columns for each timestamp.
+    df['target'] = df.mean(axis=1)
+    
+    # 4. Isolate just the new average column
+    df = df[['target']]
+
+    # 5. Reset index so 'time' becomes a regular column named 'timestamp'
+    df = df.reset_index().rename(columns={'time': 'timestamp'})
+    
+    # 6. Format for Chronos requirement
+    # Even for a single averaged series, Chronos still requires an 'item_id' identifier column.
+    df.insert(0, 'item_id', 'average_sensor')
+    
+    # 7. Final cleaning: Ensure datetime formatting and explicit chronological ordering
+    df['timestamp'] = pd.to_datetime(df['timestamp'])
+    chronos_df = df.sort_values(by=['timestamp']).reset_index(drop=True)
+    
+    return chronos_df

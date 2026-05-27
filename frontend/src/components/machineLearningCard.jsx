@@ -55,6 +55,11 @@ const GRAPH_ITEMS = [
     label: "Comparison Forecast",
     apiUrl: `${backendBase}/comparison_forecast`,
   },
+                {
+    id: "chronos2forecast",
+    label: "Chronos-2 Forecast",
+    apiUrl: `${backendBase}/chronos2forecast`,
+  },
 
   
   
