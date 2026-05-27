@@ -17,6 +17,7 @@ import customtensorflowbrowser from './components/customtensorflowbrowser';
 import TensorflowConductivity from './components/tensorflowconductivity';
 import { machineLearningCard } from './components/machineLearningCard';
 import {LSTMInference} from './components/EdgeDeepLearning'
+import {chronosCard} from './components/chronosCard';
 
 const App = () => {
 
@@ -24,7 +25,7 @@ const App = () => {
   const [activeTab, setActiveTab] = useState('Station Info');
 
   //const navItems = ['Station Info','Browse Data', 'LDES Client', 'LDES', 'LDES + TSS', 'TTL','SQL', 'Benchmarks', 'Query'];
-  const navItems = ['Station Info', 'LDES Client','Data Visualization','Machine Learning','Deep Learning (Edge)'];
+  const navItems = ['Station Info', 'LDES Client','Data Visualization','Machine Learning','Deep Learning (Edge)','Chronos'];
 
 
   const styles = {
@@ -242,6 +243,13 @@ const renderBodyContent = () => {
                               <BodyCard
           Top={() => <ChartCardHead title=" "/>}
           Bottom={LSTMInference} />
+        );
+
+                case 'Chronos':
+                  return (
+                              <BodyCard
+          Top={() => <ChartCardHead title=" "/>}
+          Bottom={chronosCard} />
         );
 
       

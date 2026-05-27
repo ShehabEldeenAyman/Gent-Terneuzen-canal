@@ -10,54 +10,10 @@ import React, { useState } from "react";
 const backendBase = "http://127.0.0.1:8000";
 const GRAPH_ITEMS = [
   {
-    id: "sensor_data",
-    label: "Browse Data",
-    apiUrl: `${backendBase}/sensor_data`,
-  },
-    {
-    id: "lightGBM_forecast",
-    label: "LightGBM Forecast",
-    apiUrl: `${backendBase}/lightGBM_forecast`,
-  },
-      {
-    id: "xgboost_forecast",
-    label: "XGBoost Forecast",
-    apiUrl: `${backendBase}/xgboost_forecast`,
-  },
-        {
-    id: "ensemble_forecast",
-    label: "Ensemble Forecast",
-    apiUrl: `${backendBase}/ensemble_forecast`,
-  },
-          {
-    id: "random_forest",
-    label: "Random Forest",
-    apiUrl: `${backendBase}/random_forest`,
-  },
-            {
-    id: "SVR",
-    label: "SVR",
-    apiUrl: `${backendBase}/SVR`,
-  },
-
-              {
-    id: "gradient_boosting_1_sensor",
-    label: "gradient boosting 1 sensor",
-    apiUrl: `${backendBase}/gradient_boosting_1_sensor`,
-  },
-                {
-    id: "gradient_boosting_multiple_sensor",
-    label: "gradient boosting multiple sensors",
-    apiUrl: `${backendBase}/gradient_boosting_multiple_sensors`,
-  },
-              {
-    id: "comparison_forecast",
-    label: "Comparison Forecast",
-    apiUrl: `${backendBase}/comparison_forecast`,
-  },
-
-  
-  
+    id: "Chronos-2_Forecast",
+    label: "Chronos-2 Forecast",
+    apiUrl: `${backendBase}/chronos2forecast`,
+  }
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -154,7 +110,7 @@ function GraphCard({ item }) {
 // ─────────────────────────────────────────────────────────────────────────────
 // GraphGrid – the main exported component
 // ─────────────────────────────────────────────────────────────────────────────
-export function machineLearningCard({ items = GRAPH_ITEMS }) {
+export function chronosCard({ items = GRAPH_ITEMS }) {
   const [loadingAll, setLoadingAll] = useState(false);
 
   // Ref trick: trigger all cards via their own handlers isn't ideal in this
@@ -172,7 +128,7 @@ export function machineLearningCard({ items = GRAPH_ITEMS }) {
       </div> */}
 
       {/* ── Grid ── */}
-      <div style={styles.grid}>
+      <div>
         {items.map((item) => (
           <GraphCard key={item.id} item={item} />
         ))}
@@ -186,7 +142,7 @@ export function machineLearningCard({ items = GRAPH_ITEMS }) {
 // ─────────────────────────────────────────────────────────────────────────────
 const styles = {
   wrapper: {
-    padding: "20px",
+    padding: "10px",
     fontFamily: "'IBM Plex Sans', 'Segoe UI', sans-serif",
   },
 
@@ -323,4 +279,4 @@ if (typeof document !== "undefined") {
   }
 }
 
-export default machineLearningCard;
+export default chronosCard;
