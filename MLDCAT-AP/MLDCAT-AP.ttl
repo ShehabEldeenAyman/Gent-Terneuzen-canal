@@ -1,0 +1,95 @@
+@prefix biro:    <http://purl.org/spar/biro/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix MLDCAT:  <https://semiceu.github.io/MLDCAT-AP/releases/2.0.0/> .
+@prefix lpwc:    <https://linkedpaperswithcode.com/class/> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix spdx:    <http://spdx.org/rdf/terms#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+
+# ─────────────────────────────────────────────────────────────────────────────
+# MODEL
+# ─────────────────────────────────────────────────────────────────────────────
+
+<https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/forecaster_v2>
+    a MLDCAT:MachineLearningModel ;
+    dcterms:title       "LSTM Seq2Seq Water Conductivity Forecaster v2" ;
+    dcterms:created     "2025-05-22T00:00:00"^^xsd:dateTime ;
+    MLDCAT:version         "2.0.0" ;
+    dcterms:license     <https://creativecommons.org/licenses/by/4.0/> ;
+
+    MLDCAT:hasOutputFilePrediction
+        <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/model.json> ;
+
+    MLDCAT:hasRepository
+        <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/tree/main> ;
+
+    MLDCAT:hasUploader
+        <https://github.com/shehabeldeenayman> ;
+
+    MLDCAT:trainedOn
+        <http://example.com/Gent-Terneuzen/conductivityDataset> ;
+
+    MLDCAT:intendedUse """This model is designed to forecast average water conductivity along the Gent-Terneuzen canal over a 72-hour horizon at 15-minute resolution.
+
+The model is served as a TensorFlow.js graph-model and can be loaded directly in a browser:
+  const model = await tf.loadGraphModel('https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/model.json');
+  const output = model.predict(inputTensor);   // inputTensor shape [1, 1344, 1]""" ;
+
+    MLDCAT:limitations """1. The model was trained exclusively on conductivity data from the Gent-Terneuzen canal. Applying it to other waterways or sensor configurations will likely degrade performance without retraining.
+2. The input window must be exactly 1344 time steps. Shorter or irregular sequences are not supported without additional preprocessing.
+3. Forecasting accuracy degrades over the horizon: error (MAE/RMSE) increases progressively beyond the 24-hour mark (step 96).
+4. The MinMax scaler (scaler_v2.pkl) fitted on the training split must be applied to the input before inference and used to inverse-transform the output. Using a different scaler will produce incorrect results.
+5. The model does not account for external covariates (e.g. tidal cycles, weather, vessel traffic) that may affect conductivity.""" .
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# OUTPUT FILE  — TensorFlow.js graph-model
+# ─────────────────────────────────────────────────────────────────────────────
+
+<https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/model.json>
+    a MLDCAT:OutputFilePrediction ;
+    dcterms:title      "forecaster_v2 TensorFlow.js graph-model" ;
+    dcterms:identifier "forecaster_v2.json" ;
+    dcterms:format     <http://example.com/format/tfjs-graph-model> ;
+    MLDCAT:url            <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/model.json> ;
+    spdx:checksum      <http://example.com/Checksum/forecaster_v2_json> .
+
+# <http://example.com/Checksum/forecaster_v2_json>
+#     a spdx:Checksum ;
+#     spdx:algorithm     spdx:checksumAlgorithm_sha256 ;
+#     spdx:checksumValue ""^^xsd:hexBinary .
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# REPOSITORY
+# ─────────────────────────────────────────────────────────────────────────────
+
+<https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/tree/main>
+    a lpwc:repository ;
+    MLDCAT:hasFile
+        <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/model.json> .
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# BIBLIOGRAPHIC REFERENCE  (fill in if a paper is published)
+# ─────────────────────────────────────────────────────────────────────────────
+
+<http://example.com/BibliographicReference/forecaster_v2>
+    a biro:BibliographicReference ;
+    dcterms:format     "http://example.com/format/BibTeX" ;
+    dcterms:bibliographicCitation """@misc{ayman2025gentterneuzen,
+  title  = {LSTM Seq2Seq Water Conductivity Forecasting for the Gent-Terneuzen Canal},
+  author = {Ayman, Shehab El-Deen},
+  year   = {2026},
+  url    = {https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/}
+}""" .
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# UPLOADER
+# ─────────────────────────────────────────────────────────────────────────────
+
+<https://github.com/shehabeldeenayman>
+    a foaf:Agent ;
+    foaf:name "Shehab El-Deen Ayman" .
