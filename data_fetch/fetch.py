@@ -1,5 +1,6 @@
 from pywaterinfo import Waterinfo
 import pandas as pd
+from datetime import datetime, timezone
 
 hic = Waterinfo("hic", cache=True)
 vmm = Waterinfo("vmm", cache=True)
@@ -33,8 +34,9 @@ def fetch_timeseries(START_DATE, END_DATE):
 def main():
     START_DATE = "2021-01-01T00:00:00Z"
     END_DATE = "2026-03-31T23:59:59Z"
+    current_datetime = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     fetch_stations()
-    fetch_timeseries(START_DATE, END_DATE)
+    fetch_timeseries(START_DATE, current_datetime)
 
 if __name__ == "__main__":
     main()
