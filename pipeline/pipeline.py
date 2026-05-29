@@ -2,6 +2,7 @@ import sys
 import subprocess
 import time
 import os
+from datetime import datetime, timezone
 
 # Setup paths (as defined in your notebook Step 1)
 def setup_environment():
@@ -78,8 +79,10 @@ def step_7_transform_ldes(input_path):
     end_time = time.perf_counter()
     print(f"LDES Processing completed in {end_time - start_time:.2f} seconds.")
 
-def catch_up():
-
+def catch_up(START_DATE):
+    current_datetime = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    print(f"Current datetime: {current_datetime}")
+    print(f"Last fetched datetime: {START_DATE}")
 
 def main():
     # Configuration
@@ -93,7 +96,7 @@ def main():
     START_DATE = "2021-01-01T00:00:00Z"
     END_DATE = "2026-03-31T23:59:59Z"
 
-    from_the_beginning = True  # Set to False to skip data fetching and preprocessing
+    from_the_beginning = False  # Set to False to skip data fetching and preprocessing
     # Execution Pipeline
     setup_environment()
     if from_the_beginning:
