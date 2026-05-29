@@ -15,7 +15,7 @@ def setup_environment():
 def step_1_fetch_data(START_DATE, END_DATE):
     print("--- Step 1: Fetching Data ---")
     import fetch
-    fetch.fetch_stations()
+    #fetch.fetch_stations()
     fetch.fetch_timeseries(START_DATE, END_DATE)
 
 def step_2_preprocess():
@@ -80,9 +80,21 @@ def step_7_transform_ldes(input_path):
     print(f"LDES Processing completed in {end_time - start_time:.2f} seconds.")
 
 def catch_up(START_DATE):
+    print("--- Started cathcing up process ---")
     current_datetime = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     print(f"Current datetime: {current_datetime}")
     print(f"Last fetched datetime: {START_DATE}")
+    if current_datetime > START_DATE:
+        print("New data is available. Starting catch-up process.")
+        step_1_fetch_data(START_DATE, current_datetime)
+        step_2_preprocess()
+        step_3_rml_mapping()
+        step_4_ingest_virtuoso("../data/timeseries.ttl", "http://example.com/Gent-Terneuzen", delete_existing=False)
+        #step_5_rdf2tss("../data/timeseries.ttl", "../data/TSSgraph.ttl")
+        #step_6_ingest_tss_virtuoso("../data/TSSgraph.ttl", "http://example.com/Gent-Terneuzen-TSS")
+        #step_7_transform_ldes("../data/TSSgraph.ttl")
+    else:
+        print("No new data available. Catch-up process skipped.")
 
 def main():
     # Configuration
@@ -96,17 +108,23 @@ def main():
     START_DATE = "2021-01-01T00:00:00Z"
     END_DATE = "2026-03-31T23:59:59Z"
 
-    from_the_beginning = False  # Set to False to skip data fetching and preprocessing
+    current_datetime = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    from_the_beginning = True  # Set to False to skip data fetching and preprocessing
     # Execution Pipeline
     setup_environment()
     if from_the_beginning:
-        step_1_fetch_data(START_DATE, END_DATE)
+        step_1_fetch_data(START_DATE, current_datetime)
         step_2_preprocess()
         step_3_rml_mapping()
-        step_4_ingest_virtuoso(TIMESERIES_TTL, GRAPH_URI, delete_existing=False)
-        step_5_rdf2tss(TIMESERIES_TTL, TSS_GRAPH_TTL)
-        #step_6_ingest_tss_virtuoso(TSS_GRAPH_TTL, TSS_GRAPH_URI)          
-        step_7_transform_ldes(TSS_GRAPH_TTL)
+        step_4_ingest_virtuoso(TIMESERIES_TTL, GRAPH_URI, delete_existing=True)
+        
+    #catch_up(END_DATE)
+
+    step_5_rdf2tss(TIMESERIES_TTL, TSS_GRAPH_TTL)
+    ##step_6_ingest_tss_virtuoso(TSS_GRAPH_TTL, TSS_GRAPH_URI)          
+    step_7_transform_ldes(TSS_GRAPH_TTL)
+
 
 if __name__ == "__main__":
     main()
