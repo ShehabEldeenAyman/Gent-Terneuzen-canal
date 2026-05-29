@@ -15,13 +15,13 @@ from statsmodels.tsa.stattools import acf
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import lightgbm as lgb
-import xgboost as xgb
+#import xgboost as xgb
 import matplotlib.dates as mdates
 
 import constants
 import start_preprocessing
 import lightGBM
-import XGboost
+import xgboost_model  
 import Ensemble
 import Comparison
 import RandomForest
@@ -142,8 +142,8 @@ async def lightGBM_visualization(request: Request):
 
 @app.get("/xgboost_forecast")
 async def xgboost_visualization(request: Request):
-    app.state.predictions_xgb = await XGboost.xgboost_train(app.state.X_train, app.state.y_train, app.state.X_test, app.state.y_test)
-    app.state.mae_xgb = await XGboost.xgboost_forecast_bias(app.state.predictions_xgb, app.state.y_test)
+    app.state.predictions_xgb = await xgboost_model.xgboost_train(app.state.X_train, app.state.y_train, app.state.X_test, app.state.y_test)
+    app.state.mae_xgb = await xgboost_model.xgboost_forecast_bias(app.state.predictions_xgb, app.state.y_test)
 
     results_xgb = pd.DataFrame({
         'Actual':  request.app.state.y_test,

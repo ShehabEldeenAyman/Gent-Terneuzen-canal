@@ -33,8 +33,8 @@ export function LDESClientCard() {
         const ldesClient = replicateLDES({
       url: data_url_LDES,
       //fetchOptions: { redirect: "follow" },
-      before: new Date("2026-01-01T00:00:00Z"),
-      after: new Date("2025-01-01T00:00:00Z"),
+      before: new Date("2026-03-31T00:00:00Z"),
+      after: new Date("2021-01-01T00:00:00Z"),
     });
 
         // Get the stream reader

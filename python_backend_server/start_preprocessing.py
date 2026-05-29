@@ -196,7 +196,7 @@ async def datapreparation(final_df):
 #####################################################################################################
 async def prepare_for_chronos(final_df, target_sensor=None):
     df = final_df.copy()
-    
+    df = df['2021-01-01':'2026-02-28']
     # 1. Drop unixtime — Chronos doesn't need it
     df = df.drop(columns=['unixtime'], errors='ignore')
     
