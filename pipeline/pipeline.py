@@ -11,11 +11,11 @@ def setup_environment():
     sys.path.insert(0, "../RDF2TSS_V2")
     sys.path.insert(0, "../RDF2LDES")
 
-def step_1_fetch_data():
+def step_1_fetch_data(START_DATE, END_DATE):
     print("--- Step 1: Fetching Data ---")
     import fetch
     fetch.fetch_stations()
-    fetch.fetch_timeseries()
+    fetch.fetch_timeseries(START_DATE, END_DATE)
 
 def step_2_preprocess():
     print("--- Step 2: Pre-Processing ---")
@@ -39,10 +39,11 @@ def step_3_rml_mapping():
         print(f"RML Mapping failed: {e.stderr}")
         return False
 
-def step_4_ingest_virtuoso(ttl_timeseries, graph_uri):
+def step_4_ingest_virtuoso(ttl_timeseries, graph_uri,delete_existing=True):
     print("--- Step 4: Ingesting to Virtuoso ---")
     import ingest
-    ingest.delete_graph(graph_uri)
+    if delete_existing:
+        ingest.delete_graph(graph_uri)
     ingest.upload_graph(ttl_timeseries, graph_uri)
     #ingest.upload_graph(ttl_stations, graph_uri)
 
@@ -77,6 +78,9 @@ def step_7_transform_ldes(input_path):
     end_time = time.perf_counter()
     print(f"LDES Processing completed in {end_time - start_time:.2f} seconds.")
 
+def catch_up():
+
+
 def main():
     # Configuration
     GRAPH_URI = "http://example.com/Gent-Terneuzen"
@@ -86,17 +90,20 @@ def main():
     STATIONS_TTL = "../data/stations.ttl"
     TSS_GRAPH_TTL = "../data/TSSgraph.ttl"
 
+    START_DATE = "2021-01-01T00:00:00Z"
+    END_DATE = "2026-03-31T23:59:59Z"
+
+    from_the_beginning = True  # Set to False to skip data fetching and preprocessing
     # Execution Pipeline
     setup_environment()
-    
-    step_1_fetch_data()
-    step_2_preprocess()
-    
-    step_3_rml_mapping()
-    step_4_ingest_virtuoso(TIMESERIES_TTL, GRAPH_URI)
-    step_5_rdf2tss(TIMESERIES_TTL, TSS_GRAPH_TTL)
-    #step_6_ingest_tss_virtuoso(TSS_GRAPH_TTL, TSS_GRAPH_URI)          
-    step_7_transform_ldes(TSS_GRAPH_TTL)
+    if from_the_beginning:
+        step_1_fetch_data(START_DATE, END_DATE)
+        step_2_preprocess()
+        step_3_rml_mapping()
+        step_4_ingest_virtuoso(TIMESERIES_TTL, GRAPH_URI, delete_existing=False)
+        step_5_rdf2tss(TIMESERIES_TTL, TSS_GRAPH_TTL)
+        #step_6_ingest_tss_virtuoso(TSS_GRAPH_TTL, TSS_GRAPH_URI)          
+        step_7_transform_ldes(TSS_GRAPH_TTL)
 
 if __name__ == "__main__":
     main()
