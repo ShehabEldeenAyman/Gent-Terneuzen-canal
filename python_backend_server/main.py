@@ -66,6 +66,7 @@ async def lifespan(app: FastAPI):
     # app.state.mae_xgb = await xgboost_forecast_bias(app.state.predictions_xgb, app.state.y_test)
 
     app.state.chronos_df = await start_preprocessing.prepare_for_chronos(app.state.final_df)
+    app.state.chronos_df_no_avg = await start_preprocessing.prepare_for_chronos_no_avg(app.state.final_df)
     print("Startup complete!")
     yield # The app runs while execution is paused here
     print("Shutting down...")
@@ -354,6 +355,92 @@ async def comparison_visualization(request: Request):
 async def chronos2forecast_visualization(request: Request):
     # 1. Get the historical averaged dataframe from the app state
     df = request.app.state.chronos_df.copy()
+    
+    # 2. Run the forecast pipeline
+    forecast_df = await chronos2forecast.chronos2forecast(df)
+
+    # 3. Ensure timestamps are in datetime format to prevent math errors
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
+    forecast_df["timestamp"] = pd.to_datetime(forecast_df["timestamp"])
+    
+    # 4. Explicitly sort chronologically to guarantee continuous lines without overlapping loops
+    df = df.sort_values("timestamp")
+    forecast_df = forecast_df.sort_values("timestamp")
+    
+    # 5. Use the start of the forecast as our anchor point
+    forecast_start_time = forecast_df["timestamp"].min()
+    
+    # --- VISUALIZATION TIME FRAME WINDOW ---
+    # We pull the history close (last 3 days) so it doesn't squash the 24h prediction window
+    history_lookback_time = forecast_start_time - pd.Timedelta(days=3)
+    
+    # Filter historical data to only include this zoomed-in timeframe
+    recent_history_df = df[df["timestamp"] >= history_lookback_time]
+    # ---------------------------------------
+
+    # 6. Plotting the results
+    # We increase the width to 16 inches to give the forecasting section horizontal breathing room
+    fig, ax = plt.subplots(figsize=(16, 6))
+
+    # Plot the 3-day historical window of the average values
+    ax.plot(
+        recent_history_df["timestamp"], 
+        recent_history_df["target"], 
+        label="Historical Data (4-Sensor Avg)", 
+        color="black", 
+        linewidth=1.5
+    )
+
+    # Plot forecast median
+    ax.plot(
+        forecast_df["timestamp"], 
+        forecast_df["0.5"], 
+        label="Chronos-2 Forecast (Median)", 
+        color="blue", 
+        linestyle="--", 
+        linewidth=2    
+    )
+
+    # Plot prediction interval (80% confidence uncertainty band)
+    ax.fill_between(
+        forecast_df["timestamp"], 
+        forecast_df["0.1"], 
+        forecast_df["0.9"], 
+        alpha=0.2, 
+        color="blue", 
+        label="80% Prediction Interval"
+    )
+
+    # 7. Formatting X-Axis Dates so they remain legible and well-spaced
+    # Force a tick mark to appear at 12-hour intervals across the 4-day span (3 days history + 1 day forecast)
+    ax.xaxis.set_major_locator(mdates.HourLocator(byhour=[0, 12]))  
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d %H:%M')) 
+    
+    # Clean up labels: rotate 30 degrees and align their right side to the tick marks
+    plt.xticks(rotation=30, ha='right')  
+
+    # 8. Add chart details
+    plt.title("Chronos-2 Forecast (Zoomed High-Resolution View)", fontsize=14, fontweight='bold')
+    plt.xlabel("Date & Time", fontsize=12)
+    plt.ylabel("Averaged Conductivity", fontsize=12)
+    plt.legend(loc="upper left", fontsize=10)
+    plt.grid(True, linestyle=":", alpha=0.6)
+    plt.tight_layout() # Prevents labels from getting clipped off at the bottom edges
+    
+    # 9. Save plot to an in-memory bytes buffer
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png", dpi=100)
+    buf.seek(0)
+    plt.close(fig) # Explicitly clear server memory
+
+    # 10. Return the buffer as a streaming image response
+    return Response(content=buf.getvalue(), media_type="image/png")
+
+
+@app.get("/chronos2forecast_no_avg")
+async def chronos2forecast_visualization(request: Request):
+    # 1. Get the historical averaged dataframe from the app state
+    df = request.app.state.chronos_df_no_avg.copy()
     
     # 2. Run the forecast pipeline
     forecast_df = await chronos2forecast.chronos2forecast(df)

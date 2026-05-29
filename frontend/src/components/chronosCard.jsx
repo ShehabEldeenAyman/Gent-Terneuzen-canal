@@ -44,7 +44,8 @@ function GraphCard({ item }) {
   };
 
   return (
-    <figure style={styles.card}>
+  
+<figure style={styles.card}>
       {/* ── Preview area ── */}
       <div style={styles.imageArea}>
         {status === "idle" && (
@@ -104,6 +105,10 @@ function GraphCard({ item }) {
       {/* ── Caption ── */}
       <figcaption style={styles.caption}>{item.label}</figcaption>
     </figure>
+
+    
+ 
+    
   );
 }
 

@@ -226,3 +226,31 @@ async def prepare_for_chronos(final_df, target_sensor=None):
     chronos_df = df.sort_values(by=['timestamp']).reset_index(drop=True)
     
     return chronos_df
+
+async def prepare_for_chronos_no_avg(final_df):
+    df = final_df.copy()
+    df = df['2021-01-01':'2026-02-28']
+
+    # 1. Drop unixtime
+    df = df.drop(columns=['unixtime'], errors='ignore')
+
+    # 2. Enforce strict 15-min frequency and fill gaps
+    df = df.resample('15min').interpolate(method='time')
+    df = df.bfill().ffill()
+
+    # 3. Reset index so 'time' becomes a regular column
+    df = df.reset_index().rename(columns={'time': 'timestamp'})
+
+    # 4. Melt from wide to long — each sensor becomes its own item_id
+    chronos_df = df.melt(
+        id_vars='timestamp',
+        var_name='item_id',
+        value_name='target'
+    )
+
+    # 5. Final sort: group by item, then chronological within each group
+    chronos_df = chronos_df.sort_values(
+        by=['item_id', 'timestamp']
+    ).reset_index(drop=True)
+
+    return chronos_df
