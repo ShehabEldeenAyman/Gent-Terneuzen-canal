@@ -124,7 +124,7 @@ def main():
         
     #catch_up(END_DATE)
 
-    step_5_rdf2tss(TIMESERIES_TTL, TSS_GRAPH_TTL)
+    #step_5_rdf2tss(TIMESERIES_TTL, TSS_GRAPH_TTL)
     ##step_6_ingest_tss_virtuoso(TSS_GRAPH_TTL, TSS_GRAPH_URI)          
     step_7_transform_ldes(TSS_GRAPH_TTL)
 
