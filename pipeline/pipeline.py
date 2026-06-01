@@ -12,11 +12,11 @@ def setup_environment():
     sys.path.insert(0, "../RDF2TSS_V2")
     sys.path.insert(0, "../RDF2LDES")
 
-def step_1_fetch_data(START_DATE, END_DATE):
+def step_1_fetch_data(START_DATE, END_DATE,timeseriesgroup_ids):
     print("--- Step 1: Fetching Data ---")
     import fetch
     #fetch.fetch_stations()
-    fetch.fetch_timeseries(START_DATE, END_DATE)
+    fetch.fetch_timeseries(START_DATE, END_DATE,timeseriesgroup_ids)
 
 def step_2_preprocess():
     print("--- Step 2: Pre-Processing ---")
@@ -79,26 +79,26 @@ def step_7_transform_ldes(input_path):
     end_time = time.perf_counter()
     print(f"LDES Processing completed in {end_time - start_time:.2f} seconds.")
 
-def catch_up(START_DATE):
-    print("--- Started cathcing up process ---")
-    current_datetime = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    print(f"Current datetime: {current_datetime}")
-    print(f"Last fetched datetime: {START_DATE}")
-    if current_datetime > START_DATE:
-        print("New data is available. Starting catch-up process.")
-        step_1_fetch_data(START_DATE, current_datetime)
-        step_2_preprocess()
-        step_3_rml_mapping()
-        step_4_ingest_virtuoso("../data/timeseries.ttl", "http://example.com/Gent-Terneuzen", delete_existing=False)
-        #step_5_rdf2tss("../data/timeseries.ttl", "../data/TSSgraph.ttl")
-        #step_6_ingest_tss_virtuoso("../data/TSSgraph.ttl", "http://example.com/Gent-Terneuzen-TSS")
-        #step_7_transform_ldes("../data/TSSgraph.ttl")
-    else:
-        print("No new data available. Catch-up process skipped.")
+# def catch_up(START_DATE):
+#     print("--- Started cathcing up process ---")
+#     current_datetime = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+#     print(f"Current datetime: {current_datetime}")
+#     print(f"Last fetched datetime: {START_DATE}")
+#     if current_datetime > START_DATE:
+#         print("New data is available. Starting catch-up process.")
+#         step_1_fetch_data(START_DATE, current_datetime,timeseriesgroup_ids = ["289435042", "289423042", "289429042", "289441042"])
+#         step_2_preprocess()
+#         step_3_rml_mapping()
+#         step_4_ingest_virtuoso("../data/timeseries.ttl", "http://example.com/Gent-Terneuzen/conductivity", delete_existing=False)
+#         #step_5_rdf2tss("../data/timeseries.ttl", "../data/TSSgraph.ttl")
+#         #step_6_ingest_tss_virtuoso("../data/TSSgraph.ttl", "http://example.com/Gent-Terneuzen-TSS")
+#         #step_7_transform_ldes("../data/TSSgraph.ttl")
+#     else:
+#         print("No new data available. Catch-up process skipped.")
 
 def main():
     # Configuration
-    GRAPH_URI = "http://example.com/Gent-Terneuzen"
+    GRAPH_URI = "http://example.com/Gent-Terneuzen/precipitation"
     TSS_GRAPH_URI = "http://example.com/Gent-Terneuzen-TSS"
     
     TIMESERIES_TTL = "../data/timeseries.ttl"
@@ -114,7 +114,8 @@ def main():
     # Execution Pipeline
     setup_environment()
     if from_the_beginning:
-        step_1_fetch_data(START_DATE, current_datetime)
+        #step_1_fetch_data(START_DATE, current_datetime,timeseriesgroup_ids = ["289435042", "289423042", "289429042", "289441042"])
+        step_1_fetch_data(START_DATE, current_datetime,timeseriesgroup_ids = ["34967042"])
         step_2_preprocess()
         step_3_rml_mapping()
         step_4_ingest_virtuoso(TIMESERIES_TTL, GRAPH_URI, delete_existing=True)

@@ -17,8 +17,8 @@ def fetch_stations():
     df.to_csv("../data/stations.csv", index=False)
     print("Station fetching finished & file saved.")
 
-def fetch_timeseries(START_DATE, END_DATE):
-    timeseriesgroup_ids = ["289435042", "289423042", "289429042", "289441042"]
+def fetch_timeseries(START_DATE, END_DATE,timeseriesgroup_ids):
+    #timeseriesgroup_ids = ["289435042", "289423042", "289429042", "289441042"]
     frames = []
     print("Timeseries fetching started.")
     for group_id in timeseriesgroup_ids:
