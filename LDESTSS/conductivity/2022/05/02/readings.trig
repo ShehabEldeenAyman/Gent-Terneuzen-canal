@@ -6,75 +6,20 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 {
-    <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/LDESTSS/conductivity/LDESTSS#eventstream> a ldes:EventStream ;
+    <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/LDESTSS/conductivity#eventstream> a ldes:EventStream ;
         ldes:timestampPath tss:from ;
-        tree:member <http://example.com/waterinfo/289423042/20220502>,
-            <http://example.com/waterinfo/289429042/20220502>,
-            <http://example.com/waterinfo/289435042/20220502>,
-            <http://example.com/waterinfo/289441042/20220502> ;
+        tree:member <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/LDESTSS/conductivity/2022/05/02/20220502> ;
         tree:view <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/LDESTSS/conductivity/LDESTSS.trig> .
 
-    <http://example.com/waterinfo/289423042/20220502> tss:from "2022-05-02T00:00:00+00:00"^^xsd:dateTime .
-
-    <http://example.com/waterinfo/289429042/20220502> tss:from "2022-05-02T00:00:00+00:00"^^xsd:dateTime .
-
-    <http://example.com/waterinfo/289435042/20220502> tss:from "2022-05-02T00:00:00+00:00"^^xsd:dateTime .
-
-    <http://example.com/waterinfo/289441042/20220502> tss:from "2022-05-02T00:00:00+00:00"^^xsd:dateTime .
+    <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/LDESTSS/conductivity/2022/05/02/20220502> tss:from "2022-05-02T00:00:00+00:00"^^xsd:dateTime .
 }
 
-<http://example.com/waterinfo/289423042/20220502> {
-    <http://example.com/waterinfo/289423042/20220502> a tss:Snippet ;
-        tss:about _:Nd76bff2c9001493698528b2223add0fa ;
-        tss:from "2022-05-02T00:00:00+00:00"^^xsd:dateTime ;
-        tss:pointType "http://www.w3.org/ns/sosa/Observation" ;
-        tss:points """[
- {
-  "id": "https://example.org/tss/snippet/reading/2",
-  "time": "2022-05-02T02:00:00+00:00",
-  "value": 2481.03
- },
- {
-  "id": "https://example.org/tss/snippet/reading/2",
-  "time": "2022-05-02T07:30:00+00:00",
-  "value": 2522.44
- },
- {
-  "id": "https://example.org/tss/snippet/reading/2",
-  "time": "2022-05-02T09:45:00+00:00",
-  "value": 2622.75
- },
- {
-  "id": "https://example.org/tss/snippet/reading/2",
-  "time": "2022-05-02T10:00:00+00:00",
-  "value": 2751.33
- },
- {
-  "id": "https://example.org/tss/snippet/reading/2",
-  "time": "2022-05-02T17:30:00+00:00",
-  "value": 2699.58
- },
- {
-  "id": "https://example.org/tss/snippet/reading/2",
-  "time": "2022-05-02T22:45:00+00:00",
-  "value": 2792.09
- },
- {
-  "id": "https://example.org/tss/snippet/reading/2",
-  "time": "2022-05-02T23:45:00+00:00",
-  "value": 2713.34
- }
-]"""^^rdf:JSON ;
-        tss:until "2022-05-02T23:59:59+00:00"^^xsd:dateTime .
-
-    _:Nd76bff2c9001493698528b2223add0fa a tss:PointTemplate ;
-        sosa:madeBySensor <http://example.com/waterinfo/289423042> ;
-        sosa:observedProperty <http://example.com/waterinfo/Conductivity> .
-}
-
-<http://example.com/waterinfo/289435042/20220502> {
-    <http://example.com/waterinfo/289435042/20220502> a tss:Snippet ;
-        tss:about _:N8be2a3edaf8f4f2cb7461e26155213ee ;
+<https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/LDESTSS/conductivity/2022/05/02/20220502> {
+    <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/LDESTSS/conductivity/2022/05/02/20220502> a tss:Snippet ;
+        tss:about _:N03fb1c71f3a640c595ebe1862c593360,
+            _:N809b65bb14314a778c31ed60bf2774d1,
+            _:N8b75161c007a468ebb354d173c9f794e,
+            _:Nea5687ea0f834fa6a27e102737712db8 ;
         tss:from "2022-05-02T00:00:00+00:00"^^xsd:dateTime ;
         tss:pointType "http://www.w3.org/ns/sosa/Observation" ;
         tss:points """[
@@ -558,20 +503,8 @@
   "time": "2022-05-02T23:45:00+00:00",
   "value": 5245.79
  }
-]"""^^rdf:JSON ;
-        tss:until "2022-05-02T23:59:59+00:00"^^xsd:dateTime .
-
-    _:N8be2a3edaf8f4f2cb7461e26155213ee a tss:PointTemplate ;
-        sosa:madeBySensor <http://example.com/waterinfo/289435042> ;
-        sosa:observedProperty <http://example.com/waterinfo/Conductivity> .
-}
-
-<http://example.com/waterinfo/289429042/20220502> {
-    <http://example.com/waterinfo/289429042/20220502> a tss:Snippet ;
-        tss:about _:N4d55ac7b8ad44a829375447f23ad52fb ;
-        tss:from "2022-05-02T00:00:00+00:00"^^xsd:dateTime ;
-        tss:pointType "http://www.w3.org/ns/sosa/Observation" ;
-        tss:points """[
+]"""^^rdf:JSON,
+            """[
  {
   "id": "https://example.org/tss/snippet/reading/1",
   "time": "2022-05-02T00:00:00+00:00",
@@ -1052,20 +985,45 @@
   "time": "2022-05-02T23:45:00+00:00",
   "value": 4435.0
  }
-]"""^^rdf:JSON ;
-        tss:until "2022-05-02T23:59:59+00:00"^^xsd:dateTime .
-
-    _:N4d55ac7b8ad44a829375447f23ad52fb a tss:PointTemplate ;
-        sosa:madeBySensor <http://example.com/waterinfo/289429042> ;
-        sosa:observedProperty <http://example.com/waterinfo/Conductivity> .
-}
-
-<http://example.com/waterinfo/289441042/20220502> {
-    <http://example.com/waterinfo/289441042/20220502> a tss:Snippet ;
-        tss:about _:N168921c507d64985b3cb52960b693110 ;
-        tss:from "2022-05-02T00:00:00+00:00"^^xsd:dateTime ;
-        tss:pointType "http://www.w3.org/ns/sosa/Observation" ;
-        tss:points """[
+]"""^^rdf:JSON,
+            """[
+ {
+  "id": "https://example.org/tss/snippet/reading/2",
+  "time": "2022-05-02T02:00:00+00:00",
+  "value": 2481.03
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/2",
+  "time": "2022-05-02T07:30:00+00:00",
+  "value": 2522.44
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/2",
+  "time": "2022-05-02T09:45:00+00:00",
+  "value": 2622.75
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/2",
+  "time": "2022-05-02T10:00:00+00:00",
+  "value": 2751.33
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/2",
+  "time": "2022-05-02T17:30:00+00:00",
+  "value": 2699.58
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/2",
+  "time": "2022-05-02T22:45:00+00:00",
+  "value": 2792.09
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/2",
+  "time": "2022-05-02T23:45:00+00:00",
+  "value": 2713.34
+ }
+]"""^^rdf:JSON,
+            """[
  {
   "id": "https://example.org/tss/snippet/reading/3",
   "time": "2022-05-02T00:00:00+00:00",
@@ -1549,7 +1507,19 @@
 ]"""^^rdf:JSON ;
         tss:until "2022-05-02T23:59:59+00:00"^^xsd:dateTime .
 
-    _:N168921c507d64985b3cb52960b693110 a tss:PointTemplate ;
+    _:N03fb1c71f3a640c595ebe1862c593360 a tss:PointTemplate ;
+        sosa:madeBySensor <http://example.com/waterinfo/289429042> ;
+        sosa:observedProperty <http://example.com/waterinfo/Conductivity> .
+
+    _:N809b65bb14314a778c31ed60bf2774d1 a tss:PointTemplate ;
+        sosa:madeBySensor <http://example.com/waterinfo/289435042> ;
+        sosa:observedProperty <http://example.com/waterinfo/Conductivity> .
+
+    _:N8b75161c007a468ebb354d173c9f794e a tss:PointTemplate ;
+        sosa:madeBySensor <http://example.com/waterinfo/289423042> ;
+        sosa:observedProperty <http://example.com/waterinfo/Conductivity> .
+
+    _:Nea5687ea0f834fa6a27e102737712db8 a tss:PointTemplate ;
         sosa:madeBySensor <http://example.com/waterinfo/289441042> ;
         sosa:observedProperty <http://example.com/waterinfo/Conductivity> .
 }

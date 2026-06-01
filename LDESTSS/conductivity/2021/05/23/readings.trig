@@ -5,9 +5,11 @@
 @prefix tss: <https://w3id.org/tss#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<http://example.com/waterinfo/289435042/20210523> {
-    <http://example.com/waterinfo/289435042/20210523> a tss:Snippet ;
-        tss:about _:Nf7b8549cf8604189a7c6b1a75e4393e6 ;
+<https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/LDESTSS/conductivity/2021/05/23/20210523> {
+    <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/LDESTSS/conductivity/2021/05/23/20210523> a tss:Snippet ;
+        tss:about _:N644ed26a48fe4e82a8810d438b66d970,
+            _:N7cc363e677af4bc3a8ffbe3dcf5ee601,
+            _:Nbeb7fae5be9c47c78c772a3f13740746 ;
         tss:from "2021-05-23T00:00:00+00:00"^^xsd:dateTime ;
         tss:pointType "http://www.w3.org/ns/sosa/Observation" ;
         tss:points """[
@@ -281,179 +283,8 @@
   "time": "2021-05-23T23:45:00+00:00",
   "value": 5901.31
  }
-]"""^^rdf:JSON ;
-        tss:until "2021-05-23T23:59:59+00:00"^^xsd:dateTime .
-
-    _:Nf7b8549cf8604189a7c6b1a75e4393e6 a tss:PointTemplate ;
-        sosa:madeBySensor <http://example.com/waterinfo/289435042> ;
-        sosa:observedProperty <http://example.com/waterinfo/Conductivity> .
-}
-
-{
-    <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/LDESTSS/conductivity/LDESTSS#eventstream> a ldes:EventStream ;
-        ldes:timestampPath tss:from ;
-        tree:member <http://example.com/waterinfo/289429042/20210523>,
-            <http://example.com/waterinfo/289435042/20210523>,
-            <http://example.com/waterinfo/289441042/20210523> ;
-        tree:view <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/LDESTSS/conductivity/LDESTSS.trig> .
-
-    <http://example.com/waterinfo/289429042/20210523> tss:from "2021-05-23T00:00:00+00:00"^^xsd:dateTime .
-
-    <http://example.com/waterinfo/289435042/20210523> tss:from "2021-05-23T00:00:00+00:00"^^xsd:dateTime .
-
-    <http://example.com/waterinfo/289441042/20210523> tss:from "2021-05-23T00:00:00+00:00"^^xsd:dateTime .
-}
-
-<http://example.com/waterinfo/289441042/20210523> {
-    <http://example.com/waterinfo/289441042/20210523> a tss:Snippet ;
-        tss:about _:Nbb75079c613c4c488238244c1d17e9bb ;
-        tss:from "2021-05-23T00:00:00+00:00"^^xsd:dateTime ;
-        tss:pointType "http://www.w3.org/ns/sosa/Observation" ;
-        tss:points """[
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T00:15:00+00:00",
-  "value": 7788.19
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T01:00:00+00:00",
-  "value": 7784.8
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T01:45:00+00:00",
-  "value": 7730.98
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T03:00:00+00:00",
-  "value": 7645.77
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T03:15:00+00:00",
-  "value": 7668.54
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T03:30:00+00:00",
-  "value": 7705.44
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T04:30:00+00:00",
-  "value": 7806.22
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T05:15:00+00:00",
-  "value": 7759.47
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T05:45:00+00:00",
-  "value": 7506.53
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T06:00:00+00:00",
-  "value": 7536.61
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T07:30:00+00:00",
-  "value": 7453.29
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T09:15:00+00:00",
-  "value": 7499.44
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T11:00:00+00:00",
-  "value": 7509.52
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T12:30:00+00:00",
-  "value": 7415.36
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T13:15:00+00:00",
-  "value": 7401.94
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T13:45:00+00:00",
-  "value": 7382.05
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T15:30:00+00:00",
-  "value": 7193.18
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T17:00:00+00:00",
-  "value": 7298.65
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T17:30:00+00:00",
-  "value": 7234.27
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T18:30:00+00:00",
-  "value": 7185.25
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T18:45:00+00:00",
-  "value": 7169.84
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T19:45:00+00:00",
-  "value": 7298.43
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T21:15:00+00:00",
-  "value": 7125.67
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T21:30:00+00:00",
-  "value": 7126.74
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T23:15:00+00:00",
-  "value": 7004.81
- },
- {
-  "id": "https://example.org/tss/snippet/reading/3",
-  "time": "2021-05-23T23:45:00+00:00",
-  "value": 7020.76
- }
-]"""^^rdf:JSON ;
-        tss:until "2021-05-23T23:59:59+00:00"^^xsd:dateTime .
-
-    _:Nbb75079c613c4c488238244c1d17e9bb a tss:PointTemplate ;
-        sosa:madeBySensor <http://example.com/waterinfo/289441042> ;
-        sosa:observedProperty <http://example.com/waterinfo/Conductivity> .
-}
-
-<http://example.com/waterinfo/289429042/20210523> {
-    <http://example.com/waterinfo/289429042/20210523> a tss:Snippet ;
-        tss:about _:N4619df15ebae45ca965d6da109b8e3a8 ;
-        tss:from "2021-05-23T00:00:00+00:00"^^xsd:dateTime ;
-        tss:pointType "http://www.w3.org/ns/sosa/Observation" ;
-        tss:points """[
+]"""^^rdf:JSON,
+            """[
  {
   "id": "https://example.org/tss/snippet/reading/1",
   "time": "2021-05-23T00:00:00+00:00",
@@ -909,11 +740,160 @@
   "time": "2021-05-23T23:45:00+00:00",
   "value": 4039.32
  }
+]"""^^rdf:JSON,
+            """[
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T00:15:00+00:00",
+  "value": 7788.19
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T01:00:00+00:00",
+  "value": 7784.8
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T01:45:00+00:00",
+  "value": 7730.98
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T03:00:00+00:00",
+  "value": 7645.77
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T03:15:00+00:00",
+  "value": 7668.54
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T03:30:00+00:00",
+  "value": 7705.44
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T04:30:00+00:00",
+  "value": 7806.22
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T05:15:00+00:00",
+  "value": 7759.47
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T05:45:00+00:00",
+  "value": 7506.53
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T06:00:00+00:00",
+  "value": 7536.61
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T07:30:00+00:00",
+  "value": 7453.29
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T09:15:00+00:00",
+  "value": 7499.44
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T11:00:00+00:00",
+  "value": 7509.52
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T12:30:00+00:00",
+  "value": 7415.36
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T13:15:00+00:00",
+  "value": 7401.94
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T13:45:00+00:00",
+  "value": 7382.05
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T15:30:00+00:00",
+  "value": 7193.18
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T17:00:00+00:00",
+  "value": 7298.65
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T17:30:00+00:00",
+  "value": 7234.27
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T18:30:00+00:00",
+  "value": 7185.25
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T18:45:00+00:00",
+  "value": 7169.84
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T19:45:00+00:00",
+  "value": 7298.43
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T21:15:00+00:00",
+  "value": 7125.67
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T21:30:00+00:00",
+  "value": 7126.74
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T23:15:00+00:00",
+  "value": 7004.81
+ },
+ {
+  "id": "https://example.org/tss/snippet/reading/3",
+  "time": "2021-05-23T23:45:00+00:00",
+  "value": 7020.76
+ }
 ]"""^^rdf:JSON ;
         tss:until "2021-05-23T23:59:59+00:00"^^xsd:dateTime .
 
-    _:N4619df15ebae45ca965d6da109b8e3a8 a tss:PointTemplate ;
+    _:N644ed26a48fe4e82a8810d438b66d970 a tss:PointTemplate ;
+        sosa:madeBySensor <http://example.com/waterinfo/289435042> ;
+        sosa:observedProperty <http://example.com/waterinfo/Conductivity> .
+
+    _:N7cc363e677af4bc3a8ffbe3dcf5ee601 a tss:PointTemplate ;
+        sosa:madeBySensor <http://example.com/waterinfo/289441042> ;
+        sosa:observedProperty <http://example.com/waterinfo/Conductivity> .
+
+    _:Nbeb7fae5be9c47c78c772a3f13740746 a tss:PointTemplate ;
         sosa:madeBySensor <http://example.com/waterinfo/289429042> ;
         sosa:observedProperty <http://example.com/waterinfo/Conductivity> .
+}
+
+{
+    <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/LDESTSS/conductivity#eventstream> a ldes:EventStream ;
+        ldes:timestampPath tss:from ;
+        tree:member <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/LDESTSS/conductivity/2021/05/23/20210523> ;
+        tree:view <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/LDESTSS/conductivity/LDESTSS.trig> .
+
+    <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/LDESTSS/conductivity/2021/05/23/20210523> tss:from "2021-05-23T00:00:00+00:00"^^xsd:dateTime .
 }
 
