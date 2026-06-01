@@ -21,7 +21,7 @@ LDES = Namespace("https://w3id.org/ldes#")
 TREE = Namespace("https://w3id.org/tree#")
 TSS = Namespace("https://w3id.org/tss#")
 eventstream_uri = URIRef("https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/LDESTSS/conductivity/LDESTSS#eventstream") #change this everytime you change the base uri for hosting
-base_uri = URIRef("https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/conductivity/")
+base_uri = URIRef("https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/")
 home_page = URIRef("https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/LDESTSS/conductivity/LDESTSS.trig")
 input_path = "../data/TSSgraph.ttl"
 base_path = "../LDESTSS"
@@ -181,7 +181,7 @@ def create_ldes_files():
             bn_lt = BNode()
 
             # the index file this folder will write
-            index_uri = URIRef(f"{base_uri}{uri_rel}/{path.parts[-1]}.trig")
+            index_uri = URIRef(f"{base_uri}{uri_rel}/conductivity/{path.parts[-1]}.trig")
             temp_graph.add((index_uri, TREE.relation, bn_ge))
             temp_graph.add((index_uri, TREE.relation, bn_lt))
 
@@ -193,9 +193,9 @@ def create_ldes_files():
             # child node URIs: year/month folders get a named index file,
             # day folders already have readings.trig
             if depth <= 1:
-                child_uri = URIRef(f"{base_uri}{uri_rel}/{d}/{d}.trig")
+                child_uri = URIRef(f"{base_uri}{uri_rel}/conductivity/{d}/{d}.trig")
             else:  # depth == 2, month → day
-                child_uri = URIRef(f"{base_uri}{uri_rel}/{d}/readings.trig")
+                child_uri = URIRef(f"{base_uri}{uri_rel}/conductivity/{d}/readings.trig")
 
             temp_graph.add((bn_ge, TREE.node, child_uri))
             temp_graph.add((bn_lt, TREE.node, child_uri))
