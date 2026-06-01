@@ -1,7 +1,7 @@
 import React, { useEffect, useState,useRef  } from "react";
 import { replicateLDES } from "ldes-client";
 import { Store } from "n3";
-export const data_url_LDES = "https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/LDESTSS/LDESTSS.trig";
+export const data_url_LDES_conductivity = "https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/LDESTSS/conductivity/LDESTSS.trig";
 export const ldesState = {
   count: 0,
   status: "Initializing...",
@@ -26,12 +26,12 @@ export function LDESClientCard() {
       ldesState.store = new Store();
     // We define the async logic INSIDE the effect
     const startStreaming = async () => {
-      console.log(`fetching LDES data from ${data_url_LDES}...`);
+      console.log(`fetching LDES data from ${data_url_LDES_conductivity}...`);
       setStatus("Fetching...");
       
       try {
         const ldesClient = replicateLDES({
-      url: data_url_LDES,
+      url: data_url_LDES_conductivity,
       //fetchOptions: { redirect: "follow" },
       before: new Date("2026-03-31T00:00:00Z"),
       after: new Date("2021-01-01T00:00:00Z"),

@@ -108,14 +108,16 @@ def main():
     START_DATE = "2021-01-01T00:00:00Z"
     END_DATE = "2026-03-31T23:59:59Z"
 
+
+
     current_datetime = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     from_the_beginning = True  # Set to False to skip data fetching and preprocessing
     # Execution Pipeline
     setup_environment()
     if from_the_beginning:
-        #step_1_fetch_data(START_DATE, current_datetime,timeseriesgroup_ids = ["289435042", "289423042", "289429042", "289441042"])
-        step_1_fetch_data(START_DATE, current_datetime,timeseriesgroup_ids = ["34967042"])
+        step_1_fetch_data(START_DATE, current_datetime,timeseriesgroup_ids = ["289435042", "289423042", "289429042", "289441042"])
+        #step_1_fetch_data(START_DATE, current_datetime,timeseriesgroup_ids = ["34967042"])
         step_2_preprocess()
         step_3_rml_mapping()
         step_4_ingest_virtuoso(TIMESERIES_TTL, GRAPH_URI, delete_existing=True)
