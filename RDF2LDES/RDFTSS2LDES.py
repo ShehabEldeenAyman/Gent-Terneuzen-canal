@@ -15,16 +15,23 @@ from datetime import timezone
 import json
 
 
-directory = "../conductivity/"
+directory = "../placeholder"
 AS = Namespace("https://www.w3.org/ns/activitystreams#")
 LDES = Namespace("https://w3id.org/ldes#")
 TREE = Namespace("https://w3id.org/tree#")
 TSS = Namespace("https://w3id.org/tss#")
-eventstream_uri = URIRef("https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/conductivity/conductivity#eventstream") #change this everytime you change the base uri for hosting
+eventstream_uri = URIRef("https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/placeholder/placeholder#eventstream") #change this everytime you change the base uri for hosting
 base_uri = URIRef("https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/")
-home_page = URIRef("https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/conductivity/conductivity.trig")
+home_page = URIRef("https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/placeholder/placeholder.trig")
 input_path = "../data/TSSgraph.ttl"
-base_path = "../conductivity"
+base_path = "../placeholder"
+
+def set_property(property_name):
+    global directory, eventstream_uri, home_page, base_path
+    directory = f"../{property_name}/"
+    eventstream_uri = URIRef(f"https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/{property_name}/{property_name}#eventstream")
+    home_page = URIRef(f"https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/{property_name}/{property_name}.trig")
+    base_path = f"../{property_name}"
 
 # split the data into their designated folders
 def load_graph(input_path):

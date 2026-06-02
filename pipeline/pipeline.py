@@ -62,11 +62,11 @@ def step_6_ingest_tss_virtuoso(tss_path, tss_graph_uri):
     ingest.delete_graph(tss_graph_uri)
     ingest.upload_graph(tss_path, tss_graph_uri)
 
-def step_7_transform_ldes(input_path):
+def step_7_transform_ldes(input_path,property_name="placeholder"):
     print("--- Step 7: Transforming to LDES ---")
     import RDFTSS2LDES
     start_time = time.perf_counter()
-    
+    RDFTSS2LDES.set_property(property_name)  # Call this function to set the property for LDES transformation
     original_graph = RDFTSS2LDES.load_graph(input_path)
     result = RDFTSS2LDES.process_graph(original_graph)
     RDFTSS2LDES.divide_data(result)
@@ -115,18 +115,18 @@ def main():
     from_the_beginning = True  # Set to False to skip data fetching and preprocessing
     # Execution Pipeline
     setup_environment()
-    #if from_the_beginning:
+    if from_the_beginning:
         #step_1_fetch_data(START_DATE, current_datetime,timeseriesgroup_ids = ["289435042", "289423042", "289429042", "289441042"])
-        #step_1_fetch_data(START_DATE, current_datetime,timeseriesgroup_ids = ["34967042"])
-        #step_2_preprocess()
-        #step_3_rml_mapping()
-        #step_4_ingest_virtuoso(TIMESERIES_TTL, GRAPH_URI, delete_existing=True)
+        step_1_fetch_data(START_DATE, current_datetime,timeseriesgroup_ids = ["34967042"])
+        step_2_preprocess()
+        step_3_rml_mapping()
+        step_4_ingest_virtuoso(TIMESERIES_TTL, GRAPH_URI, delete_existing=True)
         
     #catch_up(END_DATE)
 
-    #step_5_rdf2tss(TIMESERIES_TTL, TSS_GRAPH_TTL)
+    step_5_rdf2tss(TIMESERIES_TTL, TSS_GRAPH_TTL)
     ##step_6_ingest_tss_virtuoso(TSS_GRAPH_TTL, TSS_GRAPH_URI)          
-    step_7_transform_ldes(TSS_GRAPH_TTL)
+    step_7_transform_ldes(TSS_GRAPH_TTL, property_name="precipitation")
 
 
 if __name__ == "__main__":
