@@ -11,23 +11,31 @@ const PREFIXES = {
   RDF: "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
 };
 
-export const sensor_data = {
-  sensorDataMap: {}, 
-  activeSensors: [] 
-};
+// URL-keyed registry — mirrors the ldesRegistry pattern in LDESClientCard.
+// Each URL gets its own cache so conductivity and precipitation never overwrite each other.
+const sensorDataRegistry = {};
+
+export function getSensorDataCache(url) {
+  if (!sensorDataRegistry[url]) {
+    sensorDataRegistry[url] = { sensorDataMap: {}, activeSensors: [] };
+  }
+  return sensorDataRegistry[url];
+}
 
 // Accept both the target IDs AND the URL we want to visualize
 export function DataVisualization({ targetSensorIds, ldesUrl }) {
-  const [sensorDataMap, setSensorDataMap] = useState(sensor_data.sensorDataMap);
-  const [activeSensors, setActiveSensors] = useState(sensor_data.activeSensors);
+  const cache = getSensorDataCache(ldesUrl);
+  const [sensorDataMap, setSensorDataMap] = useState(cache.sensorDataMap);
+  const [activeSensors, setActiveSensors] = useState(cache.activeSensors);
 
   // Dynamically get the state associated with the passed URL
   const ldesState = getLdesState(ldesUrl);
 
   useEffect(() => {
-    sensor_data.sensorDataMap = sensorDataMap;
-    sensor_data.activeSensors = activeSensors;
-  }, [sensorDataMap, activeSensors]);
+    const c = getSensorDataCache(ldesUrl);
+    c.sensorDataMap = sensorDataMap;
+    c.activeSensors = activeSensors;
+  }, [sensorDataMap, activeSensors, ldesUrl]);
 
   const handleLoadData = () => {
     // Read directly from the dynamic URL store instance

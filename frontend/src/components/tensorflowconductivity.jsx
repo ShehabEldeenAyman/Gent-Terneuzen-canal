@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import * as tf from '@tensorflow/tfjs';
-import { sensor_data } from './datavisualization';
+
+import { getSensorDataCache } from './datavisualization';
+
+const CONDUCTIVITY_URL = "https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/conductivity/conductivity.trig";
+const sensor_data = getSensorDataCache(CONDUCTIVITY_URL);
 
 export default function TensorflowConductivity() {
   const [modelStatus, setModelStatus] = useState("Waiting for data...");

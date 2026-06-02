@@ -48,8 +48,8 @@ export function LDESClientCard({ url }) {
       try {
         const ldesClient = replicateLDES({
           url: url,
-          before: new Date("2026-03-31T00:00:00Z"),
-          after: new Date("2026-01-01T00:00:00Z"),
+          before: new Date("2025-10-20T00:00:00Z"),
+          after: new Date("2025-01-01T00:00:00Z"),
         });
 
         const reader = ldesClient.stream().getReader();
