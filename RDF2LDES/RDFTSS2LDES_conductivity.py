@@ -15,16 +15,16 @@ from datetime import timezone
 import json
 
 
-directory = "../conductivity/"
+directory = "../LDESTSS/"
 AS = Namespace("https://www.w3.org/ns/activitystreams#")
 LDES = Namespace("https://w3id.org/ldes#")
 TREE = Namespace("https://w3id.org/tree#")
 TSS = Namespace("https://w3id.org/tss#")
-eventstream_uri = URIRef("https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/conductivity/conductivity#eventstream") #change this everytime you change the base uri for hosting
+eventstream_uri = URIRef("https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/LDESTSS/LDESTSS#eventstream") #change this everytime you change the base uri for hosting
 base_uri = URIRef("https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/")
-home_page = URIRef("https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/conductivity/conductivity.trig")
+home_page = URIRef("https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/LDESTSS/LDESTSS.trig")
 input_path = "../data/TSSgraph.ttl"
-base_path = "../conductivity"
+base_path = "../LDESTSS"
 
 # split the data into their designated folders
 def load_graph(input_path):
@@ -181,7 +181,7 @@ def create_ldes_files():
             bn_lt = BNode()
 
             # the index file this folder will write
-            index_uri = home_page if depth == 0 else URIRef(f"{base_uri}{uri_rel}/{path.parts[-1]}.trig")
+            index_uri = URIRef(f"{base_uri}{uri_rel}{path.parts[-1]}.trig")
             temp_graph.add((index_uri, TREE.relation, bn_ge))
             temp_graph.add((index_uri, TREE.relation, bn_lt))
 
