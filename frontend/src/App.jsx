@@ -11,13 +11,16 @@ import { QueryCard } from './components/QueryCard';
 import { BrowseDataHead,BrowseDataBody } from './components/BrowseData';
 import { LDESClientCard } from './components/LDESClientCard';
 import { base_url } from './constants';
-import { datavisualization } from './components/datavisualization';
+import { DataVisualization } from './components/datavisualization';
 import tensorflowbrowser from './components/tensorflowbrowser';
 import customtensorflowbrowser from './components/customtensorflowbrowser';
 import TensorflowConductivity from './components/tensorflowconductivity';
 import { machineLearningCard } from './components/machineLearningCard';
 import {LSTMInference} from './components/EdgeDeepLearning'
 import {chronosCard} from './components/chronosCard';
+
+const CONDUCTIVITY_URL = "https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/conductivity/conductivity.trig";
+const PRECIPITATION_URL = "https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/precipitation/precipitation.trig";
 
 const App = () => {
 
@@ -219,7 +222,8 @@ const renderBodyContent = () => {
 
           <BodyCard
           Top={() => <ChartCardHead title="LDES Client Test"/>}
-          Bottom={LDESClientCard} />
+          Bottom={() => <div><LDESClientCard url={CONDUCTIVITY_URL} /> <LDESClientCard url={PRECIPITATION_URL} />  </div>}
+          />
         );
 
         case 'Data Visualization':
@@ -227,7 +231,8 @@ const renderBodyContent = () => {
 
           <BodyCard
           Top={() => <ChartCardHead title=" "/>}
-          Bottom={datavisualization} />
+          //Bottom={datavisualization(["289435042", "289429042", "289441042", "289423042"])} />
+          Bottom={() => <div><DataVisualization targetSensorIds={["289435042", "289429042", "289441042", "289423042"]} ldesUrl={CONDUCTIVITY_URL}/><DataVisualization targetSensorIds={["34967042"]} ldesUrl={PRECIPITATION_URL}/></div>} />
         );
 
         case 'Machine Learning':

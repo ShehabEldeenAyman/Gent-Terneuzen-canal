@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import * as tf from "@tensorflow/tfjs";
 import { DataFactory } from "n3";
-import { ldesState } from "./LDESClientCard";
+import { getLdesState } from "./LDESClientCard";
 import ReactECharts from "echarts-for-react";
 
 const { namedNode } = DataFactory;
@@ -12,7 +12,11 @@ const PREFIXES = {
   RDF: "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
 };
 
+const CONDUCTIVITY_URL = "https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/conductivity/conductivity.trig";
+const ldesState = getLdesState(CONDUCTIVITY_URL);
+
 const TARGET_SENSOR_IDS = ["289435042", "289429042", "289441042", "289423042"];
+//const TARGET_SENSOR_IDS = ["34967042"];
 const TIME_STEPS   = 1344;  // 2 weeks  @ 15-min
 const N_FUTURE     = 288;   // 72 hours @ 15-min
 const INTERVAL_MS  = 15 * 60 * 1000; // 15 minutes in milliseconds

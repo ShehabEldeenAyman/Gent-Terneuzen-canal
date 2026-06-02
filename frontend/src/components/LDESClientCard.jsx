@@ -1,103 +1,106 @@
-import React, { useEffect, useState,useRef  } from "react";
+import React, { useEffect, useState } from "react";
 import { replicateLDES } from "ldes-client";
 import { Store } from "n3";
-export const data_url_LDES_conductivity = "https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/conductivity/conductivity.trig";
-export const ldesState = {
-  count: 0,
-  status: "Initializing...",
-  dataLoaded: false,
-  store: new Store()
-};
-export function LDESClientCard() {
+
+// A global registry map to store separate states for each URL
+// This ensures data stays cached when you switch tabs
+export const ldesRegistry = {};
+
+// Helper function to get or initialize an LDES state for a specific URL
+export function getLdesState(url) {
+  if (!url) return { count: 0, status: "No URL provided", dataLoaded: false, store: new Store() };
+  
+  if (!ldesRegistry[url]) {
+    ldesRegistry[url] = {
+      count: 0,
+      status: "Initializing...",
+      dataLoaded: false,
+      store: new Store()
+    };
+  }
+  return ldesRegistry[url];
+}
+
+// 1. Accept 'url' as a parameter (prop)
+export function LDESClientCard({ url }) {
+  // Grab the specific state bucket belonging to this URL
+  const ldesState = getLdesState(url);
+
   const [status, setStatus] = useState(ldesState.status);
   const [count, setCount] = useState(ldesState.count);
   const [sampleTriples, setSampleTriples] = useState([]);
 
-  //const store = useRef(new Store()); // persists across renders
-
   useEffect(() => {
+    if (!url) return;
 
+    // If this URL has already finished streaming, skip downloading it again
     if (ldesState.dataLoaded) {
-      console.log("Data already loaded, skipping fetch.");
+      console.log(`Data already loaded for ${url}, skipping fetch.`);
       setStatus("Already Loaded");
       return;
     }
     
-      ldesState.store = new Store();
-    // We define the async logic INSIDE the effect
     const startStreaming = async () => {
-      console.log(`fetching LDES data from ${data_url_LDES_conductivity}...`);
+      console.log(`fetching LDES data from ${url}...`);
       setStatus("Fetching...");
+      ldesState.status = "Fetching...";
       
       try {
         const ldesClient = replicateLDES({
-      url: data_url_LDES_conductivity,
-      //fetchOptions: { redirect: "follow" },
-      before: new Date("2026-03-31T00:00:00Z"),
-      after: new Date("2026-01-01T00:00:00Z"),
-    });
+          url: url,
+          before: new Date("2026-03-31T00:00:00Z"),
+          after: new Date("2026-01-01T00:00:00Z"),
+        });
 
-        // Get the stream reader
         const reader = ldesClient.stream().getReader();
-
-        let memberCount = 0;
         let result = await reader.read();
-        let objects = [];
 
         while (!result.done) {
           ldesState.count++;
-          setCount(ldesState.count); // Update UI with progress
-          objects.push(result.value);
+          setCount(ldesState.count); // Update UI progress
 
           const member = result.value;
+          // Add data directly to this URL's specific store
           ldesState.store.addQuads(member.quads);
 
           if (ldesState.count <= 5) {
-            console.log(`--- Member ${ldesState.count} ---`, member);
-             const triples = member.quads.map((quad) => ({
+            const triples = member.quads.map((quad) => ({
               subject:   quad.subject.value,
               predicate: quad.predicate.value,
               object:    quad.object.value,
             }));
-              setSampleTriples(prev => [...prev, ...triples]);
-            console.table(triples); // renders as a nice table in the browser console
+            setSampleTriples(prev => [...prev, ...triples]);
           }
-          // Process your quads here if needed
-          // const quads = result.value.quads;
 
           result = await reader.read();
         }
 
-        console.log(`Finished streaming. Total members: ${ldesState.count}`);
-        //console.log("Processed objects:", objects);
-
-
+        console.log(`Finished streaming ${url}. Total members: ${ldesState.count}`);
         setStatus("Completed");
+        ldesState.status = "Completed";
+        ldesState.dataLoaded = true;
       } catch (error) {
-        console.error("Error fetching LDES data:", error);
+        console.error(`Error fetching LDES data from ${url}:`, error);
         setStatus("Error: " + error.message);
+        ldesState.status = "Error: " + error.message;
       }
     };
 
-    
     startStreaming();
-    ldesState.dataLoaded = true;
-  
 
-  }, []); // The empty array [] ensures this runs only ONCE on mount
+  }, [url]); // If the URL parameter changes, re-run this effect
 
   return (
     <div>
-          <div style={{ padding: "20px", border: "1px solid #ccc" }}>
-      <h3>LDES Sync Status</h3>
-      <p>Status: <strong>{status}</strong></p>
-      <p>Members Processed: <strong>{count}</strong></p>
+      <div style={{ padding: "20px", border: "1px solid #ccc", borderRadius: "8px" }}>
+        <h3>LDES Sync Status</h3>
+        <p style={{ wordBreak: 'break-all' }}>URL: <code style={{ background: '#f4f4f4', padding: '2px 4px' }}>{url}</code></p>
+        <p>Status: <strong>{status}</strong></p>
+        <p>Members Processed: <strong>{count}</strong></p>
+      </div>
+      <pre style={{ fontSize: '11px', overflow: 'auto', maxHeight: '300px', marginTop: '10px', background: '#fafafa', padding: '10px' }}>
+        {JSON.stringify(sampleTriples, null, 2)}
+      </pre>
     </div>
-    <pre style={{ fontSize: '11px', overflow: 'auto', maxHeight: '300px' }}>
-  {JSON.stringify(sampleTriples, null, 2)}
-</pre>
-    </div>
-
-    
   );
 }
