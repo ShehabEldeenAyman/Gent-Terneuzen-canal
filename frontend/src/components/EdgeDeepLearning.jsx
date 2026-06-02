@@ -137,14 +137,16 @@ function minMaxInverse(scaledValues) {
 
 // ── Step 4: Prepare model input window ───────────────────────────────────────
 // Shape: (1, TIME_STEPS, 1)  →  (1, 1344, 1)
+// We leave the last N_FUTURE points as held-out ground truth for comparison,
+// so the input window is series[-(TIME_STEPS + N_FUTURE) : -N_FUTURE].
 function prepareInput(series) {
-  if (series.length < TIME_STEPS) {
+  if (series.length < TIME_STEPS + N_FUTURE) {
     throw new Error(
-      `Not enough data: need ${TIME_STEPS} steps (~2 weeks) but only have ${series.length}.`
+      `Not enough data: need ${TIME_STEPS + N_FUTURE} steps (~${Math.round((TIME_STEPS + N_FUTURE) * 15 / 60 / 24)} days) but only have ${series.length}.`
     );
   }
 
-  const lastWindow = series.slice(-TIME_STEPS).map(d => d.value);
+  const lastWindow = series.slice(-(TIME_STEPS + N_FUTURE), -N_FUTURE).map(d => d.value);
   const scaled = minMaxScale(lastWindow);
   // TF.js tensor: shape [1, 1344, 1]
   return tf.tensor3d([scaled.map(v => [v])], [1, TIME_STEPS, 1]);
@@ -152,8 +154,9 @@ function prepareInput(series) {
 
 
 // ── Step 5: Build forecast timestamps ────────────────────────────────────────
+// Timestamps start from the end of the INPUT window (N_FUTURE steps before the last point).
 function buildForecastTimestamps(series) {
-  const lastTs = series[series.length - 1].ts;
+  const lastTs = series[series.length - N_FUTURE - 1].ts;
   return Array.from({ length: N_FUTURE }, (_, i) =>
     new Date(lastTs + INTERVAL_MS * (i + 1))
   );
@@ -210,12 +213,17 @@ export function LSTMInference() {
       const forecastValues = minMaxInverse(Array.from(scaledForecast));
       const forecastTimes  = buildForecastTimestamps(series);
 
-      // Keep the last 2 weeks of observed data for context on the chart
-      const lastWindowData = series.slice(-TIME_STEPS).map(d => [
+      // Observed input window (last 2 weeks before the forecast starts)
+      const lastWindowData = series.slice(-(TIME_STEPS + N_FUTURE), -N_FUTURE).map(d => [
         new Date(d.ts).toISOString(), d.value
       ]);
 
-      setForecast({ times: forecastTimes, values: forecastValues, lastWindowData });
+      // Ground truth: the real values that occurred during the forecast window
+      const actualWindowData = series.slice(-N_FUTURE).map(d => [
+        new Date(d.ts).toISOString(), d.value
+      ]);
+
+      setForecast({ times: forecastTimes, values: forecastValues, lastWindowData, actualWindowData });
       setStatus("done");
 
       // Cleanup tensors
@@ -241,7 +249,7 @@ export function LSTMInference() {
       title: { text: "72-Hour Conductivity Forecast (LSTM Seq2Seq v2)", left: "center", top: 10 },
       tooltip: { trigger: "axis", axisPointer: { type: "cross" } },
       legend: {
-        data: ["Observed (last 2 weeks)", "Forecast (72 h)"],
+        data: ["Observed (last 2 weeks)", "Forecast (72 h)", "Actual (72 h)"],
         bottom: 50
       },
       grid: { left: "5%", right: "5%", bottom: "22%", containLabel: true },
@@ -275,6 +283,13 @@ export function LSTMInference() {
           data: forecastSeries,
           showSymbol: false,
           lineStyle: { color: "#ee6666", width: 2, type: "dashed" }
+        },
+        {
+          name: "Actual (72 h)",
+          type: "line",
+          data: forecast.actualWindowData,
+          showSymbol: false,
+          lineStyle: { color: "#91cc75", width: 2 }
         }
       ]
     };
@@ -289,7 +304,8 @@ export function LSTMInference() {
       ].map(m => ({
         label: m.label,
         time: forecast.times[m.idx]?.toLocaleString(),
-        value: forecast.values[m.idx]?.toFixed(2)
+        forecast: forecast.values[m.idx]?.toFixed(2),
+        actual: forecast.actualWindowData[m.idx]?.[1]?.toFixed(2)
       }))
     : [];
 
@@ -331,8 +347,11 @@ export function LSTMInference() {
               flex: 1, padding: "12px", borderRadius: "8px",
               background: "#fff5f5", border: "1px solid #f5c2c2", textAlign: "center"
             }}>
-              <div style={{ fontSize: "12px", color: "#888" }}>{m.label}</div>
-              <div style={{ fontSize: "20px", fontWeight: "bold", color: "#ee6666" }}>{m.value}</div>
+              <div style={{ fontSize: "12px", color: "#888", marginBottom: "6px" }}>{m.label}</div>
+              <div style={{ fontSize: "11px", color: "#aaa", marginBottom: "2px" }}>Forecast</div>
+              <div style={{ fontSize: "18px", fontWeight: "bold", color: "#ee6666" }}>{m.forecast}</div>
+              <div style={{ fontSize: "11px", color: "#aaa", marginTop: "6px", marginBottom: "2px" }}>Actual</div>
+              <div style={{ fontSize: "18px", fontWeight: "bold", color: "#91cc75" }}>{m.actual ?? "—"}</div>
               <div style={{ fontSize: "11px", color: "#aaa" }}>μS/cm</div>
               <div style={{ fontSize: "10px", color: "#ccc", marginTop: "4px" }}>{m.time}</div>
             </div>
