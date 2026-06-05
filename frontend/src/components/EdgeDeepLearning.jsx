@@ -263,7 +263,9 @@ export function LSTMInference() {
         type: "value",
         name: "μS/cm",
         nameLocation: "middle",
-        nameGap: 50
+        nameGap: 50,
+        min: 13900,
+        max: 19500
       },
       dataZoom: [
         { type: "slider", xAxisIndex: 0, filterMode: "filter" },

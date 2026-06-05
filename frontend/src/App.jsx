@@ -221,7 +221,7 @@ const renderBodyContent = () => {
         return (
 
           <BodyCard
-          Top={() => <ChartCardHead title="LDES Client Test"/>}
+          Top={() => <ChartCardHead title="LDES Client"/>}
           Bottom={() => <div><LDESClientCard url={CONDUCTIVITY_URL} /> <LDESClientCard url={PRECIPITATION_URL} />  </div>}
           />
         );
