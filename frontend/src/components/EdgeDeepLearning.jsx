@@ -246,7 +246,7 @@ export function LSTMInference() {
     ]);
 
     return {
-      title: { text: "72-Hour Conductivity Forecast (LSTM Seq2Seq v2)", left: "center", top: 10 },
+      title: { text: "72-Hour Conductivity Forecast", left: "center", top: 10 },
       tooltip: { trigger: "axis", axisPointer: { type: "cross" } },
       legend: {
         data: ["Observed (last 2 weeks)", "Forecast (72 h)", "Actual (72 h)"],
