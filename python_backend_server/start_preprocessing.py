@@ -46,7 +46,7 @@ async def identify_unique_sensors():
     return sensor_set
 
 
-async def reframe_data(sensor_set):
+async def reframe_data(sensor_set, after=None, before=None):
     final_df = pd.DataFrame()
     print("Fetching and pivoting sensor data...")
 
@@ -83,7 +83,17 @@ async def reframe_data(sensor_set):
                     final_df = pd.merge(final_df, temp_df, on=['time', 'unixtime'], how='outer')
                 print(f"Added column for sensor: {column_name}")
 
+    print("All sensors fetched and pivoted successfully!")
+    print(f"Final DataFrame shape: {final_df.shape}")
+    print(final_df.head())
+
     final_df = final_df.sort_values('time').set_index('time')
+
+    if after is not None:
+        final_df = final_df[final_df.index >= pd.Timestamp(after, tz='UTC')]
+    if before is not None:
+        final_df = final_df[final_df.index <= pd.Timestamp(before, tz='UTC')]
+
     print("Finished!")
     print(final_df.head())
     return final_df

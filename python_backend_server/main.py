@@ -39,7 +39,7 @@ async def lifespan(app: FastAPI):
     print("Starting up...")
 
     app.state.sensor_set = await start_preprocessing.identify_unique_sensors()
-    app.state.final_df = await start_preprocessing.reframe_data(app.state.sensor_set)
+    app.state.final_df = await start_preprocessing.reframe_data(app.state.sensor_set, after="2025-01-01", before="2025-12-31")
     #app.state.df_featured = await start_preprocessing.featureengineering(app.state.final_df)
     #app.state.X_train, app.state.y_train, app.state.X_test, app.state.y_test = await start_preprocessing.datapreparation(app.state.df_featured)
 
