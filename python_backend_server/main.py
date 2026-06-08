@@ -124,7 +124,7 @@ async def lightGBM_visualization(request: Request):
     plt.figure(figsize=(15, 7))
     plt.plot(results['Actual'], label='Ground Truth (Actual)', color='blue', alpha=0.7)
     plt.plot(results['Forecast'], label='LightGBM Forecast', color='red', linestyle='--')
-    plt.title('Conductivity Forecast vs Ground Truth')
+    plt.title('LightGBM')
     plt.xlabel('Date')
     plt.ylabel('Conductivity (μS/cm)')
     plt.legend()
@@ -165,7 +165,7 @@ async def xgboost_visualization(request: Request):
             linestyle='--', 
             linewidth=1.5)
 
-    plt.title('Conductivity Forecast vs Ground Truth (XGBoost - Sept 2025)')
+    plt.title('XGBoost')
     plt.xlabel('Date')
     plt.ylabel('Conductivity (μS/cm)')
     plt.legend()
@@ -211,7 +211,7 @@ async def ensemble_visualization(request: Request):
     plt.plot(results['Actual'],   label='Ground Truth (Actual)', color='blue', alpha=0.7)
     plt.plot(results['Forecast'], label='Ensemble Forecast',     color='purple',  linestyle='--') # Switched to purple to denote combined forecast
 
-    plt.title('Conductivity Forecast vs Ground Truth (Ensemble)')
+    plt.title('Ensemble Forecast (LightGBM + XGBoost)')
     plt.xlabel('Date')
     plt.ylabel('Conductivity (μS/cm)')
     plt.xticks(rotation=45)
@@ -271,7 +271,7 @@ async def SVR_visualization(request: Request):
     plt.plot(app.state.y_test.index, app.state.y_test.values, label='Actual Sensor (289429042)', color='blue', alpha=0.6, linewidth=2)
     plt.plot(app.state.y_test.index, y_pred, label='SVR Prediction', color='red', linestyle='--', alpha=0.9)
 
-    plt.title('Canal Water Conductivity: Actual vs. SVR Prediction')
+    plt.title('SVR')
     plt.xlabel('Time (Unix Format)')
     plt.ylabel('Conductivity (µS/cm)')
     plt.legend()
@@ -285,32 +285,32 @@ async def SVR_visualization(request: Request):
     # 3. Return the buffer as a streaming response
     return Response(content=buf.getvalue(), media_type="image/png")
 
-@app.get("/gradient_boosting_1_sensor")
-async def GradientBoosting1Sensor_visualization(request: Request):
+# @app.get("/gradient_boosting_1_sensor")
+# async def GradientBoosting1Sensor_visualization(request: Request):
 
-    forecasts, gb_y_test, mae, r2 = await gradientBoosting1Sensor.GradientBoosting1Sensor(request.app.state.final_df)
+#     forecasts, gb_y_test, mae, r2 = await gradientBoosting1Sensor.GradientBoosting1Sensor(request.app.state.final_df)
 
-    print(f"\n24-Hour Forecast Accuracy:")
-    print(f"MAE:  {mae:.2f} µS/cm")
-    print(f"R²:   {r2:.4f}")
+#     print(f"\n24-Hour Forecast Accuracy:")
+#     print(f"MAE:  {mae:.2f} µS/cm")
+#     print(f"R²:   {r2:.4f}")
 
-    plt.figure(figsize=(14, 5))
-    plt.plot(gb_y_test.index, gb_y_test.values, label='Actual Conductivity', color='blue', linewidth=2, alpha=0.7)
-    plt.plot(gb_y_test.index, forecasts, label='Gradient Boosting Forecast', color='red', linestyle='--', linewidth=2)
-    plt.title(f'24-Hour Future Forecast for Sensor {constants.target_sensor}')
-    plt.xlabel('Time')
-    plt.ylabel('Conductivity (µS/cm)')
-    plt.legend()
-    plt.grid(True, alpha=0.3)
-    plt.tight_layout()
-    # 2. Save plot to a bytes buffer instead of plt.show()
-    buf = io.BytesIO()
-    plt.savefig(buf, format="png")
-    buf.seek(0)
-    plt.close() # Important: Close the plot to free up server memory
+#     plt.figure(figsize=(14, 5))
+#     plt.plot(gb_y_test.index, gb_y_test.values, label='Actual Conductivity', color='blue', linewidth=2, alpha=0.7)
+#     plt.plot(gb_y_test.index, forecasts, label='Gradient Boosting Forecast', color='red', linestyle='--', linewidth=2)
+#     plt.title(f'24-Hour Future Forecast for Sensor {constants.target_sensor}')
+#     plt.xlabel('Time')
+#     plt.ylabel('Conductivity (µS/cm)')
+#     plt.legend()
+#     plt.grid(True, alpha=0.3)
+#     plt.tight_layout()
+#     # 2. Save plot to a bytes buffer instead of plt.show()
+#     buf = io.BytesIO()
+#     plt.savefig(buf, format="png")
+#     buf.seek(0)
+#     plt.close() # Important: Close the plot to free up server memory
 
-    # 3. Return the buffer as a streaming response
-    return Response(content=buf.getvalue(), media_type="image/png")
+#     # 3. Return the buffer as a streaming response
+#     return Response(content=buf.getvalue(), media_type="image/png")
 
 # @app.get("/gradient_boosting_multiple_sensors")
 # async def GradientBoostingMultipleSensors_visualization(request: Request):
@@ -365,7 +365,7 @@ async def comparison_visualization(request: Request):
     plt.plot(results['LightGBM'], label='LightGBM Forecast',     color='red',  linestyle='--')
     plt.plot(results['XGBoost'],  label='XGBoost Forecast',      color='green', linestyle='--')
 
-    plt.title('Conductivity Forecast vs Ground Truth')
+    plt.title('Comparison of LightGBM and XGBoost Forecasts')
     plt.xlabel('Date')
     plt.ylabel('Conductivity (μS/cm)')
     plt.xticks(rotation=45)
