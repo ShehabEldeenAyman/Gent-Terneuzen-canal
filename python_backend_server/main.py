@@ -357,15 +357,36 @@ async def comparison_visualization(request: Request):
             request.app.state.predictions_xgb, request.app.state.y_test
         )
 
-    # 3. Safe to compute comparison now
-    results = Comparison.comparisonforecast(request.app.state.forecast, request.app.state.predictions_xgb, request.app.state.y_test)
+    # 3. Fallback: Generate Random Forest forecast if missing
+    if not hasattr(request.app.state, 'predictions_rf'):
+        request.app.state.predictions_rf, request.app.state.mae_rf, request.app.state.rmse_rf, request.app.state.r2_rf = await RandomForest.RandomForest(
+            request.app.state.X_train, request.app.state.y_train, request.app.state.X_test, request.app.state.y_test
+        )
 
+    # 4. Fallback: Generate SVR forecast if missing
+    if not hasattr(request.app.state, 'predictions_svr'):
+        request.app.state.predictions_svr, request.app.state.mae_svr, request.app.state.rmse_svr, request.app.state.r2_svr = await SupportVectorMachine.SupportVectorMachine(
+            request.app.state.X_train, request.app.state.y_train, request.app.state.X_test, request.app.state.y_test
+        )
+
+    # 5. Build data frame combining all models to easily map lines
+    results = pd.DataFrame({
+        'Actual':       request.app.state.y_test,
+        'LightGBM':     request.app.state.forecast,
+        'XGBoost':      request.app.state.predictions_xgb,
+        'RandomForest': request.app.state.predictions_rf,
+        'SVR':          request.app.state.predictions_svr
+    }, index=request.app.state.y_test.index)
+
+    # 6. Generate Multi-Model Comparison Plot
     plt.figure(figsize=(15, 7))
-    plt.plot(results['Actual'],   label='Ground Truth (Actual)', color='blue', alpha=0.7)
-    plt.plot(results['LightGBM'], label='LightGBM Forecast',     color='red',  linestyle='--')
-    plt.plot(results['XGBoost'],  label='XGBoost Forecast',      color='green', linestyle='--')
+    plt.plot(results['Actual'],       label='Ground Truth (Actual)',  color='blue',   alpha=0.7, linewidth=2)
+    plt.plot(results['LightGBM'],     label='LightGBM Forecast',      color='red',    linestyle='--')
+    plt.plot(results['XGBoost'],      label='XGBoost Forecast',       color='green',  linestyle='--')
+    plt.plot(results['RandomForest'], label='Random Forest Forecast', color='orange', linestyle='--')
+    plt.plot(results['SVR'],          label='SVR Forecast',           color='purple', linestyle='--')
 
-    plt.title('Comparison of LightGBM and XGBoost Forecasts')
+    plt.title('Multi-Model Conductivity Forecast Comparison')
     plt.xlabel('Date')
     plt.ylabel('Conductivity (μS/cm)')
     plt.xticks(rotation=45)
