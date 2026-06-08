@@ -114,31 +114,31 @@ async def plot_sensor_data(request: Request):
 async def lightGBM_visualization(request: Request):
     app.state.model = await lightGBM.lightGBM_train(app.state.X_train, app.state.y_train, app.state.X_test, app.state.y_test)
     app.state.forecast, app.state.mae, app.state.error = await lightGBM.lightGBM_forecast_bias(app.state.model, app.state.X_test, app.state.y_test)
-    # 1. Create a DataFrame for easy plotting
+
     results = pd.DataFrame({
-        'Actual': request.app.state.y_test,
+        'Actual':   request.app.state.y_test,
         'Forecast': request.app.state.forecast
     }, index=request.app.state.y_test.index)
 
-    # 2. Plotting a 7-day window to see the detail
-    plt.figure(figsize=(15, 7))
-    plt.plot(results['Actual'].iloc[:2688], label='Ground Truth (Actual)', color='blue', alpha=0.7)
-    # 672 rows = 7 days * 24 hours * 4 readings/hour
-    plt.plot(results['Forecast'].iloc[:2688], label='LightGBM Forecast', color='red', linestyle='--')
+    plot_start = pd.Timestamp("2025-12-28", tz="UTC")
+    plot_end   = pd.Timestamp("2025-12-31", tz="UTC")
+    results    = results[(results.index >= plot_start) & (results.index <= plot_end)]
 
-    plt.title('Conductivity Forecast vs Ground Truth (Month of '' 2025)')
+    plt.figure(figsize=(15, 7))
+    plt.plot(results['Actual'],   label='Ground Truth (Actual)', color='blue', alpha=0.7)
+    plt.plot(results['Forecast'], label='LightGBM Forecast',     color='red',  linestyle='--')
+
+    plt.title('Conductivity Forecast vs Ground Truth (Dec 28–31 2025)')
     plt.xlabel('Date')
     plt.ylabel('Conductivity (μS/cm)')
     plt.legend()
     plt.grid(True, alpha=0.3)
 
-    # 2. Save plot to a bytes buffer instead of plt.show()
     buf = io.BytesIO()
     plt.savefig(buf, format="png")
     buf.seek(0)
-    plt.close() # Important: Close the plot to free up server memory
+    plt.close()
 
-    # 3. Return the buffer as a streaming response
     return Response(content=buf.getvalue(), media_type="image/png")
 
 @app.get("/xgboost_forecast")
@@ -357,7 +357,7 @@ async def chronos2forecast_visualization(request: Request):
     df = request.app.state.chronos_df.copy()
     
     # 2. Run the forecast pipeline
-    forecast_df = await chronos2forecast.chronos2forecast(df)
+    forecast_df = await chronos2forecast.chronos2forecast(df, forecast_as_of="2025-12-30")
 
     # 3. Ensure timestamps are in datetime format to prevent math errors
     df["timestamp"] = pd.to_datetime(df["timestamp"])
@@ -371,18 +371,14 @@ async def chronos2forecast_visualization(request: Request):
     forecast_start_time = forecast_df["timestamp"].min()
     
     # --- VISUALIZATION TIME FRAME WINDOW ---
-    # We pull the history close (last 3 days) so it doesn't squash the 24h prediction window
-    history_lookback_time = forecast_start_time - pd.Timedelta(days=3)
-    
-    # Filter historical data to only include this zoomed-in timeframe
-    recent_history_df = df[df["timestamp"] >= history_lookback_time]
+    history_start = pd.Timestamp("2025-12-14", tz="UTC")
+    recent_history_df = df[df["timestamp"] >= history_start]
     # ---------------------------------------
 
     # 6. Plotting the results
-    # We increase the width to 16 inches to give the forecasting section horizontal breathing room
-    fig, ax = plt.subplots(figsize=(16, 6))
+    fig, ax = plt.subplots(figsize=(26, 6))
 
-    # Plot the 3-day historical window of the average values
+    # Plot the historical window of the average values
     ax.plot(
         recent_history_df["timestamp"], 
         recent_history_df["target"], 
@@ -411,27 +407,28 @@ async def chronos2forecast_visualization(request: Request):
         label="80% Prediction Interval"
     )
 
-    # 7. Formatting X-Axis Dates so they remain legible and well-spaced
-    # Force a tick mark to appear at 12-hour intervals across the 4-day span (3 days history + 1 day forecast)
-    ax.xaxis.set_major_locator(mdates.HourLocator(byhour=[0, 12]))  
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d %H:%M')) 
-    
-    # Clean up labels: rotate 30 degrees and align their right side to the tick marks
-    plt.xticks(rotation=30, ha='right')  
+    # 7. Cleaner x-axis: one label per day, noon marked with a minor tick only
+    ax.xaxis.set_major_locator(mdates.DayLocator(interval=1))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))   # e.g. "Dec 14"
+    ax.xaxis.set_minor_locator(mdates.HourLocator(byhour=[12]))   # tick at noon, no label
+
+    ax.grid(True, which='major', linestyle=':', alpha=0.6)
+    ax.grid(True, which='minor', linestyle=':', alpha=0.25)       # subtle noon gridline
+
+    plt.xticks(rotation=45, ha='right')
 
     # 8. Add chart details
-    plt.title("Chronos-2 Forecast (Zoomed High-Resolution View)", fontsize=14, fontweight='bold')
+    plt.title("Chronos-2 Forecast", fontsize=14, fontweight='bold')
     plt.xlabel("Date & Time", fontsize=12)
     plt.ylabel("Averaged Conductivity", fontsize=12)
     plt.legend(loc="upper left", fontsize=10)
-    plt.grid(True, linestyle=":", alpha=0.6)
-    plt.tight_layout() # Prevents labels from getting clipped off at the bottom edges
+    plt.tight_layout()
     
     # 9. Save plot to an in-memory bytes buffer
     buf = io.BytesIO()
     plt.savefig(buf, format="png", dpi=100)
     buf.seek(0)
-    plt.close(fig) # Explicitly clear server memory
+    plt.close(fig)
 
     # 10. Return the buffer as a streaming image response
     return Response(content=buf.getvalue(), media_type="image/png")
