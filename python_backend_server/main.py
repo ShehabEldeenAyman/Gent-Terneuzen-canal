@@ -53,7 +53,7 @@ async def lifespan(app: FastAPI):
     app.state.X_train, app.state.y_train = await start_preprocessing.featureengineering(train_df, fit=True)
 
     # Prepend last 2880 rows of train to test so lag features at the boundary aren't NaN
-    max_lag = 2880
+    max_lag = 2881
     context_df = pd.concat([train_df.iloc[-max_lag:], test_df])
     X_test_ctx, y_test_ctx = await start_preprocessing.featureengineering(context_df, fit=False)
     # Trim off the prepended context rows, keep only true test period
@@ -114,31 +114,29 @@ async def plot_sensor_data(request: Request):
 async def lightGBM_visualization(request: Request):
     app.state.model = await lightGBM.lightGBM_train(app.state.X_train, app.state.y_train, app.state.X_test, app.state.y_test)
     app.state.forecast, app.state.mae, app.state.error = await lightGBM.lightGBM_forecast_bias(app.state.model, app.state.X_test, app.state.y_test)
-
+    # 1. Create a DataFrame for easy plotting
     results = pd.DataFrame({
-        'Actual':   request.app.state.y_test,
+        'Actual': request.app.state.y_test,
         'Forecast': request.app.state.forecast
     }, index=request.app.state.y_test.index)
 
-    plot_start = pd.Timestamp("2025-12-28", tz="UTC")
-    plot_end   = pd.Timestamp("2025-12-31", tz="UTC")
-    results    = results[(results.index >= plot_start) & (results.index <= plot_end)]
-
+    # 2. Plotting a 7-day window to see the detail
     plt.figure(figsize=(15, 7))
-    plt.plot(results['Actual'],   label='Ground Truth (Actual)', color='blue', alpha=0.7)
-    plt.plot(results['Forecast'], label='LightGBM Forecast',     color='red',  linestyle='--')
-
-    plt.title('Conductivity Forecast vs Ground Truth (Dec 28–31 2025)')
+    plt.plot(results['Actual'], label='Ground Truth (Actual)', color='blue', alpha=0.7)
+    plt.plot(results['Forecast'], label='LightGBM Forecast', color='red', linestyle='--')
+    plt.title('Conductivity Forecast vs Ground Truth')
     plt.xlabel('Date')
     plt.ylabel('Conductivity (μS/cm)')
     plt.legend()
     plt.grid(True, alpha=0.3)
 
+    # 2. Save plot to a bytes buffer instead of plt.show()
     buf = io.BytesIO()
     plt.savefig(buf, format="png")
     buf.seek(0)
-    plt.close()
+    plt.close() # Important: Close the plot to free up server memory
 
+    # 3. Return the buffer as a streaming response
     return Response(content=buf.getvalue(), media_type="image/png")
 
 @app.get("/xgboost_forecast")
@@ -155,15 +153,15 @@ async def xgboost_visualization(request: Request):
     plt.figure(figsize=(15, 7))
 
     # Plot Actual Data
-    plt.plot(results_xgb['Actual'].iloc[:2688], 
+    plt.plot(results_xgb['Actual'], 
             label='Ground Truth (Actual)', 
             color='blue', 
             alpha=0.6)
 
     # Plot XGBoost Forecast
-    plt.plot(results_xgb['XGBoost_Forecast'].iloc[:2688], 
+    plt.plot(results_xgb['XGBoost_Forecast'], 
             label='XGBoost Forecast', 
-            color='green',           # Using Green to distinguish from LightGBM's Red
+            color='red',           # Using Green to distinguish from LightGBM's Red
             linestyle='--', 
             linewidth=1.5)
 
@@ -184,19 +182,36 @@ async def xgboost_visualization(request: Request):
 
 @app.get("/ensemble_forecast")
 async def ensemble_visualization(request: Request):
+    # 1. Fallback: Generate LightGBM forecast if missing
+    if not hasattr(request.app.state, 'forecast'):
+        request.app.state.model = await lightGBM.lightGBM_train(
+            request.app.state.X_train, request.app.state.y_train, request.app.state.X_test, request.app.state.y_test
+        )
+        request.app.state.forecast, request.app.state.mae, request.app.state.error = await lightGBM.lightGBM_forecast_bias(
+            request.app.state.model, request.app.state.X_test, request.app.state.y_test
+        )
 
-    app.state.final_ensemble, app.state.mae_ensemble = Ensemble.ensemble(app.state.forecast, app.state.predictions_xgb, app.state.y_test)
+    # 2. Fallback: Generate XGBoost forecast if missing
+    if not hasattr(request.app.state, 'predictions_xgb'):
+        request.app.state.predictions_xgb = await xgboost_model.xgboost_train(
+            request.app.state.X_train, request.app.state.y_train, request.app.state.X_test, request.app.state.y_test
+        )
+
+    # 3. Safe to compute ensemble now
+    request.app.state.final_ensemble, request.app.state.mae_ensemble = Ensemble.ensemble(
+        request.app.state.forecast, request.app.state.predictions_xgb, request.app.state.y_test
+    )
 
     results = pd.DataFrame({
-        'Actual':   app.state.y_test.values[:2688],
-        'Forecast': app.state.final_ensemble[:2688]
-    }, index=app.state.y_test.index[:2688])
+        'Actual':   request.app.state.y_test.values[:2688],
+        'Forecast': request.app.state.final_ensemble[:2688]
+    }, index=request.app.state.y_test.index[:2688])
 
     plt.figure(figsize=(15, 7))
     plt.plot(results['Actual'],   label='Ground Truth (Actual)', color='blue', alpha=0.7)
-    plt.plot(results['Forecast'], label='LightGBM Forecast',     color='red',  linestyle='--')
+    plt.plot(results['Forecast'], label='Ensemble Forecast',     color='purple',  linestyle='--') # Switched to purple to denote combined forecast
 
-    plt.title('Conductivity Forecast vs Ground Truth')
+    plt.title('Conductivity Forecast vs Ground Truth (Ensemble)')
     plt.xlabel('Date')
     plt.ylabel('Conductivity (μS/cm)')
     plt.xticks(rotation=45)
@@ -204,15 +219,12 @@ async def ensemble_visualization(request: Request):
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
     
-    # 2. Save plot to a bytes buffer instead of plt.show()
     buf = io.BytesIO()
     plt.savefig(buf, format="png")
     buf.seek(0)
-    plt.close() # Important: Close the plot to free up server memory
+    plt.close()
 
-    # 3. Return the buffer as a streaming response
     return Response(content=buf.getvalue(), media_type="image/png")
-
 @app.get("/random_forest")
 async def random_forest_visualization(request: Request):
 
@@ -226,9 +238,9 @@ async def random_forest_visualization(request: Request):
 
     # 4. Actual vs Predicted plot
     fig, ax = plt.subplots(figsize=(14, 4))
-    ax.plot(app.state.y_test.index, app.state.y_test.values,  label='Actual',    alpha=0.8)
-    ax.plot(app.state.y_test.index, app.state.predictions_rf,label='Predicted', alpha=0.8, linestyle='--')
-    ax.set_title(f'Random Forest – Actual vs Predicted: {constants.target_sensor}')
+    ax.plot(app.state.y_test.index, app.state.y_test.values,  label='Actual',    alpha=0.8,color='blue')
+    ax.plot(app.state.y_test.index, app.state.predictions_rf,label='Predicted', alpha=0.8, linestyle='--', color='red')
+    ax.set_title(f'Random Forest')
     ax.set_xlabel('Time')
     ax.legend()
     plt.tight_layout()
@@ -300,34 +312,53 @@ async def GradientBoosting1Sensor_visualization(request: Request):
     # 3. Return the buffer as a streaming response
     return Response(content=buf.getvalue(), media_type="image/png")
 
-@app.get("/gradient_boosting_multiple_sensors")
-async def GradientBoostingMultipleSensors_visualization(request: Request):
+# @app.get("/gradient_boosting_multiple_sensors")
+# async def GradientBoostingMultipleSensors_visualization(request: Request):
 
-    target_forecasts, y_test, mae, r2 = await gradientBoostingMultipleSensors.gradientBoostingMultipleSensors(request.app.state.final_df)
-    print(f"\nMultivariate 24-Hour Forecast Accuracy (Sensor {constants.target_sensor}):")
-    print(f"MAE:  {mae:.2f} µS/cm")
-    print(f"R²:   {r2:.4f}")
+#     target_forecasts, y_test, mae, r2 = await gradientBoostingMultipleSensors.gradientBoostingMultipleSensors(request.app.state.final_df)
+#     print(f"\nMultivariate 24-Hour Forecast Accuracy (Sensor {constants.target_sensor}):")
+#     print(f"MAE:  {mae:.2f} µS/cm")
+#     print(f"R²:   {r2:.4f}")
 
-    plt.figure(figsize=(14, 5))
-    plt.plot(y_test.index, y_test[constants.target_sensor].values, label='Actual Conductivity', color='blue', linewidth=2, alpha=0.7)
-    plt.plot(y_test.index, target_forecasts, label='Multivariate GB Forecast', color='red', linestyle='--', linewidth=2)
-    plt.title(f'24-Hour Future Forecast for Sensor {constants.target_sensor} (Using All Sensor Data)')
-    plt.xlabel('Time')
-    plt.ylabel('Conductivity (µS/cm)')
-    plt.legend()
-    plt.grid(True, alpha=0.3)
-    plt.tight_layout()
-# 2. Save plot to a bytes buffer instead of plt.show()
-    buf = io.BytesIO()
-    plt.savefig(buf, format="png")
-    buf.seek(0)
-    plt.close() # Important: Close the plot to free up server memory
-    return Response(content=buf.getvalue(), media_type="image/png")
+#     plt.figure(figsize=(14, 5))
+#     plt.plot(y_test.index, y_test[constants.target_sensor].values, label='Actual Conductivity', color='blue', linewidth=2, alpha=0.7)
+#     plt.plot(y_test.index, target_forecasts, label='Multivariate GB Forecast', color='red', linestyle='--', linewidth=2)
+#     plt.title(f'24-Hour Future Forecast for Sensor {constants.target_sensor} (Using All Sensor Data)')
+#     plt.xlabel('Time')
+#     plt.ylabel('Conductivity (µS/cm)')
+#     plt.legend()
+#     plt.grid(True, alpha=0.3)
+#     plt.tight_layout()
+# # 2. Save plot to a bytes buffer instead of plt.show()
+#     buf = io.BytesIO()
+#     plt.savefig(buf, format="png")
+#     buf.seek(0)
+#     plt.close() # Important: Close the plot to free up server memory
+#     return Response(content=buf.getvalue(), media_type="image/png")
 
 #####################################################################################################
 @app.get("/comparison_forecast")
 async def comparison_visualization(request: Request):
-    results = Comparison.comparisonforecast(app.state.forecast, app.state.predictions_xgb, app.state.y_test)
+    # 1. Fallback: Generate LightGBM forecast if missing
+    if not hasattr(request.app.state, 'forecast'):
+        request.app.state.model = await lightGBM.lightGBM_train(
+            request.app.state.X_train, request.app.state.y_train, request.app.state.X_test, request.app.state.y_test
+        )
+        request.app.state.forecast, request.app.state.mae, request.app.state.error = await lightGBM.lightGBM_forecast_bias(
+            request.app.state.model, request.app.state.X_test, request.app.state.y_test
+        )
+
+    # 2. Fallback: Generate XGBoost forecast if missing
+    if not hasattr(request.app.state, 'predictions_xgb'):
+        request.app.state.predictions_xgb = await xgboost_model.xgboost_train(
+            request.app.state.X_train, request.app.state.y_train, request.app.state.X_test, request.app.state.y_test
+        )
+        request.app.state.mae_xgb = await xgboost_model.xgboost_forecast_bias(
+            request.app.state.predictions_xgb, request.app.state.y_test
+        )
+
+    # 3. Safe to compute comparison now
+    results = Comparison.comparisonforecast(request.app.state.forecast, request.app.state.predictions_xgb, request.app.state.y_test)
 
     plt.figure(figsize=(15, 7))
     plt.plot(results['Actual'],   label='Ground Truth (Actual)', color='blue', alpha=0.7)
@@ -342,13 +373,11 @@ async def comparison_visualization(request: Request):
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
     
-    # 2. Save plot to a bytes buffer instead of plt.show()
     buf = io.BytesIO()
     plt.savefig(buf, format="png")
     buf.seek(0)
-    plt.close() # Important: Close the plot to free up server memory
+    plt.close()
 
-    # 3. Return the buffer as a streaming response
     return Response(content=buf.getvalue(), media_type="image/png")
 #####################################################################################################
 @app.get("/chronos2forecast")

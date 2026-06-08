@@ -198,11 +198,19 @@ async def featureengineering(final_df, fit=True):
     return X, y       
 
 async def datapreparation(final_df):
-    train_df = final_df[:'2025-06-30']
-    test_df  = final_df['2025-07-01':'2025-07-30']
+    # 1. Enforce strict 15-min frequency and interpolate gaps
+    # This ensures dropna() won't wipe out your test set due to missing sensor readings!
+    df = final_df.resample('15min').interpolate(method='time')
+    df = df.bfill().ffill()
+
+    # 2. Perform the split
+    train_df = df[:'2025-12-27']
+    test_df  = df['2025-12-28':'2025-12-31']
+    
     print("Train conductivity range:", train_df[constants.target_sensor].min(), "→", train_df[constants.target_sensor].max())
     print("Test  conductivity range:", test_df[constants.target_sensor].min(),  "→", test_df[constants.target_sensor].max())
-    return train_df, test_df              # <-- returns raw DataFrames with ALL columns
+    
+    return train_df, test_df
 #####################################################################################################
 async def prepare_for_chronos(final_df, target_sensor=None):
     df = final_df.copy()
