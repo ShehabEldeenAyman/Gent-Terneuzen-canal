@@ -209,7 +209,7 @@ async def ensemble_visualization(request: Request):
 
     plt.figure(figsize=(15, 7))
     plt.plot(results['Actual'],   label='Ground Truth (Actual)', color='blue', alpha=0.7)
-    plt.plot(results['Forecast'], label='Ensemble Forecast',     color='purple',  linestyle='--') # Switched to purple to denote combined forecast
+    plt.plot(results['Forecast'], label='Ensemble Forecast',     color='red',  linestyle='--') # Switched to purple to denote combined forecast
 
     plt.title('Ensemble Forecast (LightGBM + XGBoost)')
     plt.xlabel('Date')

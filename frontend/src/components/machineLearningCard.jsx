@@ -40,16 +40,16 @@ const GRAPH_ITEMS = [
     apiUrl: `${backendBase}/SVR`,
   },
 
-              {
-    id: "gradient_boosting_1_sensor",
-    label: "gradient boosting 1 sensor",
-    apiUrl: `${backendBase}/gradient_boosting_1_sensor`,
-  },
-                {
-    id: "gradient_boosting_multiple_sensor",
-    label: "gradient boosting multiple sensors",
-    apiUrl: `${backendBase}/gradient_boosting_multiple_sensors`,
-  },
+  //             {
+  //   id: "gradient_boosting_1_sensor",
+  //   label: "gradient boosting 1 sensor",
+  //   apiUrl: `${backendBase}/gradient_boosting_1_sensor`,
+  // },
+  //               {
+  //   id: "gradient_boosting_multiple_sensor",
+  //   label: "gradient boosting multiple sensors",
+  //   apiUrl: `${backendBase}/gradient_boosting_multiple_sensors`,
+  // },
               {
     id: "comparison_forecast",
     label: "Comparison Forecast",
