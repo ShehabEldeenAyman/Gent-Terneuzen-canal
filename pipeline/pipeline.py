@@ -98,7 +98,7 @@ def step_7_transform_ldes(input_path,property_name="placeholder"):
 
 def main():
     # Configuration
-    GRAPH_URI = "http://example.com/Gent-Terneuzen/precipitation"
+    GRAPH_URI = "http://example.com/Gent-Terneuzen/conductivity"
     TSS_GRAPH_URI = "http://example.com/Gent-Terneuzen-TSS"
     
     TIMESERIES_TTL = "../data/timeseries.ttl"
@@ -116,8 +116,8 @@ def main():
     # Execution Pipeline
     setup_environment()
     if from_the_beginning:
-        #step_1_fetch_data(START_DATE, current_datetime,timeseriesgroup_ids = ["289435042", "289423042", "289429042", "289441042"])
-        step_1_fetch_data(START_DATE, current_datetime,timeseriesgroup_ids = ["34967042"])
+        step_1_fetch_data(START_DATE, current_datetime,timeseriesgroup_ids = ["289435042", "289423042", "289429042", "289441042"])
+        #step_1_fetch_data(START_DATE, current_datetime,timeseriesgroup_ids = ["34967042"])
         step_2_preprocess()
         step_3_rml_mapping()
         step_4_ingest_virtuoso(TIMESERIES_TTL, GRAPH_URI, delete_existing=True)
