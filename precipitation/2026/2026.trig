@@ -1,0 +1,48 @@
+@prefix ldes: <https://w3id.org/ldes#> .
+@prefix tree: <https://w3id.org/tree#> .
+@prefix tss: <https://w3id.org/tss#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+{
+    <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/precipitation/2026/2026.trig> tree:relation _:N097b88fe8a294354af689063cac809a1,
+            _:N100ae75a96764c36a862ee1dc965affd,
+            _:N6ff8b0761c3e411980507273b78cdf23,
+            _:Nab938c8adaf24aa4ba8b077be52b841c,
+            _:Ndb5c520a723b45219feb5a9ac1a6f997,
+            _:Ne39ac267fdd9480ab88a47ab776ab900 .
+
+    <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/precipitation/precipitation#eventstream> a ldes:EventStream ;
+        ldes:timestampPath tss:from ;
+        tree:view <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/precipitation/precipitation.trig> .
+
+    _:N097b88fe8a294354af689063cac809a1 a tree:LessThanRelation ;
+        tree:node <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/precipitation/2026/02/02.trig> ;
+        tree:path tss:from ;
+        tree:value "2026-03-01T00:00:00+00:00"^^xsd:dateTime .
+
+    _:N100ae75a96764c36a862ee1dc965affd a tree:GreaterThanOrEqualToRelation ;
+        tree:node <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/precipitation/2026/02/02.trig> ;
+        tree:path tss:from ;
+        tree:value "2026-02-01T00:00:00+00:00"^^xsd:dateTime .
+
+    _:N6ff8b0761c3e411980507273b78cdf23 a tree:GreaterThanOrEqualToRelation ;
+        tree:node <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/precipitation/2026/03/03.trig> ;
+        tree:path tss:from ;
+        tree:value "2026-03-01T00:00:00+00:00"^^xsd:dateTime .
+
+    _:Nab938c8adaf24aa4ba8b077be52b841c a tree:LessThanRelation ;
+        tree:node <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/precipitation/2026/01/01.trig> ;
+        tree:path tss:from ;
+        tree:value "2026-02-01T00:00:00+00:00"^^xsd:dateTime .
+
+    _:Ndb5c520a723b45219feb5a9ac1a6f997 a tree:LessThanRelation ;
+        tree:node <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/precipitation/2026/03/03.trig> ;
+        tree:path tss:from ;
+        tree:value "2026-04-01T00:00:00+00:00"^^xsd:dateTime .
+
+    _:Ne39ac267fdd9480ab88a47ab776ab900 a tree:GreaterThanOrEqualToRelation ;
+        tree:node <https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/precipitation/2026/01/01.trig> ;
+        tree:path tss:from ;
+        tree:value "2026-01-01T00:00:00+00:00"^^xsd:dateTime .
+}
+
