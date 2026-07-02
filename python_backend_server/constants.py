@@ -1,6 +1,6 @@
 #VIRTUOSO_URL = "http://localhost:8890/sparql-graph-crud"
 VIRTUOSO_URL = "http://localhost:8890/sparql"
-GRAPH_URI = "http://example.com/Gent-Terneuzen/conductivity"
+GRAPH_URI = "http://example.com/Gent-Terneuzen/"
 USERNAME = "dba"
 PASSWORD = "dba"
 AUTH  = (USERNAME,PASSWORD)

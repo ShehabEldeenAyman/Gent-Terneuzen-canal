@@ -50,7 +50,7 @@ def create_sensor_set(graph):
     print(f'{len(sensor_set)} Sensors identified successfully.')
     return sensor_set
 
-def create_tss(sensor_set, graph):
+def create_tss(sensor_set, graph,observed_parameter="unknown"):
     """Transforms sensor observations into the Time Series Snippets (TSS) format."""
     final_graph = Graph()
 
@@ -141,7 +141,7 @@ def create_tss(sensor_set, graph):
         
         final_graph.add((template, RDF.type, TSS.PointTemplate))
         final_graph.add((template, SOSA.madeBySensor, sensor))
-        final_graph.add((template, SOSA.observedProperty, WATERINFO.Conductivity))
+        final_graph.add((template, SOSA.observedProperty, WATERINFO[f"{observed_parameter}"]))
     
     print("TSS graph creation complete.")
     return final_graph

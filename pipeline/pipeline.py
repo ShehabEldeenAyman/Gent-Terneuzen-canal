@@ -48,12 +48,12 @@ def step_4_ingest_virtuoso(ttl_timeseries, graph_uri,delete_existing=True):
     ingest.upload_graph(ttl_timeseries, graph_uri)
     #ingest.upload_graph(ttl_stations, graph_uri)
 
-def step_5_rdf2tss(input_path, output_path):
+def step_5_rdf2tss(input_path, output_path,observed_parameter="placeholder"):
     print("--- Step 5: RDF2TSS ---")
     import RDF2TSS_V2
     original_graph = RDF2TSS_V2.load_graph(input_path)
     sensor_set = RDF2TSS_V2.create_sensor_set(original_graph)
-    tss_graph = RDF2TSS_V2.create_tss(sensor_set, original_graph)
+    tss_graph = RDF2TSS_V2.create_tss(sensor_set, original_graph,observed_parameter)
     RDF2TSS_V2.save_graph(output_path, tss_graph)
 
 def step_6_ingest_tss_virtuoso(tss_path, tss_graph_uri):
@@ -124,7 +124,7 @@ def main():
         
     #catch_up(END_DATE)
 
-    step_5_rdf2tss(TIMESERIES_TTL, TSS_GRAPH_TTL)
+    step_5_rdf2tss(TIMESERIES_TTL, TSS_GRAPH_TTL,"conductivity")
     ##step_6_ingest_tss_virtuoso(TSS_GRAPH_TTL, TSS_GRAPH_URI)          
     step_7_transform_ldes(TSS_GRAPH_TTL, property_name="precipitation")
 
