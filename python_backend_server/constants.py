@@ -8,7 +8,17 @@ AUTH  = (USERNAME,PASSWORD)
 params  = {'graph': GRAPH_URI}
 headers = {'Accept': 'text/turtle'}
 
-sensors = ['289435042', '289423042', '289429042', '289441042']
+conductivity_stations = ["HIS_BWO_VITO_IOW50", "HIS_BWO_VITO_IOW48", "BWO_VITO_IOW49", "BWO_VITO_IOW51"]
+conductivity_sensors = ['289435042', '289423042', '289429042', '289441042']
+
+waterlevel_stations = ["kgt04a-1066"]
+waterlevel_sensors = ['98524010']
+
 colors  = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728']
 
 target_sensor = '289441042'
+
+################################################################
+
+
+

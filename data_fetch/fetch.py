@@ -1,20 +1,25 @@
 from pywaterinfo import Waterinfo
 import pandas as pd
 from datetime import datetime, timezone
+import sys; sys.path.append('..')  # Adds the parent directory
+
+import python_backend_server.constants as constants
 
 hic = Waterinfo("hic", cache=True)
 vmm = Waterinfo("vmm", cache=True)
 
 
-def fetch_stations():
-    station_no = ["HIS_BWO_VITO_IOW50", "HIS_BWO_VITO_IOW48", "BWO_VITO_IOW49", "BWO_VITO_IOW51"]
+def fetch_stations(station_no,parameter_name="placeholder"):
+    
     frames = []
     print("Station fetching started.")
     for station in station_no:
-        station_data = vmm.get_timeseries_list(station_no=station)
-        frames.append(pd.DataFrame(station_data))
+        station_data_hic = hic.get_timeseries_list(station_no=station)
+        station_data_vmm = vmm.get_timeseries_list(station_no=station)
+        frames.append(pd.DataFrame(station_data_hic))
+        frames.append(pd.DataFrame(station_data_vmm))
     df = pd.concat(frames, ignore_index=True)
-    df.to_csv("../data/stations.csv", index=False)
+    df.to_csv(f"../data/{parameter_name}_stations.csv", index=False)
     print("Station fetching finished & file saved.")
 
 def fetch_timeseries(START_DATE, END_DATE,timeseriesgroup_ids):
@@ -35,8 +40,8 @@ def main():
     START_DATE = "2021-01-01T00:00:00Z"
     END_DATE = "2026-03-31T23:59:59Z"
     current_datetime = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    fetch_stations()
-    fetch_timeseries(START_DATE, current_datetime)
+    fetch_stations(constants.waterlevel_stations, "waterlevel")
+    #fetch_timeseries(START_DATE, current_datetime,constants.conductivity_sensors)
 
 if __name__ == "__main__":
     main()
