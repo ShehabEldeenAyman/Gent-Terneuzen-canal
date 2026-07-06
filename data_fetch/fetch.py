@@ -22,7 +22,7 @@ def fetch_stations(station_no,parameter_name="placeholder"):
     df.to_csv(f"../data/{parameter_name}_stations.csv", index=False)
     print("Station fetching finished & file saved.")
 
-def fetch_timeseries(START_DATE, END_DATE,timeseriesgroup_ids):
+def fetch_timeseries(START_DATE, END_DATE,timeseriesgroup_ids,parameter_name="placeholder"):
     #timeseriesgroup_ids = ["289435042", "289423042", "289429042", "289441042"]
     frames = []
     print("Timeseries fetching started.")
@@ -32,8 +32,8 @@ def fetch_timeseries(START_DATE, END_DATE,timeseriesgroup_ids):
         )
         frames.append(pd.DataFrame(group_id_data))
     df = pd.concat(frames, ignore_index=True)
-    df.to_csv("../data/timeseries.csv", index=False)
-    print("Timeseries fetching finished & file saved.")
+    df.to_csv(f"../data/{parameter_name}.csv", index=False)
+    print(f"{parameter_name} Timeseries fetching finished & file saved.")
     return (END_DATE)
 
 def main():

@@ -109,6 +109,7 @@ def main():
     TSS_GRAPH_TTL = "../data/TSSgraph.ttl"
 
     START_DATE = "2021-01-01T00:00:00Z"
+    TEST_END_DATE = "2021-01-02T00:00:00Z"
     END_DATE = "2026-03-31T23:59:59Z"
 
 
@@ -118,8 +119,12 @@ def main():
     from_the_beginning = True  # Set to False to skip data fetching and preprocessing
     # Execution Pipeline
     setup_environment()
-    if from_the_beginning:
-        step_1_fetch_data(START_DATE, current_datetime,)
+    #if from_the_beginning:
+
+    for key,value in constants.data_dictionary.items():
+
+
+        step_1_fetch_data(START_DATE, current_datetime,value)
         #step_1_fetch_data(START_DATE, current_datetime,timeseriesgroup_ids = ["34967042"])
         step_2_preprocess()
         step_3_rml_mapping()
@@ -127,9 +132,9 @@ def main():
         
     #catch_up(END_DATE)
 
-    step_5_rdf2tss(TIMESERIES_TTL, TSS_GRAPH_TTL,f"Data/{observation_parameter}")
+        step_5_rdf2tss(TIMESERIES_TTL, TSS_GRAPH_TTL,f"Data/{key}")
     ##step_6_ingest_tss_virtuoso(TSS_GRAPH_TTL, TSS_GRAPH_URI)          
-    step_7_transform_ldes(TSS_GRAPH_TTL, property_name=f"{observation_parameter}")
+        step_7_transform_ldes(TSS_GRAPH_TTL, property_name=f"{key}")
 
 
 if __name__ == "__main__":
