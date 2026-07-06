@@ -14,11 +14,16 @@ conductivity_sensors = ['289435042', '289423042', '289429042', '289441042']
 waterlevel_stations = ["kgt04a-1066"]
 waterlevel_sensors = ['98524010']
 
+
+
 colors  = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728']
 
 target_sensor = '289441042'
 
 ################################################################
-
+data_dictionary = {
+    'conductivity': conductivity_sensors,
+    'waterlevel': waterlevel_sensors
+}
 
 

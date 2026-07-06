@@ -3,6 +3,9 @@ import subprocess
 import time
 import os
 from datetime import datetime, timezone
+import sys; sys.path.append('..')  # Adds the parent directory
+import python_backend_server.constants as constants
+
 
 # Setup paths (as defined in your notebook Step 1)
 def setup_environment():
@@ -116,17 +119,17 @@ def main():
     # Execution Pipeline
     setup_environment()
     if from_the_beginning:
-        step_1_fetch_data(START_DATE, current_datetime,timeseriesgroup_ids = ["289435042", "289423042", "289429042", "289441042"])
+        step_1_fetch_data(START_DATE, current_datetime,)
         #step_1_fetch_data(START_DATE, current_datetime,timeseriesgroup_ids = ["34967042"])
         step_2_preprocess()
         step_3_rml_mapping()
-        step_4_ingest_virtuoso(TIMESERIES_TTL, GRAPH_URI, delete_existing=True)
+        #step_4_ingest_virtuoso(TIMESERIES_TTL, GRAPH_URI, delete_existing=True)
         
     #catch_up(END_DATE)
 
-    step_5_rdf2tss(TIMESERIES_TTL, TSS_GRAPH_TTL,"conductivity")
+    step_5_rdf2tss(TIMESERIES_TTL, TSS_GRAPH_TTL,f"Data/{observation_parameter}")
     ##step_6_ingest_tss_virtuoso(TSS_GRAPH_TTL, TSS_GRAPH_URI)          
-    step_7_transform_ldes(TSS_GRAPH_TTL, property_name="precipitation")
+    step_7_transform_ldes(TSS_GRAPH_TTL, property_name=f"{observation_parameter}")
 
 
 if __name__ == "__main__":
