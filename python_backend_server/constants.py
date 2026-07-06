@@ -23,7 +23,7 @@ target_sensor = '289441042'
 ################################################################
 data_dictionary = {
     'conductivity': conductivity_sensors,
-    'waterlevel': waterlevel_sensors
+    #'waterlevel': waterlevel_sensors
 }
 
 

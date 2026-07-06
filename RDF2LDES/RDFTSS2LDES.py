@@ -26,12 +26,15 @@ home_page = URIRef("https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/pla
 input_path = "../data/TSSgraph.ttl"
 base_path = "../placeholder"
 
-def set_property(property_name):
+def set_property(property_name,directory_input="../placeholder",base_path_input="../placeholder"):
     global directory, eventstream_uri, home_page, base_path
-    directory = f"../{property_name}/"
+    #directory = f"../{property_name}/"
+    directory = directory_input
+
     eventstream_uri = URIRef(f"https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/{property_name}/{property_name}#eventstream")
     home_page = URIRef(f"https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/{property_name}/{property_name}.trig")
-    base_path = f"../{property_name}"
+    #base_path = f"../{property_name}"
+    base_path = base_path_input
 
 # split the data into their designated folders
 def load_graph(input_path):

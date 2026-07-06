@@ -14,25 +14,28 @@ def setup_environment():
     sys.path.insert(0, "../triple_store_ingestion")
     sys.path.insert(0, "../RDF2TSS_V2")
     sys.path.insert(0, "../RDF2LDES")
+    sys.path.insert(0, "../RML_generator")
 
-def step_1_fetch_data(START_DATE, END_DATE,timeseriesgroup_ids):
+def step_1_fetch_data(START_DATE, END_DATE,timeseriesgroup_ids,parameter_name):
     print("--- Step 1: Fetching Data ---")
     import fetch
     #fetch.fetch_stations()
-    fetch.fetch_timeseries(START_DATE, END_DATE,timeseriesgroup_ids)
+    fetch.fetch_timeseries(START_DATE, END_DATE,timeseriesgroup_ids,parameter_name)
 
-def step_2_preprocess():
+def step_2_preprocess(parameter_name):
     print("--- Step 2: Pre-Processing ---")
     import preprocess
-    preprocess.preprocess()
+    preprocess.preprocess(parameter_name)
 
-def step_3_rml_mapping():
+def step_3_rml_mapping(parameter_name):
     print("--- Step 3: RML-Mapping ---")
+    import RML_generator
+    RML_generator.generate_timeseries_mapping(parameter_name)
     command = [
         "java", 
         "-jar", "rmlmapper.jar", 
-        "-m", "../RML_mapping/timeseriesmapping.rml.ttl", 
-        "-o", "../data/timeseries.ttl", 
+        "-m", f"../RML_mapping/{parameter_name}.rml.ttl", 
+        "-o", f"../data/{parameter_name}.ttl", 
         "-s", "turtle"
     ]
     try:
@@ -69,7 +72,7 @@ def step_7_transform_ldes(input_path,property_name="placeholder"):
     print("--- Step 7: Transforming to LDES ---")
     import RDFTSS2LDES
     start_time = time.perf_counter()
-    RDFTSS2LDES.set_property(property_name)  # Call this function to set the property for LDES transformation
+    RDFTSS2LDES.set_property(property_name, directory_input=f"../data/{property_name}/", base_path_input=f"../data/{property_name}")  # Call this function to set the property for LDES transformation
     original_graph = RDFTSS2LDES.load_graph(input_path)
     result = RDFTSS2LDES.process_graph(original_graph)
     RDFTSS2LDES.divide_data(result)
@@ -109,7 +112,7 @@ def main():
     TSS_GRAPH_TTL = "../data/TSSgraph.ttl"
 
     START_DATE = "2021-01-01T00:00:00Z"
-    TEST_END_DATE = "2021-01-02T00:00:00Z"
+    TEST_END_DATE = "2021-05-30T00:00:00Z"
     END_DATE = "2026-03-31T23:59:59Z"
 
 
@@ -123,18 +126,21 @@ def main():
 
     for key,value in constants.data_dictionary.items():
 
-
-        step_1_fetch_data(START_DATE, current_datetime,value)
+        print (f"--- Processing parameter: {key} ---")
+        print (f"--- Associated sensor IDs: {value} ---")
+        print(f"value type: {type(value)}")
+        print (f"--- Fetching data from {START_DATE} to {TEST_END_DATE} ---")
+        step_1_fetch_data(START_DATE, TEST_END_DATE,value, parameter_name=key)
         #step_1_fetch_data(START_DATE, current_datetime,timeseriesgroup_ids = ["34967042"])
-        step_2_preprocess()
-        step_3_rml_mapping()
+        step_2_preprocess(parameter_name=key)
+        step_3_rml_mapping(parameter_name=key)
         #step_4_ingest_virtuoso(TIMESERIES_TTL, GRAPH_URI, delete_existing=True)
         
     #catch_up(END_DATE)
 
-        step_5_rdf2tss(TIMESERIES_TTL, TSS_GRAPH_TTL,f"Data/{key}")
+        step_5_rdf2tss(f"../data/{key}.ttl", f"../data/{key}_tss.ttl",f"Data/{key}")
     ##step_6_ingest_tss_virtuoso(TSS_GRAPH_TTL, TSS_GRAPH_URI)          
-        step_7_transform_ldes(TSS_GRAPH_TTL, property_name=f"{key}")
+        step_7_transform_ldes(f"../data/{key}_tss.ttl", property_name=f"{key}")
 
 
 if __name__ == "__main__":
