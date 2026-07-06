@@ -27,10 +27,21 @@ def fetch_timeseries(START_DATE, END_DATE,timeseriesgroup_ids,parameter_name="pl
     frames = []
     print("Timeseries fetching started.")
     for group_id in timeseriesgroup_ids:
-        group_id_data = vmm.get_timeseries_values(
-            group_id, start=START_DATE, end=END_DATE
-        )
-        frames.append(pd.DataFrame(group_id_data))
+        
+        try: 
+            group_id_data = vmm.get_timeseries_values(group_id, start=START_DATE, end=END_DATE)
+            frames.append(pd.DataFrame(group_id_data))
+        except Exception as e:
+            print(f"Error fetching data for group ID {group_id}: {e}")
+        
+        try: 
+            group_id_data = hic.get_timeseries_values(group_id, start=START_DATE, end=END_DATE)
+            frames.append(pd.DataFrame(group_id_data))
+        except Exception as e:
+            print(f"Error fetching data for group ID {group_id}: {e}")
+            
+        #frames.append(pd.DataFrame(group_id_data))
+        
     df = pd.concat(frames, ignore_index=True)
     df.to_csv(f"../data/{parameter_name}.csv", index=False)
     print(f"{parameter_name} Timeseries fetching finished & file saved.")
@@ -40,8 +51,8 @@ def main():
     START_DATE = "2021-01-01T00:00:00Z"
     END_DATE = "2026-03-31T23:59:59Z"
     current_datetime = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    fetch_stations(constants.waterlevel_stations, "waterlevel")
-    #fetch_timeseries(START_DATE, current_datetime,constants.conductivity_sensors)
+    #fetch_stations(constants.waterlevel_stations, "waterlevel")
+    fetch_timeseries(START_DATE, current_datetime,constants.waterlevel_sensors, "waterlevel")
 
 if __name__ == "__main__":
     main()
