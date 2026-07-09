@@ -101,7 +101,31 @@ def step_7_transform_ldes(input_path,property_name="placeholder"):
 #         #step_7_transform_ldes("../data/TSSgraph.ttl")
 #     else:
 #         print("No new data available. Catch-up process skipped.")
+##################################################################################################
+#Water-Link data
+def step_1_pre_process_waterlink(input_path,output_path):
+    import preprocess_waterlink
+    preprocess_waterlink.clean_result_sheet(input_path,output_path)
 
+def step_2_rml_mapping_waterlink(parameter_name):
+    print("--- Step 3: RML-Mapping ---")
+    import RML_generator_waterlink
+    RML_generator_waterlink.generate_timeseries_mapping(parameter_name)
+    command = [
+        "java", 
+        "-jar", "rmlmapper.jar", 
+        "-m", f"../RML_mapping/{parameter_name}.rml.ttl", 
+        "-o", f"../data/{parameter_name}.ttl", 
+        "-s", "turtle"
+    ]
+    try:
+        result = subprocess.run(command, capture_output=True, text=True, check=True)
+        print("RML Mapping completed successfully.")
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"RML Mapping failed: {e.stderr}")
+        return False
+##################################################################################################
 def main():
     # Configuration
     GRAPH_URI = "http://example.com/Gent-Terneuzen/conductivity"
@@ -123,7 +147,15 @@ def main():
     # Execution Pipeline
     setup_environment()
     #if from_the_beginning:
+    print("--- Pre-Processing Water-Link Data started---")
+    step_1_pre_process_waterlink("../data/water-link/data.xlsx","../data/water_link.csv")
+    print("--- Pre-Processing Water-Link Data finished---")
+    step_2_rml_mapping_waterlink("water_link")
+    step_5_rdf2tss("../data/water_link.ttl", "../data/water_link_tss.ttl","Data/conductivity")
 
+
+'''
+    #Waterinfo
     for key,value in constants.data_dictionary.items():
 
         print (f"--- Processing parameter: {key} ---")
@@ -141,6 +173,8 @@ def main():
         step_5_rdf2tss(f"../data/{key}.ttl", f"../data/{key}_tss.ttl",f"Data/{key}")
     ##step_6_ingest_tss_virtuoso(TSS_GRAPH_TTL, TSS_GRAPH_URI)          
         step_7_transform_ldes(f"../data/{key}_tss.ttl", property_name=f"{key}")
+'''
+
 
 
 if __name__ == "__main__":

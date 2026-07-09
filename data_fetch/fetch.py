@@ -45,8 +45,7 @@ def fetch_timeseries(START_DATE, END_DATE,timeseriesgroup_ids,parameter_name="pl
     df = pd.concat(frames, ignore_index=True)
     df.to_csv(f"../data/{parameter_name}.csv", index=False)
     print(f"{parameter_name} Timeseries fetching finished & file saved.")
-    return (END_DATE)
-
+    
 def main():
     START_DATE = "2021-01-01T00:00:00Z"
     END_DATE = "2026-03-31T23:59:59Z"
