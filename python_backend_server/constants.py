@@ -9,7 +9,14 @@ params  = {'graph': GRAPH_URI}
 headers = {'Accept': 'text/turtle'}
 
 conductivity_stations = ["HIS_BWO_VITO_IOW50", "HIS_BWO_VITO_IOW48", "BWO_VITO_IOW49", "BWO_VITO_IOW51"]
-conductivity_sensors = ['289435042', '289423042', '289429042', '289441042']
+conductivity_sensors = ['289441042','289435042', '289429042', '289423042' ] #arranged furthest to nearest
+#289441042 -> Terneuzen
+#289435042 -> Westdorpe
+#289429042 -> Gent - far
+#289423042 -> Gent - near
+
+
+
 
 waterlevel_stations = ["kgt04a-1066"]
 waterlevel_sensors = ['98524010']
