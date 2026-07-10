@@ -15,8 +15,7 @@ conductivity_sensors = ['289441042','289435042', '289429042', '289423042' ] #arr
 #289429042 -> Gent - far
 #289423042 -> Gent - near
 
-
-
+water_link_conductivity_sensor = ['111111111'] #At the Indusii site
 
 waterlevel_stations = ["kgt04a-1066"]
 waterlevel_sensors = ['98524010']

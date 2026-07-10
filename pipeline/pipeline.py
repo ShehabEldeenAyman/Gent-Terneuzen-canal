@@ -54,13 +54,13 @@ def step_4_ingest_virtuoso(ttl_timeseries, graph_uri,delete_existing=True):
     ingest.upload_graph(ttl_timeseries, graph_uri)
     #ingest.upload_graph(ttl_stations, graph_uri)
 
-def step_5_rdf2tss(input_path, output_path,observed_parameter="placeholder"):
+def step_5_rdf2tss(input_path, output_path,observed_parameter="placeholder",overwrite=True):
     print("--- Step 5: RDF2TSS ---")
     import RDF2TSS_V2
     original_graph = RDF2TSS_V2.load_graph(input_path)
     sensor_set = RDF2TSS_V2.create_sensor_set(original_graph)
     tss_graph = RDF2TSS_V2.create_tss(sensor_set, original_graph,observed_parameter)
-    RDF2TSS_V2.save_graph(output_path, tss_graph)
+    RDF2TSS_V2.save_graph(output_path, tss_graph, overwrite)
 
 def step_6_ingest_tss_virtuoso(tss_path, tss_graph_uri):
     print("--- Step 6: Ingesting TSS to Virtuoso ---")
@@ -135,9 +135,9 @@ def main():
     STATIONS_TTL = "../data/stations.ttl"
     TSS_GRAPH_TTL = "../data/TSSgraph.ttl"
 
-    START_DATE = "2021-01-01T00:00:00Z"
+    START_DATE = "2025-01-01T00:00:00Z"
     TEST_END_DATE = "2021-05-30T00:00:00Z"
-    END_DATE = "2026-03-31T23:59:59Z"
+    END_DATE = "2025-12-31T23:59:59Z"
 
 
 
@@ -147,11 +147,12 @@ def main():
     # Execution Pipeline
     setup_environment()
     #if from_the_beginning:
+
     print("--- Pre-Processing Water-Link Data started---")
     step_1_pre_process_waterlink("../data/water-link/data.xlsx","../data/water_link.csv")
     print("--- Pre-Processing Water-Link Data finished---")
     step_2_rml_mapping_waterlink("water_link")
-    step_5_rdf2tss("../data/water_link.ttl", "../data/water_link_tss.ttl","Data/conductivity")
+    step_5_rdf2tss("../data/water_link.ttl", "../data/conductivity_tss.ttl","Data/conductivity",overwrite=False)
 
 
 '''

@@ -24,11 +24,22 @@ def load_graph(directory):
     print("Graph loaded successfully.")
     return graph
 
-def save_graph(directory, final_graph):
-    """Serializes the graph to a Turtle file on disk."""
-    print(f"Started writing file to disk: {directory}")
-    final_graph.serialize(destination=directory, format="turtle")
-    print("File written successfully.")
+def save_graph(directory, final_graph,overwrite=True):
+    if not overwrite:
+        print(f"Loading existing data from: {directory}")
+        combined_graph = Graph()
+        try:
+            combined_graph.parse(directory, format="turtle")
+        except FileNotFoundError:
+            print("File not found. Creating a new one.")
+        combined_graph += final_graph
+        print(f"Writing updated graph to disk: {directory}")
+        combined_graph.serialize(destination=directory, format="turtle")
+        print("File updated successfully.")
+    else:
+        print(f"Started writing file to disk: {directory}")
+        final_graph.serialize(destination=directory, format="turtle")
+        print("File written successfully.")
 
 def create_sensor_set(graph):
     """Identifies unique sensors within the graph using a SPARQL query."""
