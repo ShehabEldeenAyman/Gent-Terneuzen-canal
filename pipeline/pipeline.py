@@ -26,6 +26,7 @@ def step_2_preprocess(parameter_name):
     print("--- Step 2: Pre-Processing ---")
     import preprocess
     preprocess.preprocess(parameter_name)
+    preprocess.preprocess2(parameter_name)
 
 def step_3_rml_mapping(parameter_name):
     print("--- Step 3: RML-Mapping ---")
@@ -128,7 +129,7 @@ def step_2_rml_mapping_waterlink(parameter_name):
 ##################################################################################################
 def main():
     # Configuration
-    GRAPH_URI = "http://example.com/Gent-Terneuzen/conductivity"
+    #GRAPH_URI = "http://example.com/Gent-Terneuzen/conductivity"
     TSS_GRAPH_URI = "http://example.com/Gent-Terneuzen-TSS"
     
     TIMESERIES_TTL = "../data/timeseries.ttl"
@@ -146,16 +147,24 @@ def main():
     from_the_beginning = True  # Set to False to skip data fetching and preprocessing
     # Execution Pipeline
     setup_environment()
+   
     #if from_the_beginning:
-
+    
     print("--- Pre-Processing Water-Link Data started---")
     step_1_pre_process_waterlink("../data/water-link/data.xlsx","../data/water_link.csv")
     print("--- Pre-Processing Water-Link Data finished---")
+    print("--- RML Mapping Water-Link Data started---")
     step_2_rml_mapping_waterlink("water_link")
+    print("--- RML Mapping Water-Link Data finished---")
+    
     step_5_rdf2tss("../data/water_link.ttl", "../data/conductivity_tss.ttl","Data/conductivity",overwrite=False)
+    print("--- Ingesting Water-Link Data to Virtuoso started---")
+    step_4_ingest_virtuoso("../data/water_link.ttl", constants.GRAPH_URI, delete_existing=False)
+    print("--- Ingesting Water-Link Data to Virtuoso finished---")
+    
 
-
-'''
+    
+    '''
     #Waterinfo
     for key,value in constants.data_dictionary.items():
 
@@ -167,15 +176,15 @@ def main():
         #step_1_fetch_data(START_DATE, current_datetime,timeseriesgroup_ids = ["34967042"])
         step_2_preprocess(parameter_name=key)
         step_3_rml_mapping(parameter_name=key)
-        #step_4_ingest_virtuoso(TIMESERIES_TTL, GRAPH_URI, delete_existing=True)
+        step_4_ingest_virtuoso(f"../data/{key}.ttl", constants.GRAPH_URI, delete_existing=True)
         
     #catch_up(END_DATE)
 
         step_5_rdf2tss(f"../data/{key}.ttl", f"../data/{key}_tss.ttl",f"Data/{key}")
     ##step_6_ingest_tss_virtuoso(TSS_GRAPH_TTL, TSS_GRAPH_URI)          
         step_7_transform_ldes(f"../data/{key}_tss.ttl", property_name=f"{key}")
-'''
-
+    '''
+    
 
 
 if __name__ == "__main__":

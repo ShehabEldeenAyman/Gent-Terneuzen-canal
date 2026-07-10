@@ -1,6 +1,6 @@
 #VIRTUOSO_URL = "http://localhost:8890/sparql-graph-crud"
 VIRTUOSO_URL = "http://localhost:8890/sparql"
-GRAPH_URI = "http://example.com/Gent-Terneuzen/"
+GRAPH_URI = "http://example.com/Gent-Terneuzen/conductivity"
 USERNAME = "dba"
 PASSWORD = "dba"
 AUTH  = (USERNAME,PASSWORD)
@@ -29,7 +29,7 @@ target_sensor = '289441042'
 ################################################################
 data_dictionary = {
     'conductivity': conductivity_sensors,
-    'waterlevel': waterlevel_sensors
+    #'waterlevel': waterlevel_sensors
 }
 
 

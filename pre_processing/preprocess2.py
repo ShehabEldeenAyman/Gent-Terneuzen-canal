@@ -2,12 +2,6 @@ import pandas as pd
 from datetime import datetime
 
 def preprocess(parameter_name="placeholder"):
-    df = pd.read_csv(f'../data/{parameter_name}.csv')
-    df['unixtimestamp'] = pd.to_datetime(df['Timestamp']).astype('int64') // 10**9
-    print(df.head())
-    df.to_csv(f'../data/{parameter_name}.csv', index=False)
-
-def preprocess2(parameter_name="placeholder"):
     # If your file is actually an Excel file (.xlsx), change this to pd.read_excel
     df = pd.read_csv(f'../data/{parameter_name}.csv')
     
@@ -22,6 +16,7 @@ def preprocess2(parameter_name="placeholder"):
     
     # Save the modified dataframe back
     df.to_csv(f'../data/{parameter_name}.csv', index=False)
+
 
 def main():
     preprocess()

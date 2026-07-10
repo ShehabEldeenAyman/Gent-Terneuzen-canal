@@ -288,13 +288,14 @@ def generate_timeseries_mapping(target_file_path):
   # ] ;
 
     # unix timestamp
-  rr:predicateObjectMap [
-    rr:predicate ex:unixTimestamp ;
-    rr:objectMap [
-      rml:reference "unixtimestamp" ;
-      rr:datatype xsd:integer
-    ];
-  ] .
+  # rr:predicateObjectMap [
+  #   rr:predicate ex:unixTimestamp ;
+  #   rr:objectMap [
+  #     rml:reference "unixtimestamp" ;
+  #     rr:datatype xsd:integer
+  #   ];
+  # ] 
+  .
 """
     
     print(f"Generated RML mapping for {target_file_path}.csv")
