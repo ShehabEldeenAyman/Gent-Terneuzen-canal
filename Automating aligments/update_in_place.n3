@@ -1,0 +1,59 @@
+@prefix ex:       <http://example.org/water-monitoring#> .
+@prefix sosa:     <http://www.w3.org/ns/sosa/> .
+@prefix qudt:     <http://qudt.org/schema/qudt/> .
+@prefix unit:     <http://qudt.org/vocab/unit/> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:     <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix math:     <http://www.w3.org/2000/10/swap/math#> .
+@prefix log:      <http://www.w3.org/2000/10/swap/log#> .
+
+# Declare the target unit outside of the rule
+ex:Config ex:targetUnit unit:K .
+
+{
+    # 1. Match the full Observation structure
+    ?obs a sosa:Observation ;
+         rdfs:label ?label ;
+         sosa:madeBySensor ?sensor ;
+         sosa:observedProperty ?property ;
+         sosa:hasFeatureOfInterest ?foi ;
+         sosa:resultTime ?time ;
+         sosa:hasResult ?quantityVal .
+
+    # 2. Match the nested QuantityValue structure
+    ?quantityVal a qudt:QuantityValue ;
+                 qudt:unit ?fromUnit ;
+                 qudt:value ?fromValue .
+
+    # 3. Match the target unit configuration pattern (replaces 'bind')
+    ex:Config ex:targetUnit ?toUnit .
+
+    # 4. Dynamically fetch conversion factors from qudt.org
+    ?fromUnit log:semantics ?fromUnitGraph .
+    ?toUnit log:semantics ?toUnitGraph .
+
+    ?fromUnitGraph log:includes { ?fromUnit qudt:conversionMultiplier ?fromMultiplier ; qudt:conversionOffset ?fromOffset } .
+    ?toUnitGraph log:includes { ?toUnit qudt:conversionMultiplier ?toMultiplier ; qudt:conversionOffset ?toOffset } .
+
+    # 5. Calculate the conversion
+    (?fromValue ?fromMultiplier) math:product ?tempProduct1 .
+    (?tempProduct1 ?fromOffset) math:sum ?baseValue .
+
+    (?baseValue ?toOffset) math:difference ?tempDifference2 .
+    (?tempDifference2 ?toMultiplier) math:quotient ?targetValue .
+}
+=>
+{
+    # 6. Output the EXACT original structure, updating only the unit and value in place
+    ?obs a sosa:Observation ;
+         rdfs:label ?label ;
+         sosa:madeBySensor ?sensor ;
+         sosa:observedProperty ?property ;
+         sosa:hasFeatureOfInterest ?foi ;
+         sosa:resultTime ?time ;
+         sosa:hasResult ?quantityVal .
+
+    ?quantityVal a qudt:QuantityValue ;
+                 qudt:unit ?toUnit ;
+                 qudt:value ?targetValue .
+} .

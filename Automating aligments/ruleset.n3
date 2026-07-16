@@ -1,0 +1,68 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix qudt: <http://qudt.org/schema/qudt/> .
+@prefix math: <http://www.w3.org/2000/10/swap/math#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix : <http://example.org/val#> .
+
+# =====================================================================
+# Rule 1: Normalize Offsets
+# =====================================================================
+
+# If a unit has an explicit conversionOffset, use it
+{
+    ?u a qudt:Unit ;
+       qudt:conversionOffset ?offset .
+} => {
+    ?u :workingOffset ?offset .
+} .
+
+# If a unit does NOT have an explicit conversionOffset, default it to 0.0
+{
+    ?u a qudt:Unit .
+    [] log:notIncludes { ?u qudt:conversionOffset ?offset } .
+} => {
+    ?u :workingOffset 0.0 .
+} .
+
+
+# =====================================================================
+# Rule 2: Universal Conversion Math
+# =====================================================================
+# Formula: V_to = ((V_from * Multiplier_from) + Offset_from - Offset_to) / Multiplier_to
+# =====================================================================
+{
+    # 1. Identify a measurement that explicitly requests a conversion
+    ?measurement a :Measurement ;
+                 :value ?v_from ;
+                 :unit ?u_from ;
+                 :convertTo ?u_to .
+
+    # 2. Semantic Check: Ensure both units belong to the same physical dimension
+    ?u_from qudt:hasQuantityKind ?kind .
+    ?u_to qudt:hasQuantityKind ?kind .
+
+    # 3. Retrieve multipliers and our normalized working offsets
+    ?u_from qudt:conversionMultiplier ?m_from ;
+            :workingOffset ?o_from .
+         
+    ?u_to qudt:conversionMultiplier ?m_to ;
+          :workingOffset ?o_to .
+
+    # 4. Perform the mathematical execution pipeline
+    # Step A: Convert source value to base SI unit (V_base = (V_from * Multiplier_from) + Offset_from)
+    (?v_from ?m_from) math:product ?step1 .
+    (?step1 ?o_from) math:sum ?v_base .
+
+    # Step B: Convert base SI unit to target unit (V_to = (V_base - Offset_to) / Multiplier_to)
+    (?v_base ?o_to) math:difference ?step2 .
+    (?step2 ?m_to) math:quotient ?v_to .
+} => {
+    # 5. Output the newly calculated, converted value block
+    ?measurement :convertedValue [
+        a :Measurement ;
+        :value ?v_to ;
+        :unit ?u_to
+    ] .
+} .

@@ -1,0 +1,63 @@
+@prefix qudt:     <http://qudt.org/schema/qudt/> .
+@prefix unit:     <http://qudt.org/vocab/unit/> .
+@prefix math:     <http://www.w3.org/2000/10/swap/math#> .
+@prefix log:      <http://www.w3.org/2000/10/swap/log#> .
+
+# --- Target Unit ---
+# Define our dynamic target unit
+:target qudt:unit unit:K .
+
+# --- Step 1: Dynamically Fetch Unit Metadata from the Web ---
+{
+    # Find any unit being used in the local source data
+    ?subject ?property ?quantityVal .
+    ?quantityVal a qudt:QuantityValue ;
+                 qudt:unit ?fromUnit .
+
+    # Use N3 log:semantics to fetch the RDF graphs from the live QUDT URIs
+    ?fromUnit log:semantics ?fromUnitGraph .
+    
+    # Also fetch the metadata for the target unit (Kelvin)
+    :target qudt:unit ?toUnit .
+    ?toUnit log:semantics ?toUnitGraph .
+}
+=>
+{
+    # Merge the dynamically fetched web graphs into our active reasoning scope
+    :dynamicData :hasGraph ?fromUnitGraph, ?toUnitGraph .
+} .
+
+
+# --- Step 2: Extract the Loaded Metadata and Calculate ---
+{
+    # 1. Match the active data
+    ?subject ?property ?quantityVal .
+    ?quantityVal a qudt:QuantityValue ;
+                 qudt:unit ?fromUnit ;
+                 qudt:value ?fromValue .
+    
+    :target qudt:unit ?toUnit .
+
+    # 2. Match the values inside the dynamically imported graphs
+    :dynamicData :hasGraph ?fromUnitGraph, ?toUnitGraph .
+    
+    # Query the fetched graphs directly for their multipliers and offsets
+    ?fromUnitGraph log:includes { ?fromUnit qudt:conversionMultiplier ?fromMultiplier ; qudt:conversionOffset ?fromOffset } .
+    ?toUnitGraph log:includes { ?toUnit qudt:conversionMultiplier ?toMultiplier ; qudt:conversionOffset ?toOffset } .
+
+    # 3. Universal QUDT Math
+    (?fromValue ?fromMultiplier) math:product ?tempProduct1 .
+    (?tempProduct1 ?fromOffset) math:sum ?baseValue .
+
+    (?baseValue ?toOffset) math:difference ?tempDifference2 .
+    (?tempDifference2 ?toMultiplier) math:quotient ?targetValue .
+}
+=>
+{
+    # 4. Output the dynamically resolved conversion
+    ?subject ?property [
+        a qudt:QuantityValue ;
+        qudt:unit ?toUnit ;
+        qudt:value ?targetValue
+    ] .
+} .

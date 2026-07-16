@@ -1,0 +1,16 @@
+@prefix qudt: <http://qudt.org/schema/qudt/> .
+
+# Only return the generated QuantityValues
+{
+    ?subject ?property ?quantityVal .
+    ?quantityVal a qudt:QuantityValue ;
+                 qudt:unit ?toUnit ;
+                 qudt:value ?targetValue .
+}
+=>
+{
+    ?subject ?property ?quantityVal .
+    ?quantityVal a qudt:QuantityValue ;
+                 qudt:unit ?toUnit ;
+                 qudt:value ?targetValue .
+} .
