@@ -12,6 +12,9 @@ def generate_timeseries_mapping(target_file_path):
 @prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix obs:   <http://example.com/observations/> .
 @prefix waterinfo: <http://example.com/waterinfo/> .
+@prefix qudt:  <http://qudt.org/schema/qudt/> .
+@prefix unit:  <http://qudt.org/vocab/unit/> .
+@prefix quantitykind: <https://qudt.org/vocab/quantitykind/> .
 
 <#SensorMapping> a rr:TriplesMap;
   rml:logicalSource [
@@ -52,11 +55,20 @@ def generate_timeseries_mapping(target_file_path):
     ]
   ] ;
 
-    # Unit of Measurement -> QUDT microsiemens per cm
+# Unit of Measurement -> New Constant IRI
   rr:predicateObjectMap [
-    rr:predicate qudt:unit ;
+    rr:predicate qudt:hasUnit ;
     rr:objectMap [
-      rr:constant unit:MicroS-PER-CM ;
+      rr:constant unit:MicroS-PER-CentiM ;
+      rr:termType rr:IRI
+    ]
+  ];
+
+# Observed Property -> New Constant IRI
+  rr:predicateObjectMap [
+    rr:predicate sosa:observedProperty ;
+    rr:objectMap [
+      rr:constant quantitykind:ElectricConductivity ;
       rr:termType rr:IRI
     ]
   ] ;

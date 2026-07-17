@@ -12,6 +12,9 @@ SOSA = Namespace('http://www.w3.org/ns/sosa/')
 SSN = Namespace('http://www.w3.org/ns/ssn/')
 WATERINFO = Namespace('http://example.com/waterinfo/')
 TSS = Namespace('https://w3id.org/tss#')
+QUDT = Namespace('http://qudt.org/schema/qudt/')
+QUANTITYKIND = Namespace('https://qudt.org/vocab/quantitykind/')
+Unit = Namespace('http://qudt.org/vocab/unit/')
 
 BASE_SNIPPET = Namespace("https://example.org/tss/snippet/")
 SENSOR_READING_ID = Namespace("https://example.org/tss/snippet/reading/")
@@ -69,7 +72,9 @@ def create_tss(sensor_set, graph,observed_parameter="unknown"):
     prefixes = {
         'EX': EX, 'obs': OBS, 'rdf': RDF, 'rdfs': RDFS, 
         'rml': RML, 'sosa': SOSA, 'ssn': SSN, 
-        'waterinfo': WATERINFO, 'xsd': XSD, 'tss': TSS
+        'waterinfo': WATERINFO, 'xsd': XSD, 'tss': TSS,
+        'qudt': QUDT, 'quantitykind': QUANTITYKIND,
+        'unit': Unit
     }
     for prefix, ns in prefixes.items():
         final_graph.bind(prefix, ns)
@@ -83,13 +88,19 @@ def create_tss(sensor_set, graph,observed_parameter="unknown"):
         PREFIX sosa: <http://www.w3.org/ns/sosa/>
         PREFIX ex: <http://example.com/attributes/>
         PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+        PREFIX qudt: <http://qudt.org/schema/qudt/>
+        PREFIX quantitykind: <https://qudt.org/vocab/quantitykind/>
 
-        SELECT ?OBSERVATION ?TIME ?READING ?qualityCode ?qualityName ?qualityDesc ?qualityColor ?interpolation
+
+        SELECT ?OBSERVATION ?TIME ?READING ?qualityCode ?qualityName ?qualityDesc ?qualityColor ?interpolation ?unit ?quantitykind
         WHERE {
             ?OBSERVATION a sosa:Observation ;
                         sosa:resultTime ?TIME ;
                         sosa:hasSimpleResult ?READING ;
-                        sosa:madeBySensor ?currentSensor .
+                        sosa:madeBySensor ?currentSensor ;
+                        sosa:observedProperty ?quantitykind ;
+                        qudt:hasUnit ?unit ;
+                        .
                         OPTIONAL { ?OBSERVATION ex:qualityCode ?qualityCode }
                         OPTIONAL { ?OBSERVATION ex:qualityCodeName ?qualityName }
                         OPTIONAL { ?OBSERVATION ex:qualityCodeDescription ?qualityDesc }
@@ -152,7 +163,11 @@ def create_tss(sensor_set, graph,observed_parameter="unknown"):
         
         final_graph.add((template, RDF.type, TSS.PointTemplate))
         final_graph.add((template, SOSA.madeBySensor, sensor))
-        final_graph.add((template, SOSA.observedProperty, WATERINFO[f"{observed_parameter}"]))
+        final_graph.add((template, SOSA.observedProperty, results_list[0].quantitykind))
+        final_graph.add((template, QUDT.hasUnit,results_list[0].unit))
+        #final_graph.add((template, SOSA.observedProperty, WATERINFO[f"{observed_parameter}"]))
+
+
     
     print("TSS graph creation complete.")
     return final_graph
