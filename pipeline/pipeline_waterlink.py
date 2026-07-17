@@ -10,7 +10,6 @@ def main():
     print("--- RML Mapping Water-Link Data started---")
     core.step_2_rml_mapping_waterlink("water_link")
     print("--- RML Mapping Water-Link Data finished---")
-    
     core.step_5_rdf2tss("../data/water_link.ttl", "../data/conductivity_tss.ttl","Data/conductivity",overwrite=False)
     print("--- Ingesting Water-Link Data to Virtuoso started---")
     core.step_4_ingest_virtuoso("../data/water_link.ttl", constants.GRAPH_URI, delete_existing=False)
