@@ -5,7 +5,6 @@ import python_backend_server.constants as constants
 def main():
     core.setup_environment()
     for key,value in constants.data_dictionary.items():
-
         print (f"--- Processing parameter: {key} ---")
         print (f"--- Associated sensor IDs: {value} ---")
         print(f"value type: {type(value)}")
