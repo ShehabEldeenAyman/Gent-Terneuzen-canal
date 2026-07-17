@@ -52,6 +52,15 @@ def generate_timeseries_mapping(target_file_path):
     ]
   ] ;
 
+    # Unit of Measurement -> QUDT microsiemens per cm
+  rr:predicateObjectMap [
+    rr:predicate qudt:unit ;
+    rr:objectMap [
+      rr:constant unit:MicroS-PER-CM ;
+      rr:termType rr:IRI
+    ]
+  ] ;
+
 # # Interpolation Type -> String
 #   rr:predicateObjectMap [
 #     rr:predicate ex:interpolationType ;

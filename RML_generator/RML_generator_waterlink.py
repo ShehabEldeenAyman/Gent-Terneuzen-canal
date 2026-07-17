@@ -50,7 +50,17 @@ def generate_timeseries_mapping(target_file_path):
       rml:reference "Conductivity dokwater + spui ABF | ZHINDS10_WINCC_INDUSS_02_AT9103-B_FEED_CONDUCTIVITY | µs/cm" ;
       rr:datatype xsd:double
     ]
-  ] .
+  ] ;
+  
+    # Unit of Measurement -> QUDT microsiemens per cm
+  rr:predicateObjectMap [
+    rr:predicate qudt:unit ;
+    rr:objectMap [
+      rr:constant unit:MicroS-PER-CM ;
+      rr:termType rr:IRI
+    ]
+  ] ;
+  .
 
 """
     
