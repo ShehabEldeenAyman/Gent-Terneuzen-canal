@@ -150,6 +150,7 @@ def main():
    
     #if from_the_beginning:
     
+    #Water-Link data
     print("--- Pre-Processing Water-Link Data started---")
     step_1_pre_process_waterlink("../data/water-link/data.xlsx","../data/water_link.csv")
     print("--- Pre-Processing Water-Link Data finished---")
@@ -164,7 +165,7 @@ def main():
     
 
     
-    '''
+    
     #Waterinfo
     for key,value in constants.data_dictionary.items():
 
@@ -182,8 +183,7 @@ def main():
 
         step_5_rdf2tss(f"../data/{key}.ttl", f"../data/{key}_tss.ttl",f"Data/{key}")
     ##step_6_ingest_tss_virtuoso(TSS_GRAPH_TTL, TSS_GRAPH_URI)          
-        step_7_transform_ldes(f"../data/{key}_tss.ttl", property_name=f"{key}")
-    '''
+   
     
 
 
