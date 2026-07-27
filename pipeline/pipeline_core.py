@@ -15,6 +15,7 @@ def setup_environment():
     sys.path.insert(0, "../RDF2TSS_V2")
     sys.path.insert(0, "../RDF2LDES")
     sys.path.insert(0, "../RML_generator")
+    sys.path.insert(0, "../automating_aligments")
 
 def step_1_fetch_data(START_DATE, END_DATE,timeseriesgroup_ids,parameter_name):
     print("--- Step 1: Fetching Data ---")
@@ -46,6 +47,11 @@ def step_3_rml_mapping(parameter_name):
     except subprocess.CalledProcessError as e:
         print(f"RML Mapping failed: {e.stderr}")
         return False
+
+def step_3_5_automating_alignments(parameter_name,NEW_UNIT):
+    print("--- Step 3.5: Automating Alignments ---")
+    import automated_alignments
+    automated_alignments.transform_unit_optimized(parameter_name,NEW_UNIT)
 
 def step_4_ingest_virtuoso(ttl_timeseries, graph_uri,delete_existing=True):
     print("--- Step 4: Ingesting to Virtuoso ---")
@@ -108,3 +114,4 @@ def step_2_rml_mapping_waterlink(parameter_name):
     except subprocess.CalledProcessError as e:
         print(f"RML Mapping failed: {e.stderr}")
         return False
+
