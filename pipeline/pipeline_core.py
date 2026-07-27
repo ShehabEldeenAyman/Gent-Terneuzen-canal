@@ -85,3 +85,26 @@ def step_7_transform_ldes(input_path,property_name="placeholder"):
     
     end_time = time.perf_counter()
     print(f"LDES Processing completed in {end_time - start_time:.2f} seconds.")
+
+def step_1_pre_process_waterlink(input_path,output_path):
+    import preprocess_waterlink
+    preprocess_waterlink.clean_result_sheet(input_path,output_path)
+
+def step_2_rml_mapping_waterlink(parameter_name):
+    print("--- Step 3: RML-Mapping ---")
+    import RML_generator_waterlink
+    RML_generator_waterlink.generate_timeseries_mapping(parameter_name)
+    command = [
+        "java", 
+        "-jar", "rmlmapper.jar", 
+        "-m", f"../RML_mapping/{parameter_name}.rml.ttl", 
+        "-o", f"../data/{parameter_name}.ttl", 
+        "-s", "turtle"
+    ]
+    try:
+        result = subprocess.run(command, capture_output=True, text=True, check=True)
+        print("RML Mapping completed successfully.")
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"RML Mapping failed: {e.stderr}")
+        return False

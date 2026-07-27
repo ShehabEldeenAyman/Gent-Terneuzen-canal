@@ -33,7 +33,7 @@ def generate_timeseries_mapping(target_file_path):
   rr:predicateObjectMap [
     rr:predicate sosa:madeBySensor ;
     rr:objectMap [
-        rr:template "http://example.com/waterinfo/111111111" ;
+        rr:template "http://example.com/waterlink/111111111" ;
         rr:termType rr:IRI
     ]
   ] ;
