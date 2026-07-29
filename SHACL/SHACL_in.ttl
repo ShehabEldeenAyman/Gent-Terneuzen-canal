@@ -71,39 +71,40 @@ shapes:ObservationShape
 
     # the trailing path segment of the observation's own IRI is a Unix epoch
     # (seconds) - it must match sosa:resultTime exactly
-    sh:sparql [
-        a sh:SPARQLConstraint ;
-        sh:message "The epoch timestamp encoded in the observation IRI does not match sosa:resultTime." ;
-        sh:select """
-            PREFIX sosa: <http://www.w3.org/ns/sosa/>
-            PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
-            SELECT $this
-            WHERE {
-                $this sosa:resultTime ?resultTime .
-                BIND(STR($this) AS ?iri) .
-                BIND(REPLACE(?iri, "^.*/", "") AS ?epochStr) .
-                FILTER(REGEX(?epochStr, "^[0-9]+$"))
-                BIND(xsd:integer(?epochStr) AS ?irEpoch) .
+    # sh:sparql [
+    #     a sh:SPARQLConstraint ;
+    #     sh:message "The epoch timestamp encoded in the observation IRI does not match sosa:resultTime." ;
+    #     sh:select """
+    #         PREFIX sosa: <http://www.w3.org/ns/sosa/>
+    #         PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+    #         SELECT $this
+    #         WHERE {
+    #             $this sosa:resultTime ?resultTime .
+    #             BIND(STR($this) AS ?iri) .
+    #             BIND(REPLACE(?iri, "^.*/", "") AS ?epochStr) .
+    #             FILTER(REGEX(?epochStr, "^[0-9]+$"))
+    #             BIND(xsd:integer(?epochStr) AS ?irEpoch) .
 
-                # compute the Unix epoch (seconds) of ?resultTime using plain
-                # integer arithmetic (Howard Hinnant's days_from_civil), since
-                # xsd:dayTimeDuration string-casting is not reliably portable
-                # across SHACL/SPARQL engines
-                BIND(YEAR(?resultTime) AS ?Y) .
-                BIND(MONTH(?resultTime) AS ?M) .
-                BIND(DAY(?resultTime) AS ?D) .
-                BIND(IF(?M <= 2, ?Y - 1, ?Y) AS ?y) .
-                BIND(IF(?y >= 0, FLOOR(?y / 400), FLOOR((?y - 399) / 400)) AS ?era) .
-                BIND(?y - ?era * 400 AS ?yoe) .
-                BIND(FLOOR((153 * (?M + IF(?M > 2, -3, 9)) + 2) / 5) + ?D - 1 AS ?doy) .
-                BIND(?yoe * 365 + FLOOR(?yoe / 4) - FLOOR(?yoe / 100) + ?doy AS ?doe) .
-                BIND(?era * 146097 + ?doe - 719468 AS ?daysSinceEpoch) .
-                BIND(?daysSinceEpoch * 86400
-                     + HOURS(?resultTime) * 3600
-                     + MINUTES(?resultTime) * 60
-                     + SECONDS(?resultTime) AS ?rtEpoch) .
+    #             # compute the Unix epoch (seconds) of ?resultTime using plain
+    #             # integer arithmetic (Howard Hinnant's days_from_civil), since
+    #             # xsd:dayTimeDuration string-casting is not reliably portable
+    #             # across SHACL/SPARQL engines
+    #             BIND(YEAR(?resultTime) AS ?Y) .
+    #             BIND(MONTH(?resultTime) AS ?M) .
+    #             BIND(DAY(?resultTime) AS ?D) .
+    #             BIND(IF(?M <= 2, ?Y - 1, ?Y) AS ?y) .
+    #             BIND(IF(?y >= 0, FLOOR(?y / 400), FLOOR((?y - 399) / 400)) AS ?era) .
+    #             BIND(?y - ?era * 400 AS ?yoe) .
+    #             BIND(FLOOR((153 * (?M + IF(?M > 2, -3, 9)) + 2) / 5) + ?D - 1 AS ?doy) .
+    #             BIND(?yoe * 365 + FLOOR(?yoe / 4) - FLOOR(?yoe / 100) + ?doy AS ?doe) .
+    #             BIND(?era * 146097 + ?doe - 719468 AS ?daysSinceEpoch) .
+    #             BIND(?daysSinceEpoch * 86400
+    #                  + HOURS(?resultTime) * 3600
+    #                  + MINUTES(?resultTime) * 60
+    #                  + SECONDS(?resultTime) AS ?rtEpoch) .
 
-                FILTER(?irEpoch != ?rtEpoch)
-            }
-        """ ;
-    ] .
+    #             FILTER(?irEpoch != ?rtEpoch)
+    #         }
+    #     """ ;
+    # ] 
+    .

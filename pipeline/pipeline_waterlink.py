@@ -11,9 +11,19 @@ def main():
     print("--- RML Mapping Water-Link Data started---")
     core.step_2_rml_mapping_waterlink("water_link")
     print("--- RML Mapping Water-Link Data finished---")
+    print("--- Shacl in validation started ---")
+
+    core.step_shacl_validate("../data/water_link.ttl","../SHACL/SHACL_in.ttl","../data/water_link_shacl_in_report.txt")
+
+    print("--- Shacl in validation started ---")
     print("--- Automated Aligments started ---")
     core.step_3_5_automating_alignments("../data/water_link.ttl",URIRef("http://qudt.org/vocab/unit/MilliS-PER-CentiM"))
     print("--- Automated Aligments finished ---")
+    print("--- Shacl out validation started ---")
+
+    core.step_shacl_validate("../data/water_link.ttl","../SHACL/SHACL_out.ttl","../data/water_link_shacl_out_report.txt")
+
+    print("--- Shacl out validation started ---")
     core.step_5_rdf2tss("../data/water_link.ttl", "../data/waterlink_tss.ttl","Data/conductivity",overwrite=True)
     print("--- Ingesting Water-Link Data to Virtuoso started---")
     core.step_4_ingest_virtuoso("../data/water_link.ttl", constants.GRAPH_URI, delete_existing=True)

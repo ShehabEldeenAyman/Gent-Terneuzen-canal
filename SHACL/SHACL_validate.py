@@ -18,6 +18,12 @@ def validate_shacl(data_location,shapes_location,report_name):
     print("Conforms:", conforms)
     print("Took:", round(time.time() - t0, 1), "seconds")
     print(f"{shapes_location} SHACL report saved successfully")
-    file = open(f"../data/{report_name}.txt", "w")
+    file = open(report_name, "w")
     file.write(results_text)
     file.close()
+
+def main():
+    validate_shacl("../data/water_link.ttl","SHACL_out.ttl","out_report")
+
+if __name__ == "__main__":
+    main()
