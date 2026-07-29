@@ -1,0 +1,109 @@
+@prefix sh:            <http://www.w3.org/ns/shacl#> .
+@prefix rdf:           <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sosa:          <http://www.w3.org/ns/sosa/> .
+@prefix qudt:          <http://qudt.org/schema/qudt/> .
+@prefix unit:          <http://qudt.org/vocab/unit/> .
+@prefix quantitykind:  <https://qudt.org/vocab/quantitykind/> .
+@prefix xsd:           <http://www.w3.org/2001/XMLSchema#> .
+@prefix waterinfo:     <http://example.com/waterinfo/> .
+@prefix shapes:        <http://example.com/waterinfo/shapes/> .
+
+shapes:ObservationShape
+    a sh:NodeShape ;
+    sh:targetClass sosa:Observation ;
+
+    # lock the shape down: an Observation may only carry rdf:type plus the
+    # properties declared below - anything else (typos, stray predicates) fails
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+
+    # every reading instance must be a sosa:Observation and carry all of the
+    # properties below exactly once
+
+    # result value ("unit result")
+    sh:property [
+        sh:path sosa:hasSimpleResult ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:or (
+            [ sh:datatype xsd:double ]
+            [ sh:datatype xsd:decimal ]
+            [ sh:datatype xsd:float ]
+        ) ;
+        sh:message "sosa:hasSimpleResult is required and must be a numeric literal." ;
+    ] ;
+
+    # the unit of measure - must be present and fixed to MilliS-PER-CentiM
+    sh:property [
+        sh:path qudt:hasUnit ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:hasValue unit:MilliS-PER-CentiM ;
+        sh:message "qudt:hasUnit is required and must be unit:MilliS-PER-CentiM." ;
+    ] ;
+
+    # sensor that produced the observation
+    sh:property [
+        sh:path sosa:madeBySensor ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:message "sosa:madeBySensor is required and must reference a sensor IRI." ;
+    ] ;
+
+    # observed property - restricted to the quantity kind(s) this dataset uses
+    sh:property [
+        sh:path sosa:observedProperty ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( quantitykind:ElectricConductivity ) ;
+        sh:message "sosa:observedProperty is required and must be quantitykind:ElectricConductivity." ;
+    ] ;
+
+    # result time, must be a well-formed xsd:dateTime
+    sh:property [
+        sh:path sosa:resultTime ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "sosa:resultTime is required and must be an xsd:dateTime literal." ;
+    ] ;
+
+    # the trailing path segment of the observation's own IRI is a Unix epoch
+    # (seconds) - it must match sosa:resultTime exactly
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "The epoch timestamp encoded in the observation IRI does not match sosa:resultTime." ;
+        sh:select """
+            PREFIX sosa: <http://www.w3.org/ns/sosa/>
+            PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+            SELECT $this
+            WHERE {
+                $this sosa:resultTime ?resultTime .
+                BIND(STR($this) AS ?iri) .
+                BIND(REPLACE(?iri, "^.*/", "") AS ?epochStr) .
+                FILTER(REGEX(?epochStr, "^[0-9]+$"))
+                BIND(xsd:integer(?epochStr) AS ?irEpoch) .
+
+                # compute the Unix epoch (seconds) of ?resultTime using plain
+                # integer arithmetic (Howard Hinnant's days_from_civil), since
+                # xsd:dayTimeDuration string-casting is not reliably portable
+                # across SHACL/SPARQL engines
+                BIND(YEAR(?resultTime) AS ?Y) .
+                BIND(MONTH(?resultTime) AS ?M) .
+                BIND(DAY(?resultTime) AS ?D) .
+                BIND(IF(?M <= 2, ?Y - 1, ?Y) AS ?y) .
+                BIND(IF(?y >= 0, FLOOR(?y / 400), FLOOR((?y - 399) / 400)) AS ?era) .
+                BIND(?y - ?era * 400 AS ?yoe) .
+                BIND(FLOOR((153 * (?M + IF(?M > 2, -3, 9)) + 2) / 5) + ?D - 1 AS ?doy) .
+                BIND(?yoe * 365 + FLOOR(?yoe / 4) - FLOOR(?yoe / 100) + ?doy AS ?doe) .
+                BIND(?era * 146097 + ?doe - 719468 AS ?daysSinceEpoch) .
+                BIND(?daysSinceEpoch * 86400
+                     + HOURS(?resultTime) * 3600
+                     + MINUTES(?resultTime) * 60
+                     + SECONDS(?resultTime) AS ?rtEpoch) .
+
+                FILTER(?irEpoch != ?rtEpoch)
+            }
+        """ ;
+    ] .
