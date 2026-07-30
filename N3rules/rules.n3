@@ -1,0 +1,83 @@
+
+@prefix sosa:  <http://www.w3.org/ns/sosa/> .
+@prefix qudt:  <http://qudt.org/schema/qudt/> .
+@prefix unit:  <http://qudt.org/vocab/unit/> .
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix math:  <http://www.w3.org/2000/10/swap/math#> .
+@prefix :      <http://example.com/waterinfo/rules#> .
+
+# ------------------------------------------------------------------
+# Ontology-level facts: declare a conversion once per unit pair.
+# Add a line here whenever a new non-canonical unit shows up, instead
+# of hardcoding a conversion factor inside a Python script.
+# ------------------------------------------------------------------
+unit:MicroS-PER-CentiM :convertsTo unit:MilliS-PER-CentiM ;
+                        :multiplier 0.001 .
+
+# ------------------------------------------------------------------
+# Rule Set 1 — unit normalization
+# ------------------------------------------------------------------
+
+# 1a. Normalize a non-canonical, but present, result value.
+{
+    ?obs a sosa:Observation ;
+         qudt:hasUnit ?u ;
+         sosa:hasSimpleResult ?v .
+    ?u :convertsTo unit:MilliS-PER-CentiM ;
+       :multiplier ?m .
+    (?v ?m) math:product ?normalized .
+} => {
+    ?obs :hasNormalizedResult ?normalized ;
+         :normalizedUnit unit:MilliS-PER-CentiM ;
+         :hasQualityIssue :UnitWasConverted .
+} .
+
+# 1b. Pass through observations that are already canonical.
+{
+    ?obs a sosa:Observation ;
+         qudt:hasUnit unit:MilliS-PER-CentiM ;
+         sosa:hasSimpleResult ?v .
+} => {
+    ?obs :hasNormalizedResult ?v ;
+         :normalizedUnit unit:MilliS-PER-CentiM .
+} .
+
+# ------------------------------------------------------------------
+# Rule Set 2 — quality annotation from SHACL validation results
+#
+# Feed pyshacl's results_graph (serialized to turtle) as a SECOND
+# input file alongside water_link.ttl, e.g.:
+#   eye water_link.ttl shacl_results.ttl water_link_rules.n3 --nope
+# ------------------------------------------------------------------
+
+# 2a. Any SHACL violation on an observation becomes a first-class,
+#     queryable annotation on that observation.
+{
+    ?result a sh:ValidationResult ;
+            sh:focusNode ?obs ;
+            sh:resultMessage ?msg ;
+            sh:resultPath ?path .
+} => {
+    ?obs :hasQualityIssue :ShaclViolation ;
+         :violationOnPath ?path ;
+         :violationMessage ?msg .
+} .
+
+# 2b. Specifically tag the wrong-unit case for easy filtering.
+{
+    ?result a sh:ValidationResult ;
+            sh:focusNode ?obs ;
+            sh:resultPath qudt:hasUnit .
+} => {
+    ?obs :hasQualityIssue :UnexpectedUnit .
+} .
+
+# 2c. Specifically tag the missing-result case for easy filtering.
+{
+    ?result a sh:ValidationResult ;
+            sh:focusNode ?obs ;
+            sh:resultPath sosa:hasSimpleResult .
+} => {
+    ?obs :hasQualityIssue :MissingResult .
+} .

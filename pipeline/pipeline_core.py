@@ -80,6 +80,10 @@ def step_5_rdf2tss(input_path, output_path,observed_parameter="placeholder",over
     tss_graph = RDF2TSS_V2.create_tss(sensor_set, original_graph,observed_parameter)
     RDF2TSS_V2.save_graph(output_path, tss_graph, overwrite)
 
+def step_5_5_reasoner(data_path,rule_path):
+#eye ../data/water_link.ttl rules.n3 --nope --pass-only-new
+    command = ["eye", data_path, rule_path,"--nope", "--pass-only-new"]
+
 def step_6_ingest_tss_virtuoso(tss_path, tss_graph_uri):
     print("--- Step 6: Ingesting TSS to Virtuoso ---")
     import ingest

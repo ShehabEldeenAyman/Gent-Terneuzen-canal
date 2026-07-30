@@ -25,6 +25,9 @@ def main():
     print("--- Shacl out validation finished ---")
 
     core.step_5_rdf2tss("../data/water_link.ttl", "../data/waterlink_tss.ttl","Data/conductivity",overwrite=True)
+
+    core.step_5_5_reasoner("../data/water_link.tt","../N3rules/rules.n3")
+
     print("--- Ingesting Water-Link Data to Virtuoso started---")
     core.step_4_ingest_virtuoso("../data/water_link.ttl", constants.GRAPH_URI, delete_existing=True)
     print("--- Ingesting Water-Link Data to Virtuoso finished---")
