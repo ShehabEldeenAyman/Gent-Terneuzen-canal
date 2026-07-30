@@ -1,7 +1,7 @@
 import pipeline_core as core
-import sys; sys.path.append('..')  # Adds the parent directory
-import python_backend_server.constants as constants
-from rdflib import Graph,Namespace,URIRef,Literal
+from rdflib import URIRef
+
+GRAPH_URI = "http://example.com/Gent-Terneuzen"
 
 def main():
     core.setup_environment()
@@ -26,10 +26,10 @@ def main():
 
     core.step_5_rdf2tss("../data/water_link.ttl", "../data/waterlink_tss.ttl","Data/conductivity",overwrite=True)
 
-    core.step_5_5_reasoner("../data/water_link.tt","../N3rules/rules.n3")
+    core.step_5_5_reasoner("../data/water_link.ttl","../N3rules/rules.n3")
 
     print("--- Ingesting Water-Link Data to Virtuoso started---")
-    core.step_4_ingest_virtuoso("../data/water_link.ttl", constants.GRAPH_URI, delete_existing=True)
+    core.step_4_ingest_virtuoso("../data/water_link.ttl", GRAPH_URI, delete_existing=True)
     print("--- Ingesting Water-Link Data to Virtuoso finished---")
 
 if __name__ == "__main__":

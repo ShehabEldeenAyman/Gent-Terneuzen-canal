@@ -1,10 +1,6 @@
 from pywaterinfo import Waterinfo
 import pandas as pd
 from datetime import datetime, timezone
-import sys; sys.path.append('..')  # Adds the parent directory
-
-import python_backend_server.constants as constants
-
 hic = Waterinfo("hic", cache=True)
 vmm = Waterinfo("vmm", cache=True)
 

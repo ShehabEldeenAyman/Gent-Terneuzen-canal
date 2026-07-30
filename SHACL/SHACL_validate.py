@@ -1,29 +1,22 @@
+from pathlib import Path
 import time
+
 import pyshacl
 import rdflib
 
-def validate_shacl(data_location,shapes_location,report_name):
+
+def validate_shacl(data_location, shapes_location, report_name):
     data = rdflib.Graph().parse(data_location, format="turtle")
     shapes = rdflib.Graph().parse(shapes_location, format="turtle")
-
-    t0 = time.time()
-    conforms, results_graph, results_text = pyshacl.validate(
-    data,
-    shacl_graph=shapes,
-    advanced=True,          # required — you're using sh:sparql (SPARQLConstraintComponent)
-    abort_on_first=False,   # set True to stop at the first violation, much faster for a quick check
-    meta_shacl=False,
+    started = time.perf_counter()
+    conforms, _results_graph, results_text = pyshacl.validate(
+        data, shacl_graph=shapes, advanced=True, abort_on_first=False, meta_shacl=False,
     )
-
-    print("Conforms:", conforms)
-    print("Took:", round(time.time() - t0, 1), "seconds")
-    print(f"{shapes_location} SHACL report saved successfully")
-    file = open(report_name, "w")
-    file.write(results_text)
-    file.close()
-
-def main():
-    validate_shacl("../data/water_link.ttl","SHACL_out.ttl","out_report")
-
-if __name__ == "__main__":
-    main()
+    report_path = Path(report_name)
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text(results_text, encoding="utf-8")
+    duration = round(time.perf_counter() - started, 2)
+    message = "SHACL validation conforms." if conforms else "SHACL validation found violations."
+    print(message)
+    print(f"Report saved to {report_path}")
+    return {"message": message, "conforms": conforms, "duration_seconds": duration}

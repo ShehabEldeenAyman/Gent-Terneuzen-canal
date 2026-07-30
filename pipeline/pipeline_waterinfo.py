@@ -1,21 +1,26 @@
 import pipeline_core as core
-import sys; sys.path.append('..')  # Adds the parent directory
-import python_backend_server.constants as constants
-from rdflib import Graph,Namespace,URIRef,Literal
+from rdflib import URIRef
+
+GRAPH_URI = "http://example.com/Gent-Terneuzen"
+DATA_DICTIONARY = {
+    "conductivity": ["289435042", "289423042", "289429042", "289441042"],
+}
+START_DATE = "2021-01-01T00:00:00Z"
+END_DATE = "2026-03-31T23:59:59Z"
 
 def main():
     core.setup_environment()
-    for key,value in constants.data_dictionary.items():
+    for key,value in DATA_DICTIONARY.items():
         print (f"--- Processing parameter: {key} ---")
         print (f"--- Associated sensor IDs: {value} ---")
         print(f"value type: {type(value)}")
-        print (f"--- Fetching data from {constants.START_DATE} to {constants.END_DATE} ---")
-        core.step_1_fetch_data(constants.START_DATE, constants.END_DATE,value, parameter_name=key)
+        print (f"--- Fetching data from {START_DATE} to {END_DATE} ---")
+        core.step_1_fetch_data(START_DATE, END_DATE,value, parameter_name=key)
         core.step_2_preprocess(parameter_name=key)
         core.step_3_rml_mapping(parameter_name=key)
 
         print("--- Shacl in validation started ---")
-        core.step_shacl_validate("../data/water_link.ttl","../SHACL/SHACL_in.ttl","../data/water_info_shacl_in_report.txt")
+        core.step_shacl_validate(f"../data/{key}.ttl","../SHACL/SHACL_in.ttl",f"../data/{key}_shacl_in_report.txt")
         print("--- Shacl in validation finished ---")
 
 
@@ -24,10 +29,10 @@ def main():
         print("--- Automated Aligments finished ---")
 
         print("--- Shacl out validation started ---")
-        core.step_shacl_validate("../data/water_link.ttl","../SHACL/SHACL_out.ttl","../data/water_info_shacl_out_report.txt")
+        core.step_shacl_validate(f"../data/{key}.ttl","../SHACL/SHACL_out.ttl",f"../data/{key}_shacl_out_report.txt")
         print("--- Shacl out validation finished ---")
 
-        core.step_4_ingest_virtuoso(f"../data/{key}.ttl", constants.GRAPH_URI, delete_existing=False)
+        core.step_4_ingest_virtuoso(f"../data/{key}.ttl", GRAPH_URI, delete_existing=False)
         core.step_5_rdf2tss(f"../data/{key}.ttl", f"../data/{key}_tss.ttl",f"Data/{key}")
 
 if __name__ == "__main__":

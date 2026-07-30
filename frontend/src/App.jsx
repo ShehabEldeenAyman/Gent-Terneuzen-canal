@@ -1,329 +1,105 @@
-import React, { useState ,useEffect} from 'react';
-import { BodyCard } from './components/BodyCard';
-import { MapCardHead, MapCardBody } from './components/MapCard';
-import { BenchmarksCardHead, BenchmarksCardBody } from './components/BenchmarksCard';
-import { ChartCardHead,ChartCardBody } from './components/ChartCard';
-import { LDESChart } from './components/ChartComponents/LDESChart';
-import { LDESTSSChart } from './components/ChartComponents/LDESTSSChart';
-import { TTLChart } from './components/ChartComponents/TTLChart';
-import { SQLChart } from './components/ChartComponents/SQLChart';
-import { QueryCard } from './components/QueryCard';
-import { BrowseDataHead,BrowseDataBody } from './components/BrowseData';
-import { LDESClientCard } from './components/LDESClientCard';
-import { base_url } from './constants';
-import { DataVisualization } from './components/datavisualization';
-import tensorflowbrowser from './components/tensorflowbrowser';
-import customtensorflowbrowser from './components/customtensorflowbrowser';
-import TensorflowConductivity from './components/tensorflowconductivity';
-import { machineLearningCard } from './components/machineLearningCard';
-import {LSTMInference} from './components/EdgeDeepLearning'
-import {chronosCard} from './components/chronosCard';
+import { useState } from 'react'
+import './App.css'
 
-const CONDUCTIVITY_URL = "https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/conductivity/conductivity.trig";
-const PRECIPITATION_URL = "https://shehabeldeenayman.github.io/Gent-Terneuzen-canal/precipitation/precipitation.trig";
+const API = import.meta.env.VITE_PIPELINE_API_URL || 'http://localhost:8000'
+const PLAYGROUND = [
+  {
+    id: 'water-link', title: 'Water-Link conductivity',
+    description: 'Clean the supplied workbook, map it to RDF, validate and align units, then create TSS and inferred RDF.',
+    stages: [
+      ['prepare', 'Prepare workbook', 'Clean the Water-Link Excel result sheet into a CSV.'],
+      ['map', 'Map to RDF', 'Generate RML and transform the CSV into Turtle RDF.'],
+      ['validate-input', 'Validate input', 'Check the source RDF against the MicroS/cm SHACL shape.'],
+      ['align', 'Align units', 'Convert observations to milliSiemens per centimetre.'],
+      ['validate-output', 'Validate output', 'Check the normalized RDF against the canonical SHACL shape.'],
+      ['tss', 'Create TSS', 'Create Time Series Snippets from the RDF observations.'],
+      ['reason', 'Run N3 rules', 'Generate inferred triples and quality annotations.'],
+      ['ingest', 'Ingest to Virtuoso', 'Upload the normalized RDF to the configured named graph.'],
+    ], results: {},
+  },
+  {
+    id: 'waterinfo-conductivity', title: 'Waterinfo conductivity',
+    description: 'Fetch conductivity measurements, then apply the same semantic quality pipeline.',
+    stages: [
+      ['fetch', 'Fetch measurements', 'Download the configured Waterinfo sensor series.'],
+      ['prepare', 'Prepare CSV', 'Add Unix timestamps and normalize date formatting.'],
+      ['map', 'Map to RDF', 'Generate RML and transform CSV measurements into Turtle RDF.'],
+      ['validate-input', 'Validate input', 'Check source RDF against the MicroS/cm SHACL shape.'],
+      ['align', 'Align units', 'Convert observations to milliSiemens per centimetre.'],
+      ['validate-output', 'Validate output', 'Check normalized RDF against the canonical SHACL shape.'],
+      ['tss', 'Create TSS', 'Create Time Series Snippets from the RDF observations.'],
+      ['ingest', 'Ingest to Virtuoso', 'Upload normalized RDF to the configured named graph.'],
+    ], results: {},
+  },
+]
 
-const App = () => {
+function Output({ result }) {
+  const [preview, setPreview] = useState(null)
+  const [previewing, setPreviewing] = useState(false)
 
-  // 1. Initialize state to track the active section
-  const [activeTab, setActiveTab] = useState('Station Info');
-
-  //const navItems = ['Station Info','Browse Data', 'LDES Client', 'LDES', 'LDES + TSS', 'TTL','SQL', 'Benchmarks', 'Query'];
-  const navItems = ['Station Info', 'LDES Client','Data Visualization','Machine Learning','Deep Learning (Edge)','Chronos'];
-
-
-  const styles = {
-    container: { display: 'flex', flexDirection: 'column', height: '100vh', margin: 0, fontFamily: "'Inter', sans-serif" },
-    mainContent: { display: 'flex', flex: '0 0 90%', width: '100%' },
-    navbar: { 
-      flex: '0 0 25%', 
-      backgroundColor: '#002353', 
-      color: 'white', 
-      padding: '2rem 1rem', 
-      display: 'flex', 
-      flexDirection: 'column', 
-      gap: '1rem', 
-      boxSizing: 'border-box' 
-    },
-    body: { 
-      flexGrow: 1, 
-      backgroundColor: '#FFFFFF', 
-      padding: '2rem', 
-      overflow: 'hidden', // The scroll happens inside BodyCard now
-      height: '100vh',
-      boxSizing: 'border-box'
-    },
-    footer: { 
-      flex: '0 0 10%', 
-      backgroundColor: '#2C3E50', 
-      color: '#BDC3C7', 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center' 
-    },
-    navItem: (isActive) => ({
-      fontSize: '1.1rem',
-      fontWeight: '500',
-      cursor: 'pointer',
-      padding: '12px',
-      borderRadius: '4px',
-      transition: 'all 0.2s',
-      listStyle: 'none',
-      // Visual feedback: Highlight the active button
-      backgroundColor: isActive ? 'rgba(255,255,255,0.2)' : 'transparent',
-      borderLeft: isActive ? '4px solid #3498db' : '4px solid transparent',
-    }),
-  };
-
-const renderBodyContent = () => {
-    switch (activeTab) {
-      case 'Station Info':
-        return (
-          <BodyCard Top={MapCardHead} Bottom={MapCardBody} />
-  );
-
-      case 'Benchmarks':
-        return <BodyCard Top={BenchmarksCardHead} Bottom={() => (<ChartCardBody 
-                charts={[
-                <BenchmarksCardBody url={`${base_url}ingestbenchmarks`} title="Ingest Benchmarks" />,
-                <BenchmarksCardBody url={`${base_url}recallbenchmarks`} title="Recall Benchmarks" />,
-                // <BenchmarksCardBody url={`${base_url}objectcountbenchmarks`} title="Object Count Benchmarks" />
-
-
-              ]} // place multiple charts here
-                placeholder="Awaiting Benchmarks..." 
-              />)} />
-      case 'LDES':
-        return (
-          <BodyCard 
-            Top={() => <ChartCardHead title="LDES Charts" />} 
-            Bottom={() => (
-              <ChartCardBody 
-                charts={[
-                <LDESChart 
-                URL={`${base_url}virtuoso/ldes/RiverStage1Year`}
-                title="River Stage - Virtuoso"
-                />,
-                  <LDESChart
-                URL={`${base_url}virtuoso/ldes/RiverDischarge1Year`}
-                title="River Discharge - Virtuoso"
-                />,
-                <LDESChart
-                URL={`${base_url}oxigraph/ldes/RiverStage1Year`}
-                title="River Stage - Oxigraph"
-                />,
-                <LDESChart
-                URL={`${base_url}oxigraph/ldes/RiverDischarge1Year`}
-                title="River Discharge - Oxigraph"
-                />,
-              ]} // place multiple charts here
-                placeholder="Awaiting Real-Time Streamflow Data for Mol Sluis..." 
-              />
-            )} 
-          />
-        );
-      case 'LDES + TSS':
-        return (
-          <BodyCard 
-            Top={() => <ChartCardHead title="LDES Charts" />} 
-            Bottom={() => (
-              <ChartCardBody 
-                charts={[
-                <LDESTSSChart 
-                URL={`${base_url}virtuoso/ldestss/RiverStage1Year`}
-                title="River Stage - Virtuoso"
-                />,
-                <LDESTSSChart 
-                URL={`${base_url}virtuoso/ldestss/RiverDischarge1Year`}
-                title="River Discharge - Virtuoso"
-                />,
-                <LDESTSSChart 
-                URL={`${base_url}oxigraph/ldestss/RiverStage1Year`}
-                title="River Stage - Oxigraph"
-                />,
-                <LDESTSSChart 
-                URL={`${base_url}oxigraph/ldestss/RiverDischarge1Year`}
-                title="River Discharge - Oxigraph"
-                />,
-              ]} // place multiple charts here
-                placeholder="Awaiting Real-Time Streamflow Data for Mol Sluis..." 
-              />
-            )} 
-          />
-        );
-      case 'TTL':
-                return (
-          <BodyCard 
-            Top={() => <ChartCardHead title="LDES Charts" />} 
-            Bottom={() => (
-              <ChartCardBody 
-                charts={[
-                <TTLChart 
-                URL={`${base_url}virtuoso/ttl/RiverStage1Year`}
-                title="River Stage - Virtuoso"
-                />,
-                                <TTLChart 
-                URL={`${base_url}virtuoso/ttl/RiverDischarge1Year`}
-                title="River Discharge - Virtuoso"
-                />,
-                                <TTLChart 
-                URL={`${base_url}oxigraph/ttl/RiverStage1Year`}
-                title="River Stage - Oxigraph"
-                />,
-                                <TTLChart 
-                URL={`${base_url}oxigraph/ttl/RiverDischarge1Year`}
-                title="River Discharge - Oxigraph"
-                />,
-
-              ]} // place multiple charts here
-                placeholder="Awaiting Real-Time Streamflow Data for Mol Sluis..." 
-              />
-            )} 
-          />
-        );
-      case 'SQL':
-          return (
-          <BodyCard 
-            Top={() => <ChartCardHead title="LDES Charts" />} 
-            Bottom={() => (
-              <ChartCardBody 
-                charts={[
-                  <SQLChart
-                    URL={`${base_url}postgres/RiverStage1Year`}
-                    title="River Stage - SQL/Postgres"
-                  />,
-                    <SQLChart
-                    URL={`${base_url}postgres/RiverDischarge1Year`}
-                    title="River Discharge - SQL/Postgres"
-                  />,
-
-              ]} // place multiple charts here
-                placeholder="Awaiting Real-Time Streamflow Data for Mol Sluis..." 
-              />
-            )} 
-          />
-        );
-
-      case 'Query':
-        return(
-          <BodyCard
-          Top={() => <ChartCardHead title="Query Form"/>}
-          Bottom={() =>(
-             <QueryCard/>
-          )} />
-        );
-
-      case 'Browse Data':
-        return (<BodyCard
-          Top={BrowseDataHead}
-          Bottom={BrowseDataBody} />);
-        
-            case 'LDES Client':
-        return (
-
-          <BodyCard
-          Top={() => <ChartCardHead title="LDES Client"/>}
-          Bottom={() => <div><LDESClientCard url={CONDUCTIVITY_URL} /> <LDESClientCard url={PRECIPITATION_URL} />  </div>}
-          />
-        );
-
-        case 'Data Visualization':
-        return (
-
-          <BodyCard
-          Top={() => <ChartCardHead title=" "/>}
-          //Bottom={datavisualization(["289435042", "289429042", "289441042", "289423042"])} />
-          Bottom={() => <div><DataVisualization targetSensorIds={["289435042", "289429042", "289441042", "289423042"]} ldesUrl={CONDUCTIVITY_URL}/><DataVisualization targetSensorIds={["34967042"]} ldesUrl={PRECIPITATION_URL}/></div>} />
-        );
-
-        case 'Machine Learning':
-                  return (
-
-          <BodyCard
-          Top={() => <ChartCardHead title=" "/>}
-          Bottom={machineLearningCard} />
-        );
-
-        case 'Deep Learning (Edge)':
-                  return (
-                              <BodyCard
-          Top={() => <ChartCardHead title=" "/>}
-          Bottom={LSTMInference} />
-        );
-
-                case 'Chronos':
-                  return (
-                              <BodyCard
-          Top={() => <ChartCardHead title=" "/>}
-          Bottom={chronosCard} />
-        );
-
-      
-
-        case 'TF':
-        return (
-
-          <BodyCard
-          Top={() => <ChartCardHead title="TensorFlow Browser"/>}
-          Bottom={tensorflowbrowser} />
-        );  
-
-        case 'Custom TF':
-        return (
-
-          <BodyCard
-          Top={() => <ChartCardHead title="Custom TensorFlow Model"/>}
-          Bottom={customtensorflowbrowser} />
-        );
-          case 'TensorflowConductivity':
-        return (
-
-          <BodyCard
-          Top={() => <ChartCardHead title="TensorFlow Conductivity"/>}
-          Bottom={TensorflowConductivity} />
-        );
-        
-
-      default:
-        return <div>Coming Soon...</div>;
+  async function showArtifact(path) {
+    setPreviewing(true)
+    try {
+      const response = await fetch(`${API}/api/artifacts/${path}`)
+      setPreview({ path, text: await response.text() })
+    } finally {
+      setPreviewing(false)
     }
-  };
+  }
 
+  if (!result) return <p className="empty">Run this stage to inspect its logs and generated artifacts.</p>
+  return <div className={`output ${result.status}`}>
+    <strong>{result.status === 'success' ? 'Completed' : 'Needs attention'}</strong>
+    <span>{result.message} · {result.duration_seconds}s</span>
+    {result.artifacts?.map((item) => <button className="artifact" key={item.path} disabled={!item.exists || previewing} onClick={() => showArtifact(item.path)}>{item.path} ({item.exists ? `${item.size.toLocaleString()} bytes` : 'not created'})</button>)}
+    {result.log && <details><summary>Execution log</summary><pre>{result.log}</pre></details>}
+    {preview && <details open><summary>{preview.path}</summary><pre>{preview.text}</pre></details>}
+  </div>
+}
 
-  return (
-    <div style={styles.container}>
-      <div style={styles.mainContent}>
-        <nav style={styles.navbar}>
-          <h2 style={{ marginBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.2)', paddingBottom: '1rem' }}>
-            Database Central
-          </h2>
-          <ul style={{ padding: 0, margin: 0 }}>
-            {navItems.map((item) => (
-              <li 
-                key={item} 
-                // 3. Update state on click
-                onClick={() => setActiveTab(item)}
-                style={styles.navItem(activeTab === item)} 
-                onMouseOver={(e) => { if(activeTab !== item) e.target.style.background = 'rgba(255,255,255,0.1)' }} 
-                onMouseOut={(e) => { if(activeTab !== item) e.target.style.background = 'transparent' }}
-              >
-                {item}
-              </li>
-            ))}
-          </ul>
-        </nav>
+function App() {
+  const [useCases, setUseCases] = useState(PLAYGROUND)
+  const [active, setActive] = useState('water-link')
+  const [running, setRunning] = useState(null)
+  const [error, setError] = useState('')
 
-        <main style={styles.body}>
-{renderBodyContent()}
-        </main>
-      </div>
+  async function load() {
+    try {
+      const response = await fetch(`${API}/api/use-cases`)
+      if (!response.ok) throw new Error('The pipeline server is unavailable.')
+      setUseCases(await response.json())
+      setError('')
+    } catch (err) { setError(`${err.message} Start it with: uvicorn pipeline.playground_server:app --reload --port 8000`) }
+  }
+  const useCase = useCases.find((item) => item.id === active) || useCases[0]
 
-      <footer style={styles.footer}>
-        <div style={{ textAlign: 'center' }}>
-          <p>&copy; 2026 Database Insights. Viewing: <strong>{activeTab}</strong></p>
-        </div>
-      </footer>
-    </div>
-  );
-};
+  async function runStage(stageId) {
+    setRunning(stageId)
+    try {
+      const response = await fetch(`${API}/api/use-cases/${active}/stages/${stageId}`, { method: 'POST' })
+      const result = await response.json()
+      setUseCases((current) => current.map((item) => item.id === active ? { ...item, results: { ...item.results, [stageId]: result } } : item))
+    } catch (err) { setError(`Could not run the stage: ${err.message}`) }
+    finally { setRunning(null) }
+  }
 
-export default App;
+  return <main className="playground">
+    <header>
+      <p className="eyebrow">Gent–Terneuzen Canal</p>
+      <h1>Pipeline Playground</h1>
+      <p>Run each semantic-data stage deliberately, inspect its output, then continue when you are satisfied.</p>
+    </header>
+    {error && <aside className="notice">{error}</aside>}
+    <nav aria-label="Use cases">{useCases.map((item) => <button className={item.id === active ? 'selected' : ''} key={item.id} onClick={() => setActive(item.id)}>{item.title}</button>)}</nav>
+    {useCase && <section className="workflow">
+      <div className="workflow-heading"><div><h2>{useCase.title}</h2><p>{useCase.description}</p></div><button className="refresh" onClick={load}>Refresh server state</button></div>
+      <ol>{useCase.stages.map(([id, title, description], index) => <li key={id} className="stage">
+        <div className="stage-number">{String(index + 1).padStart(2, '0')}</div>
+        <div className="stage-content"><h3>{title}</h3><p>{description}</p><Output result={useCase.results?.[id]} /></div>
+        <button className="run" disabled={running !== null} onClick={() => runStage(id)}>{running === id ? 'Running…' : 'Run stage'}</button>
+      </li>)}</ol>
+    </section>}
+  </main>
+}
+
+export default App
