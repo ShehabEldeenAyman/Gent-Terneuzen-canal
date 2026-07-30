@@ -13,9 +13,20 @@ def main():
         core.step_1_fetch_data(constants.START_DATE, constants.END_DATE,value, parameter_name=key)
         core.step_2_preprocess(parameter_name=key)
         core.step_3_rml_mapping(parameter_name=key)
+
+        print("--- Shacl in validation started ---")
+        core.step_shacl_validate("../data/water_link.ttl","../SHACL/SHACL_in.ttl","../data/water_info_shacl_in_report.txt")
+        print("--- Shacl in validation finished ---")
+
+
         print("--- Automated Aligments started ---")
         core.step_3_5_automating_alignments(f"../data/{key}.ttl",URIRef("http://qudt.org/vocab/unit/MilliS-PER-CentiM"))
         print("--- Automated Aligments finished ---")
+
+        print("--- Shacl out validation started ---")
+        core.step_shacl_validate("../data/water_link.ttl","../SHACL/SHACL_out.ttl","../data/water_info_shacl_out_report.txt")
+        print("--- Shacl out validation finished ---")
+
         core.step_4_ingest_virtuoso(f"../data/{key}.ttl", constants.GRAPH_URI, delete_existing=False)
         core.step_5_rdf2tss(f"../data/{key}.ttl", f"../data/{key}_tss.ttl",f"Data/{key}")
 
