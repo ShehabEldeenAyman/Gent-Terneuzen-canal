@@ -90,7 +90,7 @@ def step_1_pre_process_waterlink(input_path=None, output_path=None):
     return {"message": "Prepared Water-Link workbook data.", "artifacts": [output_path]}
 
 
-def _rml_mapping(parameter_name, generator_module):
+def step_3_rml_mapping(parameter_name, "RML_generator"):
     setup_environment()
     generator = __import__(generator_module)
     generator.generate_timeseries_mapping(parameter_name)
@@ -99,10 +99,6 @@ def _rml_mapping(parameter_name, generator_module):
     result = _run(["java", "-jar", "rmlmapper.jar", "-m", str(mapping), "-o", str(output), "-s", "turtle"], "RML mapping")
     result["artifacts"] = [mapping, output]
     return result
-
-
-def step_3_rml_mapping(parameter_name):
-    return _rml_mapping(parameter_name, "RML_generator")
 
 
 def step_2_rml_mapping_waterlink(parameter_name="water_link"):
