@@ -1,29 +1,24 @@
 import requests
-USERNAME = "dba"
-PASSWORD = "dba"
+
+# Update the URL to point to your new Fuseki dataset endpoint
+VIRTUOSO_URL = "http://localhost:3030/dataset/data"  # Replace 'dataset' with your actual Fuseki dataset name
 ttl_timeseries_path = "../data/timeseries.ttl"
 ttl_stations_path = "../data/stations.ttl"
-VIRTUOSO_URL = "http://localhost:8890/sparql-graph-crud"
 
 
-
-def upload_graph(ttl_data_path,GRAPH_URI):
-    # 1. Prepare parameters and headers
-    params = {'graph-uri': GRAPH_URI}
+def upload_graph(ttl_data_path, GRAPH_URI):
+    params = {'graph': GRAPH_URI}
     headers = {'Content-Type': 'text/turtle'}
     print(f"started uploading {ttl_data_path} to {GRAPH_URI}")
     try:
-        # 2. Open the file in binary mode and stream it
         with open(ttl_data_path, 'rb') as f:
             response = requests.post(
                 VIRTUOSO_URL, 
                 params=params, 
                 data=f, 
-                headers=headers, 
-                auth=(USERNAME, PASSWORD)
+                headers=headers
             )
 
-        # 3. Check result
         if response.status_code in [200, 201, 204]:
             print(f"Successfully uploaded {ttl_data_path} to {GRAPH_URI}")
         else:
@@ -35,19 +30,18 @@ def upload_graph(ttl_data_path,GRAPH_URI):
     except Exception as e:
         print(f"An error occurred: {e}")
 
+
 def delete_graph(GRAPH_URI):
-    """Removes the entire named graph from Virtuoso."""
-    params = {'graph-uri': GRAPH_URI}
+    """Removes the entire named graph from the triplestore."""
+    params = {'graph': GRAPH_URI}
     
     try:
         print(f"Attempting to delete graph: {GRAPH_URI}...")
         response = requests.delete(
             VIRTUOSO_URL,
-            params=params,
-            auth=(USERNAME, PASSWORD)
+            params=params
         )
         
-        # 200 (OK) or 204 (No Content) usually indicates success
         if response.status_code in [200, 204]:
             print(f"Successfully deleted graph: {GRAPH_URI}")
             return True
@@ -60,6 +54,7 @@ def delete_graph(GRAPH_URI):
         print(f"An error occurred during deletion: {e}")
         return False
 
+
 def main():
     GRAPH_URI = "http://example.com/Gent-Terneuzen"
     delete_graph(GRAPH_URI)
@@ -68,4 +63,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()    
+    main()

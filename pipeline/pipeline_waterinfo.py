@@ -5,7 +5,7 @@ GRAPH_URI = "http://example.com/Gent-Terneuzen"
 DATA_DICTIONARY = {
     "conductivity": ["289435042", "289423042", "289429042", "289441042"],
 }
-START_DATE = "2021-01-01T00:00:00Z"
+START_DATE = "2025-01-01T00:00:00Z"
 END_DATE = "2026-03-31T23:59:59Z"
 
 def main():
