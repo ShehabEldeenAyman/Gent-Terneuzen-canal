@@ -1,105 +1,154 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './App.css'
+import UseCasePage from './pages/UseCasePage.jsx'
 
 const API = import.meta.env.VITE_PIPELINE_API_URL || 'http://localhost:8000'
-const PLAYGROUND = [
-  {
-    id: 'water-link', title: 'Water-Link conductivity',
-    description: 'Clean the supplied workbook, map it to RDF, validate and align units, then create TSS and inferred RDF.',
-    stages: [
-      ['prepare', 'Prepare workbook', 'Clean the Water-Link Excel result sheet into a CSV.'],
-      ['map', 'Map to RDF', 'Generate RML and transform the CSV into Turtle RDF.'],
-      ['validate-input', 'Validate input', 'Check the source RDF against the MicroS/cm SHACL shape.'],
-      ['align', 'Align units', 'Convert observations to milliSiemens per centimetre.'],
-      ['validate-output', 'Validate output', 'Check the normalized RDF against the canonical SHACL shape.'],
-      ['tss', 'Create TSS', 'Create Time Series Snippets from the RDF observations.'],
-      ['reason', 'Run N3 rules', 'Generate inferred triples and quality annotations.'],
-      ['ingest', 'Ingest to Virtuoso', 'Upload the normalized RDF to the configured named graph.'],
-    ], results: {},
-  },
-  {
-    id: 'waterinfo-conductivity', title: 'Waterinfo conductivity',
-    description: 'Fetch conductivity measurements, then apply the same semantic quality pipeline.',
-    stages: [
-      ['fetch', 'Fetch measurements', 'Download the configured Waterinfo sensor series.'],
-      ['prepare', 'Prepare CSV', 'Add Unix timestamps and normalize date formatting.'],
-      ['map', 'Map to RDF', 'Generate RML and transform CSV measurements into Turtle RDF.'],
-      ['validate-input', 'Validate input', 'Check source RDF against the MicroS/cm SHACL shape.'],
-      ['align', 'Align units', 'Convert observations to milliSiemens per centimetre.'],
-      ['validate-output', 'Validate output', 'Check normalized RDF against the canonical SHACL shape.'],
-      ['tss', 'Create TSS', 'Create Time Series Snippets from the RDF observations.'],
-      ['ingest', 'Ingest to Virtuoso', 'Upload normalized RDF to the configured named graph.'],
-    ], results: {},
-  },
+const DEFAULT_QUERY = `PREFIX sosa: <http://www.w3.org/ns/sosa/>
+SELECT ?observation ?time ?value
+WHERE {
+  GRAPH <http://example.com/Gent-Terneuzen> {
+    ?observation a sosa:Observation ;
+                 sosa:resultTime ?time ;
+                 sosa:hasSimpleResult ?value .
+  }
+}
+ORDER BY DESC(?time)
+LIMIT 25`
+
+const fallbackUseCases = [
+  { id: 'water-link', title: 'Water-Link conductivity', description: 'Workbook-to-Fuseki semantic pipeline.', stages: [], results: {} },
+  { id: 'waterinfo-conductivity', title: 'Waterinfo conductivity', description: 'Waterinfo-to-Fuseki semantic pipeline.', stages: [], results: {} },
 ]
 
-function Output({ result }) {
-  const [preview, setPreview] = useState(null)
-  const [previewing, setPreviewing] = useState(false)
+const icon = (name) => ({
+  overview: '◈', usecase: '◎', pipeline: '◫', browser: '▤', query: '⌘', settings: '⚙', run: '▶', file: '▧', database: '◉', check: '✓', warning: '!',
+}[name])
 
-  async function showArtifact(path) {
-    setPreviewing(true)
-    try {
-      const response = await fetch(`${API}/api/artifacts/${path}`)
-      setPreview({ path, text: await response.text() })
-    } finally {
-      setPreviewing(false)
-    }
-  }
+function ApiError({ message }) {
+  return message ? <div className="api-error"><span>{icon('warning')}</span>{message}</div> : null
+}
 
-  if (!result) return <p className="empty">Run this stage to inspect its logs and generated artifacts.</p>
-  return <div className={`output ${result.status}`}>
-    <strong>{result.status === 'success' ? 'Completed' : 'Needs attention'}</strong>
-    <span>{result.message} · {result.duration_seconds}s</span>
-    {result.artifacts?.map((item) => <button className="artifact" key={item.path} disabled={!item.exists || previewing} onClick={() => showArtifact(item.path)}>{item.path} ({item.exists ? `${item.size.toLocaleString()} bytes` : 'not created'})</button>)}
-    {result.log && <details><summary>Execution log</summary><pre>{result.log}</pre></details>}
-    {preview && <details open><summary>{preview.path}</summary><pre>{preview.text}</pre></details>}
+function ArtifactPreview({ artifact, onClose }) {
+  const [content, setContent] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const artifactPath = artifact.path.split('/').map(encodeURIComponent).join('/')
+
+  useEffect(() => {
+    let cancelled = false
+    fetch(`${API}/api/artifacts/${artifactPath}/summary`)
+      .then(async (response) => {
+        if (!response.ok) throw new Error(await response.text())
+        return response.json()
+      })
+      .then((value) => !cancelled && setContent(value))
+      .catch((error) => !cancelled && setContent({ error: error.message }))
+      .finally(() => !cancelled && setLoading(false))
+    return () => { cancelled = true }
+  }, [artifactPath])
+
+  return <aside className="preview-panel">
+    <div className="preview-title"><div><span className="file-icon">{icon('file')}</span><div><strong>{artifact.path.split('/').pop()}</strong><small>{artifact.size.toLocaleString()} bytes · {artifact.updated_at ? new Date(artifact.updated_at).toLocaleString() : 'not generated'}</small></div></div><button className="icon-button" onClick={onClose} aria-label="Close preview">×</button></div>
+    {loading && <p className="muted">Loading artifact preview…</p>}
+    {content?.error && <ApiError message={content.error} />}
+    {content?.columns && <div className="table-wrap"><table><thead><tr>{content.columns.map((column) => <th key={column}>{column}</th>)}</tr></thead><tbody>{content.rows.map((row, index) => <tr key={index}>{content.columns.map((column) => <td key={column}>{row[column]}</td>)}</tr>)}</tbody></table></div>}
+    {content?.text && <pre className="text-preview">{content.text}</pre>}
+    {content?.truncated && <p className="muted">Preview limited to the first 30,000 characters.</p>}
+  </aside>
+}
+
+function PipelineRun({ useCase, running, onRun, onPreview }) {
+  return <div className="stage-list">
+    {useCase.stages.map((stage, index) => {
+      const result = useCase.results?.[stage.id]
+      const status = result?.status || (stage.available ? 'ready' : 'unavailable')
+      const artifacts = result?.artifacts?.length ? result.artifacts : stage.artifacts?.filter((artifact) => artifact.exists)
+      return <article className={`stage-card ${status}`} key={stage.id}>
+        <div className="stage-marker"><span>{String(index + 1).padStart(2, '0')}</span></div>
+        <div className="stage-body"><div className="stage-heading"><div><h3>{stage.title}</h3><p>{stage.description}</p></div><span className={`status-pill ${status}`}>{status === 'success' ? 'Completed' : status === 'unavailable' ? 'Unavailable' : status === 'error' ? 'Attention needed' : 'Ready'}</span></div>
+          {status === 'unavailable' ? <p className="unavailable-copy">{stage.unavailable_reason}</p> : <div className={result ? 'stage-result' : 'stage-output'}>{result ? <><p><b>{result.message}</b><span> · {result.duration_seconds}s</span></p>{result.log && <details><summary>View execution log</summary><pre>{result.log}</pre></details>}</> : artifacts?.length > 0 ? <p><b>Existing output detected</b><span> · generated by an earlier pipeline run</span></p> : <p className="muted">No output has been generated for this stage yet.</p>}{artifacts?.length > 0 && <div className="artifact-row">{artifacts.map((artifact) => <button className="artifact-chip" disabled={!artifact.exists} key={artifact.path} onClick={() => onPreview(artifact)}>{icon('file')} {artifact.path.split('/').pop()}</button>)}</div>}</div>}
+        </div>
+        <button className="primary-button" disabled={!stage.available || running !== null} onClick={() => onRun(stage.id)}>{running === stage.id ? 'Running…' : <>{icon('run')} Run</>}</button>
+      </article>
+    })}
   </div>
 }
 
-function App() {
-  const [useCases, setUseCases] = useState(PLAYGROUND)
-  const [active, setActive] = useState('water-link')
-  const [running, setRunning] = useState(null)
+function SparqlWorkspace({ connected }) {
+  const [query, setQuery] = useState(DEFAULT_QUERY)
+  const [result, setResult] = useState(null)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const rows = result?.results?.bindings || []
+  const columns = useMemo(() => result?.head?.vars || [], [result])
 
-  async function load() {
+  async function execute() {
+    setLoading(true); setError('')
     try {
-      const response = await fetch(`${API}/api/use-cases`)
-      if (!response.ok) throw new Error('The pipeline server is unavailable.')
-      setUseCases(await response.json())
-      setError('')
-    } catch (err) { setError(`${err.message} Start it with: uvicorn pipeline.playground_server:app --reload --port 8000`) }
+      const response = await fetch(`${API}/api/sparql`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query }) })
+      if (!response.ok) throw new Error((await response.json()).detail || 'Query failed.')
+      setResult(await response.json())
+    } catch (err) { setError(err.message) }
+    finally { setLoading(false) }
   }
-  const useCase = useCases.find((item) => item.id === active) || useCases[0]
+
+  return <section className="workbench"><div className="workbench-header"><div><p className="eyebrow">Fuseki query service</p><h2>SPARQL workspace</h2><p>Query the named graph published by the pipeline. Results are returned directly from Apache Jena Fuseki.</p></div><span className={`connection ${connected ? 'online' : 'offline'}`}><i />{connected ? 'Fuseki connected' : 'Fuseki unavailable'}</span></div><div className="query-layout"><div className="query-editor"><label htmlFor="sparql">Query</label><textarea id="sparql" spellCheck="false" value={query} onChange={(event) => setQuery(event.target.value)} /><div className="query-actions"><button className="secondary-button" onClick={() => setQuery(DEFAULT_QUERY)}>Reset example</button><button className="primary-button" disabled={loading} onClick={execute}>{loading ? 'Querying…' : `${icon('run')} Run query`}</button></div></div><div className="query-help"><strong>Useful prefixes</strong><code>sosa:</code><span>Sensor observations</span><code>qudt:</code><span>Units and quantities</span><code>sh:</code><span>Validation results</span></div></div><ApiError message={error} />{result && <div className="query-results"><div className="result-summary"><strong>{rows.length} result{rows.length === 1 ? '' : 's'}</strong><span>SPARQL JSON response</span></div><div className="table-wrap"><table><thead><tr>{columns.map((column) => <th key={column}>?{column}</th>)}</tr></thead><tbody>{rows.map((row, index) => <tr key={index}>{columns.map((column) => <td key={column} title={row[column]?.value}>{row[column]?.value ?? '—'}</td>)}</tr>)}</tbody></table></div></div>}</section>
+}
+
+function DataBrowser({ useCases, onPreview }) {
+  const fileMap = new Map()
+  useCases.forEach((useCase) => {
+    useCase.stages.forEach((stage) => (stage.artifacts || []).forEach((artifact) => {
+      if (artifact.exists) fileMap.set(`${useCase.title}-${artifact.path}`, { ...artifact, useCase: useCase.title, stage: stage.title })
+    }))
+    Object.values(useCase.results || {}).forEach((result) => (result.artifacts || []).forEach((artifact) => {
+      if (artifact.exists) fileMap.set(`${useCase.title}-${artifact.path}`, { ...artifact, useCase: useCase.title, stage: 'Current run' })
+    }))
+  })
+  const files = [...fileMap.values()]
+  return <section className="workbench"><div className="workbench-header"><div><p className="eyebrow">Pipeline outputs</p><h2>Data browser</h2><p>Open the generated artifact from any completed stage. CSV files render as tables; Turtle and reports render as readable source previews.</p></div><span className="file-count">{files.length} artifacts</span></div>{files.length === 0 ? <div className="empty-state"><span>{icon('file')}</span><h3>No generated outputs yet</h3><p>Run a pipeline stage to make its CSV, RDF, SHACL report, or TSS output available here.</p></div> : <div className="asset-grid">{files.map((artifact) => <button className="asset-card" key={`${artifact.useCase}-${artifact.path}`} onClick={() => onPreview(artifact)}><span className="file-icon">{icon('file')}</span><div><strong>{artifact.path.split('/').pop()}</strong><small>{artifact.useCase} · {artifact.stage} · {artifact.size.toLocaleString()} bytes</small></div><span className="open-arrow">→</span></button>)}</div>}</section>
+}
+
+function App() {
+  const [useCases, setUseCases] = useState(fallbackUseCases)
+  const [activeUseCase, setActiveUseCase] = useState('water-link')
+  const [page, setPage] = useState('overview')
+  const [running, setRunning] = useState(null)
+  const [connection, setConnection] = useState(false)
+  const [error, setError] = useState('')
+  const [preview, setPreview] = useState(null)
+
+  async function refresh() {
+    try {
+      const [useCaseResponse, statusResponse] = await Promise.all([fetch(`${API}/api/use-cases`), fetch(`${API}/api/fuseki/status`)])
+      if (!useCaseResponse.ok) throw new Error('Pipeline API is unavailable.')
+      setUseCases(await useCaseResponse.json())
+      setConnection((await statusResponse.json()).connected)
+      setError('')
+    } catch (err) { setError(`${err.message} Start the API with: uvicorn pipeline.playground_server:app --reload --port 8000`) }
+  }
+
+  useEffect(() => { void refresh() }, [])
+  const currentUseCase = useCases.find((useCase) => useCase.id === activeUseCase) || useCases[0]
 
   async function runStage(stageId) {
     setRunning(stageId)
     try {
-      const response = await fetch(`${API}/api/use-cases/${active}/stages/${stageId}`, { method: 'POST' })
+      const response = await fetch(`${API}/api/use-cases/${activeUseCase}/stages/${stageId}`, { method: 'POST' })
       const result = await response.json()
-      setUseCases((current) => current.map((item) => item.id === active ? { ...item, results: { ...item.results, [stageId]: result } } : item))
+      setUseCases((items) => items.map((item) => item.id === activeUseCase ? { ...item, results: { ...item.results, [stageId]: result } } : item))
     } catch (err) { setError(`Could not run the stage: ${err.message}`) }
     finally { setRunning(null) }
   }
 
-  return <main className="playground">
-    <header>
-      <p className="eyebrow">Gent–Terneuzen Canal</p>
-      <h1>Pipeline Playground</h1>
-      <p>Run each semantic-data stage deliberately, inspect its output, then continue when you are satisfied.</p>
-    </header>
-    {error && <aside className="notice">{error}</aside>}
-    <nav aria-label="Use cases">{useCases.map((item) => <button className={item.id === active ? 'selected' : ''} key={item.id} onClick={() => setActive(item.id)}>{item.title}</button>)}</nav>
-    {useCase && <section className="workflow">
-      <div className="workflow-heading"><div><h2>{useCase.title}</h2><p>{useCase.description}</p></div><button className="refresh" onClick={load}>Refresh server state</button></div>
-      <ol>{useCase.stages.map(([id, title, description], index) => <li key={id} className="stage">
-        <div className="stage-number">{String(index + 1).padStart(2, '0')}</div>
-        <div className="stage-content"><h3>{title}</h3><p>{description}</p><Output result={useCase.results?.[id]} /></div>
-        <button className="run" disabled={running !== null} onClick={() => runStage(id)}>{running === id ? 'Running…' : 'Run stage'}</button>
-      </li>)}</ol>
-    </section>}
-  </main>
+  const navigation = [['overview', 'overview', 'Overview'], ['usecase', 'usecase', 'Use case'], ['pipeline', 'pipeline', 'Pipeline'], ['browser', 'browser', 'Data browser'], ['query', 'query', 'SPARQL query']]
+  const pageMeta = {
+    overview: ['Overview', 'Good morning, team.'],
+    usecase: ['Use case', 'Salt intrusion monitoring'],
+    pipeline: ['Pipeline', 'Pipeline control centre'],
+    browser: ['Data browser', 'Data browser'],
+    query: ['SPARQL query', 'SPARQL query workspace'],
+  }[page] || ['Overview', 'Good morning, team.']
+  return <div className="app-shell"><aside className="sidebar"><div className="brand"><span className="brand-mark">∿</span><div><strong>CanalOps</strong><small>Data platform</small></div></div><nav className="main-nav">{navigation.map(([id, glyph, label]) => <button aria-label={label} className={page === id ? 'active' : ''} key={id} onClick={() => setPage(id)}><span className="nav-icon">{icon(glyph)}</span><span className="nav-label">{label}</span></button>)}</nav><div className="sidebar-footer"><span className={`connection ${connection ? 'online' : 'offline'}`}><i /><span className="connection-label">{connection ? 'Fuseki online' : 'Fuseki offline'}</span></span><small>Gent–Terneuzen Canal</small></div></aside><main className="content"><header className="topbar"><div><p className="breadcrumb">Operations / {pageMeta[0]}</p><h1>{pageMeta[1]}</h1></div><div className="topbar-actions"><button className="refresh-button" onClick={refresh}>↻ Refresh</button><span className="avatar">GT</span></div></header><ApiError message={error} />{page === 'overview' && <><section className="hero-card"><div><p className="eyebrow">Semantic data operations</p><h2>From raw canal measurements to queryable knowledge.</h2><p>Run auditable data-quality stages, publish graphs to Fuseki, and inspect every produced artifact in one workspace.</p><button className="primary-button" onClick={() => setPage('pipeline')}>{icon('run')} Open pipeline</button></div><div className="hero-visual"><div className="flow-node source">Source</div><span>→</span><div className="flow-node">RDF</div><span>→</span><div className="flow-node accent">Fuseki</div></div></section><section className="metric-grid"><div><span>Use cases</span><strong>{useCases.length}</strong><small>Configured workflows</small></div><div><span>Available stages</span><strong>{useCases.reduce((sum, item) => sum + item.stages.filter((stage) => stage.available).length, 0)}</strong><small>Detected from source</small></div><div><span>Generated assets</span><strong>{useCases.reduce((sum, item) => sum + Object.values(item.results || {}).reduce((total, result) => total + (result.artifacts?.length || 0), 0), 0)}</strong><small>Ready to inspect</small></div><div><span>Store status</span><strong className={connection ? 'metric-good' : 'metric-muted'}>{connection ? 'Online' : 'Offline'}</strong><small>Apache Jena Fuseki</small></div></section><section className="overview-grid"><div className="panel"><div className="panel-heading"><div><p className="eyebrow">Workflow health</p><h2>Pipeline availability</h2></div><button className="text-button" onClick={() => setPage('pipeline')}>View pipeline →</button></div>{useCases.map((item) => <div className="workflow-summary" key={item.id}><strong>{item.title}</strong><span>{item.stages.filter((stage) => stage.available).length}/{item.stages.length} stages active</span><div><i style={{ width: `${item.stages.length ? item.stages.filter((stage) => stage.available).length / item.stages.length * 100 : 0}%` }} /></div></div>)}</div><div className="panel quick-panel"><p className="eyebrow">Quick actions</p><button onClick={() => setPage('usecase')}>{icon('usecase')} Explore the use case</button><button onClick={() => setPage('query')}>{icon('query')} Query Fuseki</button><button onClick={() => setPage('browser')}>{icon('browser')} Browse outputs</button><button onClick={() => setPage('pipeline')}>{icon('pipeline')} Run a stage</button></div></section></>}{page === 'usecase' && <UseCasePage onOpenPipeline={() => setPage('pipeline')} />}{page === 'pipeline' && <section className="workbench"><div className="workbench-header"><div><p className="eyebrow">Step-by-step execution</p><h2>Pipeline control centre</h2><p>The availability badge follows the active calls in the pipeline files. Commented stages stay visible but cannot be run.</p></div><div className="segmented">{useCases.map((item) => <button className={activeUseCase === item.id ? 'active' : ''} key={item.id} onClick={() => setActiveUseCase(item.id)}>{item.title.replace(' conductivity', '')}</button>)}</div></div>{currentUseCase && <PipelineRun useCase={currentUseCase} running={running} onRun={runStage} onPreview={setPreview} />}</section>}{page === 'browser' && <DataBrowser useCases={useCases} onPreview={setPreview} />}{page === 'query' && <SparqlWorkspace connected={connection} />}</main>{preview && <ArtifactPreview artifact={preview} onClose={() => setPreview(null)} />}</div>
 }
 
 export default App

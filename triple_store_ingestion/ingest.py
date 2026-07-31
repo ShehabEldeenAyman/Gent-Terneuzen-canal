@@ -1,66 +1,51 @@
+"""Apache Jena Fuseki graph-store client used by the pipeline."""
+
+import os
+
 import requests
 
-# Update the URL to point to your new Fuseki dataset endpoint
-VIRTUOSO_URL = "http://localhost:3030/dataset/data"  # Replace 'dataset' with your actual Fuseki dataset name
-ttl_timeseries_path = "../data/timeseries.ttl"
-ttl_stations_path = "../data/stations.ttl"
+
+FUSEKI_DATA_URL = os.getenv("FUSEKI_DATA_URL", "http://localhost:3030/dataset/data")
 
 
-def upload_graph(ttl_data_path, GRAPH_URI):
-    params = {'graph': GRAPH_URI}
-    headers = {'Content-Type': 'text/turtle'}
-    print(f"started uploading {ttl_data_path} to {GRAPH_URI}")
+def get_query_url():
+    """Resolve Fuseki's read-only SPARQL query endpoint from the data endpoint."""
+    configured = os.getenv("FUSEKI_QUERY_URL")
+    if configured:
+        return configured
+    return FUSEKI_DATA_URL.rsplit("/data", 1)[0] + "/query"
+
+
+def upload_graph(ttl_data_path, graph_uri):
+    """Upload a Turtle file into a named graph and report an actionable result."""
     try:
-        with open(ttl_data_path, 'rb') as f:
+        with open(ttl_data_path, "rb") as source:
             response = requests.post(
-                VIRTUOSO_URL, 
-                params=params, 
-                data=f, 
-                headers=headers
+                FUSEKI_DATA_URL,
+                params={"graph": graph_uri},
+                data=source,
+                headers={"Content-Type": "text/turtle"},
+                timeout=60,
             )
-
-        if response.status_code in [200, 201, 204]:
-            print(f"Successfully uploaded {ttl_data_path} to {GRAPH_URI}")
-        else:
-            print(f"Failed to upload. Status code: {response.status_code}")
-            print(f"Response: {response.text}")
-
-    except FileNotFoundError:
-        print(f"Error: The file at {ttl_data_path} was not found.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
-
-def delete_graph(GRAPH_URI):
-    """Removes the entire named graph from the triplestore."""
-    params = {'graph': GRAPH_URI}
-    
-    try:
-        print(f"Attempting to delete graph: {GRAPH_URI}...")
-        response = requests.delete(
-            VIRTUOSO_URL,
-            params=params
-        )
-        
-        if response.status_code in [200, 204]:
-            print(f"Successfully deleted graph: {GRAPH_URI}")
+        if response.status_code in (200, 201, 204):
+            print(f"Uploaded {ttl_data_path} to Fuseki graph {graph_uri}")
             return True
-        else:
-            print(f"Failed to delete graph. Status code: {response.status_code}")
-            print(f"Response: {response.text}")
-            return False
-            
-    except Exception as e:
-        print(f"An error occurred during deletion: {e}")
-        return False
+        print(f"Fuseki upload failed ({response.status_code}): {response.text}")
+    except FileNotFoundError:
+        print(f"Turtle file not found: {ttl_data_path}")
+    except requests.RequestException as error:
+        print(f"Fuseki upload request failed: {error}")
+    return False
 
 
-def main():
-    GRAPH_URI = "http://example.com/Gent-Terneuzen"
-    delete_graph(GRAPH_URI)
-    upload_graph(ttl_timeseries_path, GRAPH_URI)
-    upload_graph(ttl_stations_path, GRAPH_URI)
-
-
-if __name__ == "__main__":
-    main()
+def delete_graph(graph_uri):
+    """Remove a named graph from Fuseki's Graph Store Protocol endpoint."""
+    try:
+        response = requests.delete(FUSEKI_DATA_URL, params={"graph": graph_uri}, timeout=30)
+        if response.status_code in (200, 204):
+            print(f"Deleted Fuseki graph {graph_uri}")
+            return True
+        print(f"Fuseki graph deletion failed ({response.status_code}): {response.text}")
+    except requests.RequestException as error:
+        print(f"Fuseki graph deletion request failed: {error}")
+    return False

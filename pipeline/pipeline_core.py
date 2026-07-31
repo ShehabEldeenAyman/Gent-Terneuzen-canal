@@ -143,13 +143,18 @@ def step_5_5_reasoner(data_path, rule_path):
     return result
 
 
-def step_4_ingest_virtuoso(ttl_timeseries, graph_uri, delete_existing=True):
+def step_4_ingest_triplestore(ttl_timeseries, graph_uri, delete_existing=True):
     setup_environment()
     import ingest
     if delete_existing and not ingest.delete_graph(graph_uri):
-        raise RuntimeError("Virtuoso graph deletion failed.")
-    ingest.upload_graph(str(ttl_timeseries), graph_uri)
-    return {"message": f"Uploaded data to {graph_uri}."}
+        raise RuntimeError("Fuseki graph deletion failed.")
+    if not ingest.upload_graph(str(ttl_timeseries), graph_uri):
+        raise RuntimeError("Fuseki upload failed. Check the data endpoint and server logs.")
+    return {"message": f"Uploaded data to Fuseki graph {graph_uri}."}
+
+
+# Compatibility alias for scripts that still use the former name.
+step_4_ingest_virtuoso = step_4_ingest_triplestore
 
 
 def data_path(name):
