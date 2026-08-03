@@ -31,6 +31,7 @@ def setup_environment():
         ROOT_DIR / "RDF2LDES",
         ROOT_DIR / "RML_generator",
         ROOT_DIR / "automating_aligments",
+        ROOT_DIR / "RDF2LDES",
         SHACL_DIR,
     ):
         path = str(directory)
@@ -90,10 +91,10 @@ def step_1_pre_process_waterlink(input_path=None, output_path=None):
     return {"message": "Prepared Water-Link workbook data.", "artifacts": [output_path]}
 
 
-def step_3_rml_mapping(parameter_name, "RML_generator"):
+def step_3_rml_mapping(parameter_name, generator_type="RML_generator"):
     setup_environment()
-    generator = __import__(generator_module)
-    generator.generate_timeseries_mapping(parameter_name)
+    import RML_generator
+    RML_generator.generate_timeseries_mapping(parameter_name)
     mapping = RML_DIR / f"{parameter_name}.rml.ttl"
     output = DATA_DIR / f"{parameter_name}.ttl"
     result = _run(["java", "-jar", "rmlmapper.jar", "-m", str(mapping), "-o", str(output), "-s", "turtle"], "RML mapping")
@@ -147,6 +148,17 @@ def step_4_ingest_triplestore(ttl_timeseries, graph_uri, delete_existing=True):
     if not ingest.upload_graph(str(ttl_timeseries), graph_uri):
         raise RuntimeError("Fuseki upload failed. Check the data endpoint and server logs.")
     return {"message": f"Uploaded data to Fuseki graph {graph_uri}."}
+
+def step_6_RDF2LDES(property_name,source_ttl, directory_input, base_path_input):
+    setup_environment()
+    import RDFTSS2LDES
+    RDFTSS2LDES.set_property(property_name, directory_input, base_path_input)
+    raw_graph = RDFTSS2LDES.load_graph(source_ttl)
+    sparql_results = RDFTSS2LDES.process_graph(raw_graph)
+    RDFTSS2LDES.divide_data(sparql_results)
+    RDFTSS2LDES.delete_log()
+    RDFTSS2LDES.delete_ldes_files()
+    RDFTSS2LDES.create_ldes_files()
 
 
 # Compatibility alias for scripts that still use the former name.

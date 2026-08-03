@@ -26,11 +26,15 @@ def main():
 
     core.step_5_rdf2tss("../data/water_link.ttl", "../data/waterlink_tss.ttl","Data/conductivity",overwrite=True)
 
-    #core.step_5_5_reasoner("../data/water_link.ttl","../N3rules/rules.n3")
+    core.step_5_5_reasoner("../data/water_link.ttl","../N3rules/rules.n3")
 
     print("--- Ingesting Water-Link Data to Virtuoso started---")
     core.step_4_ingest_virtuoso("../data/water_link.ttl", GRAPH_URI, delete_existing=False)
     print("--- Ingesting Water-Link Data to Virtuoso finished---")
+
+    print("--- Starting LDES File Generation Process---")
+    core.step_6_RDF2LDES("water-link","data/waterlink_tss.ttl","../data/water_link_ldes","../data/water_link_ldes")
+    print("---  LDES File Generation Process Finished---")
 
 if __name__ == "__main__":
     main()
