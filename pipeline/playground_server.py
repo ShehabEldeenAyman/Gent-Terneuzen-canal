@@ -46,6 +46,7 @@ STAGES = {
         ("tss", "Create time-series snippets", "Create TSS resources from the RDF observations.", "step_5_rdf2tss", None),
         ("reason", "Apply N3 rules", "Materialize quality annotations and inferred triples.", "step_5_5_reasoner", None),
         ("ingest", "Publish to Fuseki", "Upload the RDF graph to Apache Jena Fuseki.", "step_4_ingest_virtuoso", None),
+        ("ldes", "Generate RDF2LDES", "Partition the TSS graph into TREE-indexed LDES TriG fragments for web traversal.", "step_6_RDF2LDES", None),
     ],
     "waterinfo-conductivity": [
         ("fetch", "Fetch measurements", "Download the configured Waterinfo conductivity series.", "step_1_fetch_data", None),
@@ -56,6 +57,7 @@ STAGES = {
         ("validate-output", "Validate normalized graph", "Confirm that the normalized graph meets the output SHACL contract.", "step_shacl_validate", "SHACL_out"),
         ("tss", "Create time-series snippets", "Create TSS resources from the RDF observations.", "step_5_rdf2tss", None),
         ("ingest", "Publish to Fuseki", "Upload the RDF graph to Apache Jena Fuseki.", "step_4_ingest_virtuoso", None),
+        ("ldes", "Generate RDF2LDES", "Partition the TSS graph into TREE-indexed LDES TriG fragments for web traversal.", "step_6_RDF2LDES", None),
     ],
 }
 PIPELINE_FILES = {
@@ -104,7 +106,8 @@ def active_calls(use_case):
 
 def expected_artifacts(use_case, stage_id):
     parameter = "water_link" if use_case == "water-link" else WATERINFO["parameter"]
-    tss_name = "waterlink_tss.ttl" if use_case == "water-link" else f"{parameter}_tss.ttl"
+    tss_name = "water_link_tss.ttl" if use_case == "water-link" else f"{parameter}_tss.ttl"
+    ldes_directory = DATA_DIR / ("water_link_ldes" if use_case == "water-link" else "water_info_ldes")
     files = {
         "prepare": [DATA_DIR / f"{parameter}.csv"],
         "map": [ROOT_DIR / "RML_mapping" / f"{parameter}.rml.ttl", DATA_DIR / f"{parameter}.ttl"],
@@ -114,6 +117,7 @@ def expected_artifacts(use_case, stage_id):
         "tss": [DATA_DIR / tss_name],
         "reason": [DATA_DIR / f"{parameter}_inferred.ttl"],
         "ingest": [],
+        "ldes": core.ldes_artifacts(ldes_directory),
     }
     return [artifact(path) for path in files.get(stage_id, [])]
 
@@ -143,6 +147,7 @@ def stage_result(use_case, stage_id):
             "tss": lambda: core.step_5_rdf2tss(rdf, DATA_DIR / "water_link_tss.ttl", "Data/conductivity"),
             "reason": lambda: core.step_5_5_reasoner(rdf, ROOT_DIR / "N3rules/rules.n3"),
             "ingest": lambda: core.step_4_ingest_triplestore(rdf, GRAPH_URI, delete_existing=False),
+            "ldes": lambda: core.step_6_RDF2LDES("water-link", DATA_DIR / "water_link_tss.ttl", "../data/water_link_ldes", "../data/water_link_ldes"),
         }
     else:
         parameter = WATERINFO["parameter"]
@@ -156,6 +161,7 @@ def stage_result(use_case, stage_id):
             "validate-output": lambda: core.step_shacl_validate(rdf, ROOT_DIR / "SHACL/SHACL_out.ttl", DATA_DIR / f"{parameter}_shacl_out_report.txt"),
             "tss": lambda: core.step_5_rdf2tss(rdf, DATA_DIR / f"{parameter}_tss.ttl", f"Data/{parameter}"),
             "ingest": lambda: core.step_4_ingest_triplestore(rdf, GRAPH_URI, delete_existing=False),
+            "ldes": lambda: core.step_6_RDF2LDES("water-info", DATA_DIR / f"{parameter}_tss.ttl", "../data/water_info_ldes", "../data/water_info_ldes"),
         }
     return actions[stage_id]()
 
@@ -183,7 +189,7 @@ def list_use_cases():
         {
             "id": use_case,
             "title": "Water-Link conductivity" if use_case == "water-link" else "Waterinfo conductivity",
-            "description": "Workbook-to-Fuseki semantic pipeline." if use_case == "water-link" else "Waterinfo-to-Fuseki semantic pipeline.",
+            "description": "Workbook-to-Fuseki and LDES semantic pipeline." if use_case == "water-link" else "Waterinfo-to-Fuseki and LDES semantic pipeline.",
             "stages": stage_catalog(use_case),
             "results": results.get(use_case, {}),
         }

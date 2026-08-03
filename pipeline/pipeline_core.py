@@ -91,15 +91,20 @@ def step_1_pre_process_waterlink(input_path=None, output_path=None):
     return {"message": "Prepared Water-Link workbook data.", "artifacts": [output_path]}
 
 
-def step_3_rml_mapping(parameter_name, generator_type="RML_generator"):
+def _rml_mapping(parameter_name, generator_type):
+    """Generate an RML mapping with the selected generator and run RMLMapper."""
     setup_environment()
-    import RML_generator
-    RML_generator.generate_timeseries_mapping(parameter_name)
+    generator = __import__(generator_type)
+    generator.generate_timeseries_mapping(parameter_name)
     mapping = RML_DIR / f"{parameter_name}.rml.ttl"
     output = DATA_DIR / f"{parameter_name}.ttl"
     result = _run(["java", "-jar", "rmlmapper.jar", "-m", str(mapping), "-o", str(output), "-s", "turtle"], "RML mapping")
     result["artifacts"] = [mapping, output]
     return result
+
+
+def step_3_rml_mapping(parameter_name, generator_type="RML_generator"):
+    return _rml_mapping(parameter_name, generator_type)
 
 
 def step_2_rml_mapping_waterlink(parameter_name="water_link"):
@@ -149,16 +154,52 @@ def step_4_ingest_triplestore(ttl_timeseries, graph_uri, delete_existing=True):
         raise RuntimeError("Fuseki upload failed. Check the data endpoint and server logs.")
     return {"message": f"Uploaded data to Fuseki graph {graph_uri}."}
 
-def step_6_RDF2LDES(property_name,source_ttl, directory_input, base_path_input):
+
+def ldes_artifacts(directory_input, limit=24):
+    """Return a useful, bounded preview of a generated LDES tree.
+
+    A full run can create hundreds of daily ``readings.trig`` fragments.  The
+    dashboard needs the TREE indexes plus a recent sample, rather than a huge
+    response containing every fragment.
+    """
+    output_directory = Path(directory_input).resolve()
+    if not output_directory.is_dir():
+        return []
+
+    trig_files = list(output_directory.rglob("*.trig"))
+    indexes = sorted(
+        (path for path in trig_files if path.name != "readings.trig"),
+        key=lambda path: (len(path.relative_to(output_directory).parts), path.as_posix()),
+    )
+    fragments = sorted(
+        (path for path in trig_files if path.name == "readings.trig"),
+        key=lambda path: path.as_posix(),
+        reverse=True,
+    )
+    index_limit = min(8, limit)
+    return (indexes[:index_limit] + fragments[: max(0, limit - index_limit)])[:limit]
+
+
+def step_6_RDF2LDES(property_name, source_ttl, directory_input, base_path_input):
     setup_environment()
     import RDFTSS2LDES
+
     RDFTSS2LDES.set_property(property_name, directory_input, base_path_input)
-    raw_graph = RDFTSS2LDES.load_graph(source_ttl)
+    raw_graph = RDFTSS2LDES.load_graph(str(source_ttl))
     sparql_results = RDFTSS2LDES.process_graph(raw_graph)
     RDFTSS2LDES.divide_data(sparql_results)
     RDFTSS2LDES.delete_log()
     RDFTSS2LDES.delete_ldes_files()
     RDFTSS2LDES.create_ldes_files()
+
+    output_directory = Path(directory_input).resolve()
+    generated = list(output_directory.rglob("*.trig")) if output_directory.is_dir() else []
+    index_count = sum(path.name != "readings.trig" for path in generated)
+    fragment_count = sum(path.name == "readings.trig" for path in generated)
+    return {
+        "message": f"Created an LDES with {index_count} TREE index file(s) and {fragment_count} daily fragment(s).",
+        "artifacts": ldes_artifacts(output_directory),
+    }
 
 
 # Compatibility alias for scripts that still use the former name.
