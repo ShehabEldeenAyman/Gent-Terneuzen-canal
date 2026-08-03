@@ -1,117 +1,110 @@
-from rdflib import Graph, Namespace, URIRef, Literal
+"""Normalize observation values between QUDT units."""
+
+from __future__ import annotations
+
+from rdflib import Graph, Literal, Namespace, URIRef
+
+
+QUDT = Namespace("http://qudt.org/schema/qudt/")
+SOSA = Namespace("http://www.w3.org/ns/sosa/")
+
+# Network-free definitions for the conductivity units used by this project.
+# Multipliers and offsets convert a value to QUDT's SI reference unit (S/m).
+KNOWN_CONVERSIONS = {
+    URIRef("http://qudt.org/vocab/unit/MicroS-PER-CentiM"): (1e-4, 0.0),
+    URIRef("http://qudt.org/vocab/unit/MilliS-PER-CentiM"): (1e-1, 0.0),
+    URIRef("http://qudt.org/vocab/unit/S-PER-M"): (1.0, 0.0),
+}
+
+
+def convert_qudt_value(
+    value: float,
+    source_multiplier: float,
+    source_offset: float,
+    target_multiplier: float,
+    target_offset: float,
+) -> float:
+    """Convert via the common SI reference represented by QUDT metadata."""
+    si_value = float(value) * source_multiplier + source_offset
+    return (si_value - target_offset) / target_multiplier
+
+
+def _conversion(unit: URIRef, cache: dict[URIRef, tuple[float, float]]):
+    if unit in cache:
+        return cache[unit]
+    if unit in KNOWN_CONVERSIONS:
+        cache[unit] = KNOWN_CONVERSIONS[unit]
+        return cache[unit]
+
+    unit_graph = Graph()
+    unit_graph.parse(str(unit))
+    multiplier = unit_graph.value(unit, QUDT.conversionMultiplier)
+    offset = unit_graph.value(unit, QUDT.conversionOffset)
+    if multiplier is None:
+        raise ValueError(f"QUDT unit {unit} has no conversionMultiplier.")
+    cache[unit] = (float(multiplier), float(offset) if offset is not None else 0.0)
+    return cache[unit]
+
 
 def transform_unit(graph_directory, NEW_UNIT):
-    g = Graph()
-    
-    # Define your namespaces to match the data
-    QUDT = Namespace("http://qudt.org/schema/qudt/")
-    SOSA = Namespace("http://www.w3.org/ns/sosa/")
-    
-    try:
-        g.parse(graph_directory, format="turtle")
-        print(f"Successfully loaded {len(g)} triples.\n")
-        
-        for subject in set(g.subjects()):
-            # FIX 1: Look for QUDT.hasUnit instead of QUDT.unit
-            unit_value = g.value(subject, QUDT.hasUnit)
-            
-            if unit_value is not None:
-                print(f"Subject: {subject}")
-                print(f"  └── Found target value: {unit_value}")
-                temporary_graph = Graph()
-                temporary_graph.parse(URIRef(unit_value))
-                
-                mult = temporary_graph.value(unit_value, QUDT.conversionMultiplier)
-                off = temporary_graph.value(unit_value, QUDT.conversionOffset)
-                conversion_multiplier = float(mult) if mult is not None else 1.0
-                conversion_offset = float(off) if off is not None else 0.0
-                print(f"  └── Found conversion multiplier value: {conversion_multiplier}")
-                print(f"  └── Found conversion offset value: {conversion_offset}")
-                
-                for predicate, obj in g.predicate_objects(subject):
-                    # FIX 2: Look for SOSA.hasSimpleResult instead of QUDT.value
-                    if (predicate == SOSA.hasSimpleResult):
-                        print(f"     ├── Predicate: {predicate}")
-                        print(f"     └── Object:    {obj}")
-                        
-                        new_value = (float(obj) + conversion_offset) * conversion_multiplier
-                        
-                        print(f"     ├── converted value: {new_value}")
-                        print(f"     ├── new unit: {NEW_UNIT}")
-                        
-                        # FIX 3: Update the correct predicates when saving
-                        g.set((subject, SOSA.hasSimpleResult, Literal(new_value)))
-                        g.set((subject, QUDT.hasUnit, NEW_UNIT))
-                        
-                        g.serialize(destination=graph_directory, format="turtle")
-                        print(f"\nMeasuring Unit Transformed! graph saved to {graph_directory}")
-    except Exception as e:
-            print(f"Error parsing the file: {e}")
+    """Compatibility entry point using the corrected batch implementation."""
+    return transform_unit_optimized(graph_directory, NEW_UNIT)
+
 
 def transform_unit_optimized(graph_directory, NEW_UNIT):
-    g = Graph()
-    
-    QUDT = Namespace("http://qudt.org/schema/qudt/")
-    SOSA = Namespace("http://www.w3.org/ns/sosa/")
-    
-    # Dict handles multiple distinct units dynamically as they appear
-    unit_cache = {}
-    
-    try:
-        g.parse(graph_directory, format="turtle")
-        print(f"Successfully loaded {len(g)} triples.\n")
-        
-        graph_modified = False 
-        
-        for subject in set(g.subjects()):
-            unit_value = g.value(subject, QUDT.hasUnit)
-            
-            if unit_value is not None:
-                
-                # SMART CHECK: If the element is already in the target unit, skip it!
-                if unit_value == NEW_UNIT:
-                    continue
-                
-                # DYNAMIC CACHING: If it's a unit we haven't seen yet, look it up and cache it
-                if unit_value not in unit_cache:
-                    print(f"Network Request: Fetching conversion data for new unit '{unit_value}'...")
-                    temporary_graph = Graph()
-                    temporary_graph.parse(str(unit_value)) 
-                    
-                    mult = temporary_graph.value(unit_value, QUDT.conversionMultiplier)
-                    off = temporary_graph.value(unit_value, QUDT.conversionOffset)
-                    
-                    conversion_multiplier = float(mult) if mult is not None else 1.0
-                    conversion_offset = float(off) if off is not None else 0.0
-                    
-                    # Store it so any future elements with this unit reuse it
-                    unit_cache[unit_value] = (conversion_multiplier, conversion_offset)
-                    print(f"  └── Cached multiplier: {conversion_multiplier}, offset: {conversion_offset}")
-                else:
-                    # Instant hit if we've seen this unit type earlier in the loop
-                    conversion_multiplier, conversion_offset = unit_cache[unit_value]
+    """Convert every SOSA observation to NEW_UNIT and serialize once.
 
-                # --- VALUE UPDATE LOGIC ---
-                for predicate, obj in g.predicate_objects(subject):
-                    if (predicate == SOSA.hasSimpleResult):
-                        new_value = (float(obj) + conversion_offset) * conversion_multiplier
-                        
-                        g.set((subject, SOSA.hasSimpleResult, Literal(new_value)))
-                        g.set((subject, QUDT.hasUnit, NEW_UNIT))
-                        
-                        graph_modified = True
-                        
-        if graph_modified:
-            g.serialize(destination=graph_directory, format="turtle")
-            print(f"\nOptimization complete! Graph saved to {graph_directory}")
+    Previous code multiplied only by the source unit's SI multiplier. For
+    µS/cm -> mS/cm that produced S/m values and then labelled them as mS/cm,
+    making the stored number ten times too small. The corrected formula divides
+    by the target unit's multiplier after converting through SI.
+    """
+    graph = Graph()
+    target_unit = URIRef(NEW_UNIT)
+    cache: dict[URIRef, tuple[float, float]] = {}
+
+    try:
+        graph.parse(graph_directory, format="turtle")
+        print(f"Successfully loaded {len(graph)} triples.")
+        target_multiplier, target_offset = _conversion(target_unit, cache)
+        converted = 0
+
+        for subject in set(graph.subjects(predicate=SOSA.hasSimpleResult)):
+            source_unit = graph.value(subject, QUDT.hasUnit)
+            if source_unit is None or source_unit == target_unit:
+                continue
+            source_multiplier, source_offset = _conversion(URIRef(source_unit), cache)
+            result = graph.value(subject, SOSA.hasSimpleResult)
+            if result is None:
+                continue
+            new_value = convert_qudt_value(
+                float(result),
+                source_multiplier,
+                source_offset,
+                target_multiplier,
+                target_offset,
+            )
+            graph.set((subject, SOSA.hasSimpleResult, Literal(new_value)))
+            graph.set((subject, QUDT.hasUnit, target_unit))
+            converted += 1
+
+        if converted:
+            graph.serialize(destination=graph_directory, format="turtle")
+            message = f"Converted {converted} observations to {target_unit}."
         else:
-            print("\nNo transformations needed. All elements already match the target unit.")
-            
-    except Exception as e:
-            print(f"Error processing the file: {e}")
+            message = f"No transformations needed; observations already use {target_unit}."
+        print(message)
+        return message
+    except Exception as error:
+        raise RuntimeError(f"Could not normalize {graph_directory}: {error}") from error
+
 
 def main():
-    transform_unit_optimized("../data/water_link.ttl", URIRef("http://qudt.org/vocab/unit/MilliS-PER-CentiM"))
+    transform_unit_optimized(
+        "../data/water_link.ttl",
+        URIRef("http://qudt.org/vocab/unit/MilliS-PER-CentiM"),
+    )
+
 
 if __name__ == "__main__":
     main()
