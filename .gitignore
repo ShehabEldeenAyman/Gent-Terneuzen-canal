@@ -1,5 +1,53 @@
 graphify-out/
 .venv-paper/
+
+# Machine-learning / deep-learning generated artifacts
+# Keep notebooks and training code in Git; keep reproducible outputs local.
+**/saved_models/
+**/saved_model/
+**/saved_model_tmp/
+**/checkpoints/
+**/checkpoint/
+**/runs/
+**/wandb/
+**/mlruns/
+**/lightning_logs/
+**/tensorboard/
+**/artifacts/
+
+# Existing notebook export directory (retain its human-written instructions).
+time_series_analysis/modeldump/*
+!time_series_analysis/modeldump/conversion instructions.txt
+
+# Model weights, serialized estimators, scalers, and interchange formats.
+*.keras
+*.h5
+*.hdf5
+*.ckpt
+*.pt
+*.pth
+*.pth.tar
+*.onnx
+*.pb
+*.tflite
+*.safetensors
+*.pkl
+*.pickle
+*.joblib
+*.ubj
+*.bst
+
+# Analysis caches and figures produced by the time-series notebooks.
+.matplotlib-cache/
+.huggingface/
+time_series_analysis/*.npy
+time_series_analysis/*.npz
+time_series_analysis/*.png
+time_series_analysis/*.jpg
+time_series_analysis/*.jpeg
+time_series_analysis/*.svg
+time_series_analysis/*.html
+
 timeseries.ttl
 stations.ttl
 TSSgraph.ttl
