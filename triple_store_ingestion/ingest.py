@@ -42,10 +42,17 @@ def delete_graph(graph_uri):
     """Remove a named graph from Fuseki's Graph Store Protocol endpoint."""
     try:
         response = requests.delete(FUSEKI_DATA_URL, params={"graph": graph_uri}, timeout=30)
+
         if response.status_code in (200, 204):
             print(f"Deleted Fuseki graph {graph_uri}")
             return True
+
+        if response.status_code == 404:
+            print(f"Fuseki graph {graph_uri} does not exist yet; continuing.")
+            return True
+
         print(f"Fuseki graph deletion failed ({response.status_code}): {response.text}")
+
     except requests.RequestException as error:
         print(f"Fuseki graph deletion request failed: {error}")
     return False
