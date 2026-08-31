@@ -1,0 +1,165 @@
+@prefix dcat:  <http://www.w3.org/ns/dcat#> .
+@prefix dct:   <http://purl.org/dc/terms/> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix it6:   <http://data.europa.eu/it6/> .
+@prefix lpwcc: <https://linkedpaperswithcode.com/class/> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix gtc:   <https://github.com/ShehabEldeenAyman/Gent-Terneuzen-canal#> .
+
+# MLDCAT-AP 3.1 metadata for the TCN experiments in
+# time_series_analysis/LSTM_TCN_72h_vs_manual_42h.ipynb.
+#
+# The notebook currently contains the trained-run results and reproducible model
+# definitions, but it does not export serialized weights. Consequently, the
+# mandatory it6:hasFile link identifies the notebook implementation and does not
+# claim that a deployable .keras, SavedModel, ONNX, or TensorFlow.js file exists.
+
+
+# -----------------------------------------------------------------------------
+# TCN model trained with the unrestricted 72-hour input representation
+# -----------------------------------------------------------------------------
+
+gtc:tcn-unrestricted-72h
+    a it6:MachineLearningModel ;
+    dct:title "TCN 72-hour Indusii conductivity forecaster — unrestricted input"@en ;
+    dct:identifier "gtc-tcn-unrestricted-72h-v1" ;
+    dct:created "2026-08-26"^^xsd:date ;
+    dct:modified "2026-08-28"^^xsd:date ;
+    dct:creator <https://github.com/ShehabEldeenAyman> ;
+    dct:license <https://opensource.org/license/mit> ;
+    dct:type gtc:MultivariateTimeSeriesForecasting ;
+    dcat:version "1.0.0" ;
+    dcat:keyword "TCN", "temporal convolutional network", "conductivity", "salinity intrusion", "time-series forecasting", "72-hour forecast", "Gent-Terneuzen Canal" ;
+    it6:hasFile gtc:lstm-tcn-notebook ;
+    it6:hasRepository <https://github.com/ShehabEldeenAyman/Gent-Terneuzen-canal> ;
+    it6:hasUploader <https://github.com/ShehabEldeenAyman> ;
+    it6:trainedOn gtc:unrestricted-72h-training-data ;
+    it6:validatedOn gtc:unrestricted-72h-validation-data ;
+    it6:testedOn gtc:unrestricted-72h-test-data ;
+    it6:releaseDate "2026-08-28"^^xsd:date ;
+    it6:shortDescription "A causal temporal convolutional network that forecasts 288 consecutive 15-minute conductivity values at Indusii from 72 hours of observations at five canal sensors."@en ;
+    dct:description "The selected unrestricted-input TCN candidate is TCN-32-k5. It consumes a 288 by 5 standardized multivariate sequence and predicts the next 288 Indusii values as residuals relative to the latest target observation."@en ;
+    it6:modelArchitecture "Causal residual Conv1D blocks with 32 filters, kernel size 5 and dilations 1, 2, 4, 8, 16 and 32, followed by layer normalization, Swish activations and spatial dropout. Last-step, temporal-mean, temporal-maximum and latest-target summaries feed a 128-unit dense head and a 288-value residual output. The receptive field is 505 steps and total trainable parameters are 108,672."@en ;
+    it6:totalNumberOfParameters "108672"^^xsd:nonNegativeInteger ;
+    it6:designSpecifications "Input shape: 288 time steps by 5 sensors (Terneuzen, Westdorpe, Gent-far, Gent-near and Indusii). Output shape: 288 steps at 15-minute resolution, corresponding to a 72-hour forecast. Causal convolutions prevent future-input leakage, and the training objective is mean squared error."@en ;
+    it6:trainingMethodologies "Supervised direct multi-horizon regression with chronological splits, causal trailing two-hour smoothing, limited internal interpolation, training-only standardization, AdamW optimization and residual prediction."@en ;
+    it6:trainingProcess "The notebook's quick search compares two predeclared TCN candidates using August only. This TCN-32-k5 candidate uses learning rate 0.0004, weight decay 0.00001, dropout 0.12 and batch size 128. Training permits up to 100 epochs with gradient clipping, ReduceLROnPlateau and early stopping with patience 12 and best-weight restoration. The recorded run stopped after 52 epochs and restored epoch 40; fit time was 379.7 seconds on the execution machine."@en ;
+    it6:evaluationStrategies "Candidate selection and optional per-lead calibration use the August 2025 validation split only. September 2025 is held out until selection. Performance is compared with a persistence forecast using RMSE and skill, where skill equals one minus model RMSE divided by persistence RMSE."@en ;
+    it6:evaluationResults "August validation RMSE was 0.28314, versus persistence RMSE 0.31953 (skill 0.114). Held-out September raw-model RMSE was approximately 0.2882 and overall 72-hour skill was 0.1440; August calibration produced essentially the same aggregate result."@en ;
+    it6:intendedUse "Research comparison of causal neural forecasting approaches for 72-hour conductivity forecasting at the Indusii station on the Gent-Terneuzen Canal."@en ;
+    it6:howToUse "Open and run time_series_analysis/LSTM_TCN_72h_vs_manual_42h.ipynb with a reachable Fuseki dataset. The notebook reconstructs and trains the model. It does not currently save trained weights, so inference in a later session requires retraining or adding an explicit model export step."@en ;
+    it6:limitations "Validated only on the stated 2025 canal observations and sensor configuration. It is not a safety-critical warning system. Accuracy can deteriorate under missing sensors, distribution shift or other waterways. The experiment has no committed serialized weights."@en .
+
+
+# -----------------------------------------------------------------------------
+# TCN model trained with the manual 42-hour input representation
+# -----------------------------------------------------------------------------
+
+gtc:tcn-manual-42h
+    a it6:MachineLearningModel ;
+    dct:title "TCN 72-hour Indusii conductivity forecaster — manual 42-hour input"@en ;
+    dct:identifier "gtc-tcn-manual-42h-v1" ;
+    dct:created "2026-08-26"^^xsd:date ;
+    dct:modified "2026-08-28"^^xsd:date ;
+    dct:creator <https://github.com/ShehabEldeenAyman> ;
+    dct:license <https://opensource.org/license/mit> ;
+    dct:type gtc:MultivariateTimeSeriesForecasting ;
+    dcat:version "1.0.0" ;
+    dcat:keyword "TCN", "temporal convolutional network", "conductivity", "salinity intrusion", "time-series forecasting", "manual lag selection", "72-hour forecast", "Gent-Terneuzen Canal" ;
+    it6:hasFile gtc:lstm-tcn-notebook ;
+    it6:hasRepository <https://github.com/ShehabEldeenAyman/Gent-Terneuzen-canal> ;
+    it6:hasUploader <https://github.com/ShehabEldeenAyman> ;
+    it6:trainedOn gtc:manual-42h-training-data ;
+    it6:validatedOn gtc:manual-42h-validation-data ;
+    it6:testedOn gtc:manual-42h-test-data ;
+    it6:releaseDate "2026-08-28"^^xsd:date ;
+    it6:shortDescription "A causal temporal convolutional network that forecasts 288 consecutive 15-minute conductivity values at Indusii from a 42-hour, four-feature manual representation."@en ;
+    dct:description "The selected manual-input TCN candidate is TCN-48-k3. It consumes a 168 by 4 standardized engineered sequence and predicts the next 288 Indusii values as residuals relative to the latest target observation."@en ;
+    it6:modelArchitecture "Causal residual Conv1D blocks with 48 filters, kernel size 3 and dilations 1, 2, 4, 8, 16, 32 and 64, followed by layer normalization, Swish activations and spatial dropout. Last-step, temporal-mean, temporal-maximum and latest-target summaries feed a 128-unit dense head and a 288-value residual output. The receptive field is 509 steps and total trainable parameters are 148,912."@en ;
+    it6:totalNumberOfParameters "148912"^^xsd:nonNegativeInteger ;
+    it6:designSpecifications "Input shape: 168 time steps by 4 manually engineered conductivity features. Output shape: 288 steps at 15-minute resolution, corresponding to a 72-hour forecast. Causal convolutions prevent future-input leakage, and the training objective is mean squared error."@en ;
+    it6:trainingMethodologies "Supervised direct multi-horizon regression with chronological splits, causal trailing two-hour smoothing, limited internal interpolation, training-only standardization, AdamW optimization and residual prediction."@en ;
+    it6:trainingProcess "The notebook's quick search compares two predeclared TCN candidates using August only. This TCN-48-k3 candidate uses learning rate 0.0003, weight decay 0.00002, dropout 0.15 and batch size 128. Training permits up to 100 epochs with gradient clipping, ReduceLROnPlateau and early stopping with patience 12 and best-weight restoration. The recorded run stopped after 48 epochs and restored epoch 36; fit time was 358.3 seconds on the execution machine."@en ;
+    it6:evaluationStrategies "Candidate selection and optional per-lead calibration use the August 2025 validation split only. September 2025 is held out until selection. Performance is compared with a persistence forecast using RMSE and skill, where skill equals one minus model RMSE divided by persistence RMSE."@en ;
+    it6:evaluationResults "August validation RMSE was 0.26514, versus persistence RMSE 0.31953 (skill 0.170). The held-out September raw model achieved RMSE 0.27374 and overall 72-hour skill 0.1869, the best September RMSE among the notebook's pre-specified neural experiments; August calibration gave RMSE approximately 0.2740 and skill 0.1860."@en ;
+    it6:intendedUse "Research comparison of causal neural forecasting approaches for 72-hour conductivity forecasting at the Indusii station on the Gent-Terneuzen Canal."@en ;
+    it6:howToUse "Open and run time_series_analysis/LSTM_TCN_72h_vs_manual_42h.ipynb with a reachable Fuseki dataset. The notebook reconstructs and trains the model. It does not currently save trained weights, so inference in a later session requires retraining or adding an explicit model export step."@en ;
+    it6:limitations "Validated only on the stated 2025 canal observations and sensor configuration. It is not a safety-critical warning system. Accuracy can deteriorate under missing sensors, distribution shift or other waterways. The experiment has no committed serialized weights."@en .
+
+
+# -----------------------------------------------------------------------------
+# Shared implementation, repository, agent and controlled concepts
+# -----------------------------------------------------------------------------
+
+gtc:lstm-tcn-notebook
+    a it6:File ;
+    dct:identifier "time_series_analysis/LSTM_TCN_72h_vs_manual_42h.ipynb" ;
+    dct:title "LSTM and TCN: 72-hour versus manual 42-hour experiment notebook"@en ;
+    dct:format gtc:JupyterNotebookFormat ;
+    it6:url <https://raw.githubusercontent.com/ShehabEldeenAyman/Gent-Terneuzen-canal/main/time_series_analysis/LSTM_TCN_72h_vs_manual_42h.ipynb> .
+
+<https://github.com/ShehabEldeenAyman/Gent-Terneuzen-canal>
+    a lpwcc:repository ;
+    dct:title "Gent-Terneuzen-canal" ;
+    it6:hasFile gtc:lstm-tcn-notebook .
+
+<https://github.com/ShehabEldeenAyman>
+    a foaf:Agent, foaf:Person ;
+    foaf:name "Shehab El-Deen Ayman" .
+
+<https://raw.githubusercontent.com/ShehabEldeenAyman/Gent-Terneuzen-canal/main/time_series_analysis/LSTM_TCN_72h_vs_manual_42h.ipynb>
+    a dcat:Resource .
+
+<https://opensource.org/license/mit>
+    a dct:LicenseDocument ;
+    dct:title "MIT License"@en .
+
+gtc:JupyterNotebookFormat
+    a skos:Concept ;
+    skos:prefLabel "Jupyter Notebook (IPYNB/JSON)"@en .
+
+gtc:MultivariateTimeSeriesForecasting
+    a skos:Concept ;
+    skos:prefLabel "Multivariate time-series forecasting"@en .
+
+
+# -----------------------------------------------------------------------------
+# Chronological datasets used by the TCN variants
+# -----------------------------------------------------------------------------
+
+gtc:unrestricted-72h-training-data
+    a dcat:Dataset ;
+    dct:title "Unrestricted 72-hour representation — training split"@en ;
+    dct:description "3,740 causal supervised samples with input shape 288 by 5 and target shape 288. Sample endpoints run from 2025-01-07T13:45:00Z through 2025-07-31T23:45:00Z."@en ;
+    it6:collectionDate "2025-01-07"^^xsd:date .
+
+gtc:unrestricted-72h-validation-data
+    a dcat:Dataset ;
+    dct:title "Unrestricted 72-hour representation — validation split"@en ;
+    dct:description "2,098 causal supervised samples with input shape 288 by 5 and target shape 288. Sample endpoints run from 2025-08-10T03:30:00Z through 2025-08-31T23:45:00Z."@en ;
+    it6:collectionDate "2025-08-10"^^xsd:date .
+
+gtc:unrestricted-72h-test-data
+    a dcat:Dataset ;
+    dct:title "Unrestricted 72-hour representation — held-out test split"@en ;
+    dct:description "2,593 causal supervised samples with input shape 288 by 5 and target shape 288. Sample endpoints run from 2025-09-03T23:45:00Z through 2025-09-30T23:45:00Z."@en ;
+    it6:collectionDate "2025-09-03"^^xsd:date .
+
+gtc:manual-42h-training-data
+    a dcat:Dataset ;
+    dct:title "Manual 42-hour representation — training split"@en ;
+    dct:description "3,740 causal supervised samples with input shape 168 by 4 and target shape 288. Sample endpoints run from 2025-01-07T13:45:00Z through 2025-07-31T23:45:00Z."@en ;
+    it6:collectionDate "2025-01-07"^^xsd:date .
+
+gtc:manual-42h-validation-data
+    a dcat:Dataset ;
+    dct:title "Manual 42-hour representation — validation split"@en ;
+    dct:description "2,098 causal supervised samples with input shape 168 by 4 and target shape 288. Sample endpoints run from 2025-08-10T03:30:00Z through 2025-08-31T23:45:00Z."@en ;
+    it6:collectionDate "2025-08-10"^^xsd:date .
+
+gtc:manual-42h-test-data
+    a dcat:Dataset ;
+    dct:title "Manual 42-hour representation — held-out test split"@en ;
+    dct:description "2,593 causal supervised samples with input shape 168 by 4 and target shape 288. Sample endpoints run from 2025-09-03T23:45:00Z through 2025-09-30T23:45:00Z."@en ;
+    it6:collectionDate "2025-09-03"^^xsd:date .
